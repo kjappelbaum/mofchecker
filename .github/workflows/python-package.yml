@@ -8,6 +8,11 @@ on:
     branches: [master, kevin]
   pull_request:
     branches: [master, kevin]
+  schedule:
+    # Nightly tests run on master by default:
+    #   Scheduled workflows run on the latest commit on the default or base branch.
+    #   (from https://help.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events-schedule)
+    - cron: "0 0 * * *"
 
 jobs:
   build:
@@ -30,4 +35,10 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Test with pytest
         run: |
-          pytest
+          pytest -v --cov=omsdetector --cov-report=xml --color=yes
+      - name: CodeCov
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-{{ '${{ matrix.os }}' }}-py{{ '${{ matrix.python-version }}' }}
