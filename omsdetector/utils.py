@@ -9,3 +9,7 @@ class HighCoordinationNumber(KeyError):
 
 class NoOpenDefined(KeyError):
     pass
+
+
+class NoMetal(KeyError):
+    pass

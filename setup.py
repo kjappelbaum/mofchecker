@@ -5,8 +5,6 @@ from setuptools import find_packages, setup
 
 import versioneer
 
-short_description = __doc__.split('\n')
-
 # from https://github.com/pytest-dev/pytest-runner#conditional-requirement
 needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
 pytest_runner = ['pytest-runner'] if needs_pytest else []
@@ -25,7 +23,6 @@ setup(
     name='omsdetector',
     author='Kevin M. Jablonka',
     author_email='kevin.jablonka@epfl.ch',
-    description=short_description[0],
     long_description=long_description,
     long_description_content_type='text/markdown',
     version=versioneer.get_version(),

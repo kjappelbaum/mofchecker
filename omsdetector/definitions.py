@@ -8,22 +8,27 @@
 OP_DEF = {
     4: {
         'names': ['sq_plan', 'sq', 'see_saw_rect', 'tet', 'tri_pyr'],
+        'weights': [0.1, 0.1, 0.1, 0.6, 0.1],
         'open': [0, 1, 2, 4]
     },
     5: {
         'names': ['pent_plan', 'sq_pyr', 'tri_bipyr'],
+        'weights': [1, 1, 1],
         'open': [0, 1]
     },
     6: {
         'names': ['hex_plan_max', 'pent_pyr', 'oct'],
+        'weights': [0.1, 0.1, 0.8],
         'open': [0, 1]
     },
     7: {
         'names': ['hex_pyr', 'pent_bipyr'],
-        'open': [0]
+        'weights': [0.7, 0.3],
+        'open': [0],
     },
     8: {
         'names': ['hex_bipyr'],
+        'weights': [1],
         'open': None
     }
 }

@@ -8,7 +8,8 @@ from pymatgen.analysis.local_env import CrystalNN, LocalStructOrderParams
 from pymatgen.io.cif import CifParser
 
 from .definitions import OP_DEF
-from .utils import HighCoordinationNumber, LowCoordinationNumber, NoOpenDefined
+from .utils import (HighCoordinationNumber, LowCoordinationNumber, NoMetal,
+                    NoOpenDefined)
 
 
 class OMSDetector:
@@ -55,13 +56,11 @@ class OMSDetector:
         try:
             names = OP_DEF[cn]['names']
             is_open = OP_DEF[cn]['open']
+            weights = OP_DEF[cn]['weights']
             lsop = LocalStructOrderParams(names)
-            return (
-                cn,
-                names,
-                lsop.get_order_parameters(self.structure, site_index),
-                is_open,
-            )
+            return (cn, names,
+                    lsop.get_order_parameters(self.structure,
+                                              site_index), is_open, weights)
         except KeyError:
             # For a bit more fine grained error messages
             if cn < 3:  # pylint:disable=no-else-raise
@@ -73,32 +72,37 @@ class OMSDetector:
                     'Coordination number {} is high and order parameters undefined'
                     .format(cn))
 
-            return cn, None, None, None
+            return cn, None, None, None, None
 
     def is_site_open(self, site_index):
         if site_index not in self._open_indices:
-            _, _, lsop, is_open = self._get_ops_for_site(site_index)
-            site_open = OMSDetector._check_if_open(lsop, is_open)
-            if site_open:
-                self._open_indices.add(site_index)
-            return site_open
+            try:
+                _, _, lsop, is_open, weights = self._get_ops_for_site(
+                    site_index)
+                site_open = OMSDetector._check_if_open(lsop, is_open, weights)
+                if site_open:
+                    self._open_indices.add(site_index)
+                return site_open
+            except LowCoordinationNumber:
+                return True
         return True
 
     @staticmethod
-    def _check_if_open(lsop, is_open):
+    def _check_if_open(lsop, is_open, weights, threshold=0.5):
         if lsop is not None:
             if is_open is None:
                 return False
-            lsop = np.array(lsop)
+            lsop = np.array(lsop) * np.array(weights)
             open_contributions = lsop[is_open].sum()
             close_contributions = lsop.sum() - open_contributions
-            return open_contributions > close_contributions
+            return open_contributions / (open_contributions +
+                                         close_contributions) > threshold
         return None
 
     def _get_metal_descriptors_for_site(self, site_index):
         metal = str(self.structure[site_index])
-        cn, names, lsop, is_open = self._get_ops_for_site(site_index)
-        site_open = OMSDetector._check_if_open(lsop, is_open)
+        cn, names, lsop, is_open, weights = self._get_ops_for_site(site_index)
+        site_open = OMSDetector._check_if_open(lsop, is_open, weights)
         if site_open:
             self._open_indices.add(site_index)
         descriptors = {
@@ -110,6 +114,8 @@ class OMSDetector:
         return descriptors
 
     def get_metal_descriptors_for_site(self, site_index):
+        if not self.has_metal():
+            raise NoMetal
         return self._get_metal_descriptors_for_site(site_index)
 
     def _get_metal_descriptors(self):
@@ -123,16 +129,25 @@ class OMSDetector:
         return descriptordict
 
     def get_metal_descriptors(self):
+        if not self.has_metal():
+            raise NoMetal
         return self._get_metal_descriptors()
+
+    def has_metal(self):
+        if self.metal_indices:
+            return True
+        return False
 
     @property
     def has_oms(self):
+        if not self.has_metal():
+            raise NoMetal('This structure does not contain a metal')
         if self._has_oms is not None:  # pylint:disable=no-else-return
             return self._has_oms
         else:
-            self._has_oms = False
             for site_index in self.metal_indices:
                 if self.is_site_open(site_index):
                     self._has_oms = True
                     return True
+            self._has_oms = False
             return False
