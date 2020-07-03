@@ -1,0 +1,63 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.2.3
+    hooks:
+      - id: trailing-whitespace
+      - id: double-quote-string-fixer
+      - id: check-json
+        name: Check JSON
+        description: This hook checks json files for parseable syntax.
+        entry: check-json
+        language: python
+        types: [json]
+      - id: check-yaml
+        name: Check Yaml
+        description: This hook checks yaml files for parseable syntax.
+        entry: check-yaml
+        language: python
+        types: [yaml]
+      - id: detect-private-key
+        name: Detect Private Key
+        description: Detects the presence of private keys
+        entry: detect-private-key
+        language: python
+        types: [text]
+      - id: end-of-file-fixer
+        name: Fix End of Files
+        description: Ensures that a file is either empty, or ends with one newline.
+        entry: end-of-file-fixer
+        language: python
+        types: [text]
+      - id: fix-encoding-pragma
+        name: Fix python encoding pragma
+        language: python
+        entry: fix-encoding-pragma
+        description: "Add # -*- coding: utf-8 -*- to the top of python files"
+        types: [python]
+      - id: mixed-line-ending
+        name: Mixed line ending
+        description: Replaces or checks mixed line ending
+        entry: mixed-line-ending
+        language: python
+        types: [text]
+
+  - repo: local
+    hooks:
+      - id: isort
+        name: isort
+        language: system
+        types: [python]
+        entry: isort
+      - id: yapf
+        exclude: vversioneer.py|omsdetector/_version.py|setup.py|test/*
+        name: yapf
+        entry: yapf
+        language: system
+        types: [python]
+        args: ["-i"]
+      - id: prospector
+        exclude: versioneer.py|omsdetector/_version.py|setup.py|test/*
+        language: system
+        types: [file, python]
+        name: prospector
+        entry: prospector
