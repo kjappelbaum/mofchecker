@@ -14,7 +14,14 @@ from .utils import (HighCoordinationNumber, LowCoordinationNumber, NoMetal,
 
 
 class MOFChecker:
-    def __init__(self, structure, porous_adjustment=True):
+    def __init__(self, structure: Structure, porous_adjustment: bool = True):
+        """Class that can perform basic sanity checks for MOF structures
+
+        Args:
+            structure (Structure): pymatgen Structure object
+            porous_adjustment (bool, optional): If true, porous adjustment
+                is used for CrystalNN to find the coordination number. Defaults to True.
+        """
         self.structure = structure
         self.metal_indices = [
             i for i, species in enumerate(self.structure.species)
@@ -48,6 +55,9 @@ class MOFChecker:
         self._atomic_overlaps = get_overlaps(self.structure)
         return self._atomic_overlaps
 
+    def get_overlapping_indices(self):
+        return self._get_atomic_overlaps()
+
     @property
     def has_atomic_overlaps(self):
         atomic_overlaps = self._get_atomic_overlaps()
@@ -66,7 +76,12 @@ class MOFChecker:
         return len(self.h_indices) > 0
 
     @property
-    def has_overvalent_c(self):
+    def has_overvalent_c(self) -> bool:
+        """Returns true if there is some carbon in the structure that has more than 4 neighbors.
+
+        Returns:
+            [bool]: True if carbon with CN > 4 in structure.
+        """
         if self._overvalent_c is not None:
             return self._overvalent_c
 
@@ -83,14 +98,14 @@ class MOFChecker:
         self._overvalent_c = overvalent_c
 
     @classmethod
-    def _from_file(cls, path, porous_adjustment=True):
+    def _from_file(cls, path: str, porous_adjustment: bool = True):
         s = Structure.from_file(path)
         omscls = cls(s, porous_adjustment)
         omscls._set_filename(path)  # pylint:disable=protected-access
         return omscls
 
     @classmethod
-    def from_cif(cls, path, porous_adjustment=True):
+    def from_cif(cls, path: str, porous_adjustment: bool = True):
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
             cifparser = CifParser(path)
@@ -99,7 +114,15 @@ class MOFChecker:
             omscls._set_filename(path)  # pylint:disable=protected-access
             return omscls
 
-    def get_cn(self, site_index):
+    def get_cn(self, site_index: int) -> int:
+        """Compute coordination number (CN) for site with CrystalNN method
+
+        Args:
+            site_index (int): index of site in pymatgen Structure
+
+        Returns:
+            int: Coordination number
+        """
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
             cnn = CrystalNN(porous_adjustment=self.porous_adjustment)
@@ -128,7 +151,7 @@ class MOFChecker:
 
             return cn, None, None, None, None
 
-    def is_site_open(self, site_index):
+    def is_site_open(self, site_index: int) -> bool:
         if site_index not in self._open_indices:
             try:
                 _, _, lsop, is_open, weights = self._get_ops_for_site(
@@ -144,7 +167,7 @@ class MOFChecker:
         return True
 
     @staticmethod
-    def _check_if_open(lsop, is_open, weights, threshold=0.5):
+    def _check_if_open(lsop, is_open, weights, threshold: float = 0.5):
         if lsop is not None:
             if is_open is None:
                 return False
@@ -155,7 +178,7 @@ class MOFChecker:
                                          close_contributions) > threshold
         return None
 
-    def _get_metal_descriptors_for_site(self, site_index):
+    def _get_metal_descriptors_for_site(self, site_index: int):
         metal = str(self.structure[site_index].species)
         try:
             cn, names, lsop, is_open, weights = self._get_ops_for_site(
@@ -185,7 +208,7 @@ class MOFChecker:
             }
         return descriptors
 
-    def get_metal_descriptors_for_site(self, site_index):
+    def get_metal_descriptors_for_site(self, site_index: int) -> dict:
         if not self.has_metal():
             raise NoMetal
         return self._get_metal_descriptors_for_site(site_index)
@@ -200,7 +223,16 @@ class MOFChecker:
 
         return descriptordict
 
-    def get_metal_descriptors(self):
+    def get_metal_descriptors(self) -> dict:
+        """Return local structure order parameters for coordination number (CN),
+        element string and wheter site is open or not. Key is the site index.
+
+        Raises:
+            NoMetal: If no metal can be found in the structure
+
+        Returns:
+            dict: Key is the site index.
+        """
         if not self.has_metal():
             raise NoMetal
         return self._get_metal_descriptors()
@@ -211,7 +243,20 @@ class MOFChecker:
         return False
 
     @property
-    def has_oms(self):
+    def has_oms(self) -> bool:
+        """True if the structure contains open metal sites (OMS).
+        Also returns True in case of low coordination numbers (CN <=3)
+        which typically also means open coordination for MOFs.
+        For high coordination numbers, for which we do not have a good order
+        parameter for open structures. For this reason we return None even though
+        this might change in a future release.
+
+        Raises:
+            NoMetal: Raised if the structure contains no metal
+
+        Returns:
+            [bool]: True if the structure contains OMS
+        """
         if not self.has_metal():
             raise NoMetal('This structure does not contain a metal')
         if self._has_oms is not None:  # pylint:disable=no-else-return

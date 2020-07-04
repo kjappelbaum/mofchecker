@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+from pymatgen import Structure
 from scipy import sparse
 
 from .definitions import COVALENT_RADII
@@ -21,7 +22,9 @@ class NoMetal(KeyError):
     pass
 
 
-def compute_overlap_matrix(distance_matrix, allatomtypes, tolerance=1.0):
+def compute_overlap_matrix(distance_matrix: np.array,
+                           allatomtypes: list,
+                           tolerance: float = 1.0):
     """
     Find atomic overlap based on pairwise distance and Covalent radii.
     Criterion: if dist < min (CovR_1,CovR_2) -> overlap (this function is used in molsimplify)
@@ -37,7 +40,7 @@ def compute_overlap_matrix(distance_matrix, allatomtypes, tolerance=1.0):
     return sparse.csr_matrix(overlap_matrix)
 
 
-def get_overlaps(s):
+def get_overlaps(s: Structure) -> list:
     distance_matrix = s.distance_matrix
     atomtypes = [str(species) for species in s.species]
     overlap_matrix = compute_overlap_matrix(distance_matrix, atomtypes)
