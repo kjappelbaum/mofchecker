@@ -45,6 +45,11 @@ setup(
         ],
         'changelog': ['gitchangelog']
     },
+    entry_points={
+        'console_scripts': [
+            'mofchecker = mofchecker.cli:main',
+        ],
+    },
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',

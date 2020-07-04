@@ -48,3 +48,8 @@ def get_overlaps(s: Structure) -> list:
     for at in set(sparse.find(overlap_matrix)[0]):
         overlap_atoms.append(at.item())
     return overlap_atoms
+
+
+def print_dict(dictionary):
+    for k, v in sorted(dictionary.items()):
+        print(k, v)

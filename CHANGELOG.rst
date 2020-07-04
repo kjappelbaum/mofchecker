@@ -2,12 +2,16 @@ Changelog
 =========
 
 
-(unreleased)
-------------
+v0.1.1-alpha (2020-07-04)
+-------------------------
 
 BREAKING
 ~~~~~~~~
 - BREAKING: has_metal is now a property and not a function. [Kevin]
+
+New
+~~~
+- Feat: basic CLI implemented. [Kevin]
 
 Changes
 ~~~~~~~
