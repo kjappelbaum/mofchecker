@@ -20,10 +20,27 @@ If works similar to the [OMS detector used for the CoRE-MOF database](https://gi
 
 We use [pymatgen](https://pymatgen.org) to calculate the [order-parameters proposed by Zimmermann and Jain](https://pubs.rsc.org/en/content/articlelanding/2020/RA/C9RA07755C#!divAbstract). Note that we introduce some weighting factors.
 
+### Overlapping atoms
+
+Overlapping atoms are detected based on the pairwise distance matrix and the covalent radii.
+
 ## Installation
+
+Development version:
+
+```(bash)
+pip install git+https://github.com/kjappelbaum/mofchecker.git
+```
 
 ## Usage
 
-## Copyright
+```(python)
+from mofchecker import MOFChecker
+mofchecker = MOFChecker.from_cif(<path_to_cif>)
 
-Copyright (c) 2020, Kevin M. Jablonka
+# Test for OMS
+mofchecker.has_oms
+
+# Test for clashing atoms
+mofchecker.has_overlapping_atoms
+```
