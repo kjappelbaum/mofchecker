@@ -5,6 +5,14 @@ Changelog
 (unreleased)
 ------------
 
+Changes
+~~~~~~~
+- Chore: updated tests. [Kevin]
+
+
+v0.1-alpha (2020-07-04)
+-----------------------
+
 New
 ~~~
 - Feat: added overlap check and property for c/h/overvalent c -
