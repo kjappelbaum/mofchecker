@@ -7,6 +7,7 @@ Changelog
 
 Changes
 ~~~~~~~
+- Chore: changed changelog format. [Kevin]
 - Chore: added docstrings. [Kevin]
 - Chore: updated changelog config. [Kevin]
 - Chore: updated tests. [Kevin]

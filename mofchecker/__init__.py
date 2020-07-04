@@ -76,6 +76,18 @@ class MOFChecker:
         return len(self.h_indices) > 0
 
     @property
+    def density(self):
+        return self.structure.density
+
+    @property
+    def volume(self):
+        return self.structure.volume
+
+    @property
+    def formula(self):
+        return self.structure.formula
+
+    @property
     def has_overvalent_c(self) -> bool:
         """Returns true if there is some carbon in the structure that has more than 4 neighbors.
 
@@ -207,6 +219,23 @@ class MOFChecker:
                 'cn': None
             }
         return descriptors
+
+    def get_mof_descriptors(self) -> dict:
+        """Run most of the sanity checks
+        and get a dictionary with the result
+
+        Returns:
+            dict: result of overall checks
+        """
+        d = {
+            'has_oms': self.has_oms,
+            'has_carbon': self.has_hydrogen,
+            'has_hydrogen': self.has_hydrogen,
+            'has_atomic_overlaps': self.has_atomic_overlaps,
+            'has_overcoordinated_c': self.has_overvalent_c,
+            'density': self.density
+        }
+        return d
 
     def get_metal_descriptors_for_site(self, site_index: int) -> dict:
         if not self.has_metal():
