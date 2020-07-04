@@ -1,0 +1,15 @@
+section_regexps = [
+    ('New', [
+        r'^feat',
+     ]),
+    ('Changes', [
+        r'^chore',
+     ]),
+    ('Fix', [
+        r'^fix',
+     ]),
+
+    ('Other', None ## Match all lines
+     ),
+
+]

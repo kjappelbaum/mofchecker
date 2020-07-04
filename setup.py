@@ -43,6 +43,7 @@ setup(
             'versioneer',
             'isort',
         ],
+        'changelog': ['gitchangelog']
     },
     classifiers=[
         'License :: OSI Approved :: MIT License',
