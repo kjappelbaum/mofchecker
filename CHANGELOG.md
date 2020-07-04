@@ -13,6 +13,7 @@ New
 
 Changes
 ~~~~~~~
+- Chore: introduced changelog. [Kevin]
 - Chore: updated readme. [Kevin]
 - Chore: added tests. [Kevin]
 - Chore: added test cases. [Kevin]

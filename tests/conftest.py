@@ -57,6 +57,12 @@ def get_testdict():
         False,
         str(os.path.join(THIS_DIR, 'test_files', 'VUGYED_clean.cif')):
         True,  # wrong in CoRE
+        str(os.path.join(THIS_DIR, 'test_files', 'TONTIB_clean.cif')):
+        False,  # wrong in CoRE
+     str(os.path.join(THIS_DIR, 'test_files', 'ELUQIM13_clean.cif')):
+        False,  # wrong in CoRE
+
+
     }
 
     return d
