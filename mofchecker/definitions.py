@@ -17,9 +17,9 @@ OP_DEF = {
         'open': [0, 1]
     },
     6: {
-        'names': ['hex_plan_max', 'pent_pyr', 'oct'],
-        'weights': [0.1, 0.1, 0.8],
-        'open': [0, 1]
+        'names': ['pent_pyr', 'oct'],
+        'weights': [0.3, 0.7],
+        'open': [0]
     },
     7: {
         'names': ['hex_pyr', 'pent_bipyr'],

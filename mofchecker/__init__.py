@@ -91,11 +91,13 @@ class MOFChecker:
 
     @classmethod
     def from_cif(cls, path, porous_adjustment=True):
-        cifparser = CifParser(path)
-        s = cifparser.get_structures()[0]
-        omscls = cls(s, porous_adjustment)
-        omscls._set_filename(path)  # pylint:disable=protected-access
-        return omscls
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            cifparser = CifParser(path)
+            s = cifparser.get_structures()[0]
+            omscls = cls(s, porous_adjustment)
+            omscls._set_filename(path)  # pylint:disable=protected-access
+            return omscls
 
     def get_cn(self, site_index):
         with warnings.catch_warnings():
