@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import warnings
 from pathlib import Path
 
@@ -9,10 +10,10 @@ from pymatgen.io.cif import CifParser
 
 from .definitions import OP_DEF
 from .utils import (HighCoordinationNumber, LowCoordinationNumber, NoMetal,
-                    NoOpenDefined)
+                    NoOpenDefined, get_overlaps)
 
 
-class OMSDetector:
+class MOFChecker:
     def __init__(self, structure, porous_adjustment=True):
         self.structure = structure
         self.metal_indices = [
@@ -24,11 +25,62 @@ class OMSDetector:
         self._open_indices = set()
         self._has_oms = None
         self._filename = None
+        self._atomic_overlaps = None
         self._name = None
+        self.c_indices = [
+            i for i, species in enumerate(self.structure.species)
+            if str(species) == 'C'
+        ]
+        self.h_indices = [
+            i for i, species in enumerate(self.structure.species)
+            if str(species) == 'H'
+        ]
+        self._overvalent_c = None
 
     def _set_filename(self, path):
-        self._filename = path
+        self._filename = os.path.abspath(path)
         self._name = Path(path).stem
+
+    def _get_atomic_overlaps(self):
+        if self._atomic_overlaps is not None:
+            return self._atomic_overlaps
+
+        self._atomic_overlaps = get_overlaps(self.structure)
+        return self._atomic_overlaps
+
+    @property
+    def has_atomic_overlaps(self):
+        atomic_overlaps = self._get_atomic_overlaps()
+        return len(atomic_overlaps) > 0
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def has_carbon(self):
+        return len(self.c_indices) > 0
+
+    @property
+    def has_hydrogen(self):
+        return len(self.h_indices) > 0
+
+    @property
+    def has_overvalent_c(self):
+        if self._overvalent_c is not None:
+            return self._overvalent_c
+
+        self._has_overvalent_c()
+        return self._overvalent_c
+
+    def _has_overvalent_c(self):
+        overvalent_c = False
+        for site_index in self.c_indices:
+            cn = self.get_cn(site_index)
+            if cn > 4:
+                overvalent_c = True
+                break
+        self._overvalent_c = overvalent_c
 
     @classmethod
     def _from_file(cls, path, porous_adjustment=True):
@@ -63,7 +115,7 @@ class OMSDetector:
                                               site_index), is_open, weights)
         except KeyError:
             # For a bit more fine grained error messages
-            if cn < 3:  # pylint:disable=no-else-raise
+            if cn <= 3:  # pylint:disable=no-else-raise
                 raise LowCoordinationNumber(
                     'Coordination number {} is low and order parameters undefined'
                     .format(cn))
@@ -79,12 +131,14 @@ class OMSDetector:
             try:
                 _, _, lsop, is_open, weights = self._get_ops_for_site(
                     site_index)
-                site_open = OMSDetector._check_if_open(lsop, is_open, weights)
+                site_open = MOFChecker._check_if_open(lsop, is_open, weights)
                 if site_open:
                     self._open_indices.add(site_index)
                 return site_open
             except LowCoordinationNumber:
                 return True
+            except HighCoordinationNumber:
+                return None
         return True
 
     @staticmethod
@@ -100,17 +154,33 @@ class OMSDetector:
         return None
 
     def _get_metal_descriptors_for_site(self, site_index):
-        metal = str(self.structure[site_index])
-        cn, names, lsop, is_open, weights = self._get_ops_for_site(site_index)
-        site_open = OMSDetector._check_if_open(lsop, is_open, weights)
-        if site_open:
-            self._open_indices.add(site_index)
-        descriptors = {
-            'metal': metal,
-            'lsop': dict(zip(names, lsop)),
-            'open': site_open,
-            'cn': cn
-        }
+        metal = str(self.structure[site_index].species)
+        try:
+            cn, names, lsop, is_open, weights = self._get_ops_for_site(
+                site_index)
+            site_open = MOFChecker._check_if_open(lsop, is_open, weights)
+            if site_open:
+                self._open_indices.add(site_index)
+            descriptors = {
+                'metal': metal,
+                'lsop': dict(zip(names, lsop)),
+                'open': site_open,
+                'cn': cn
+            }
+        except LowCoordinationNumber:
+            descriptors = {
+                'metal': metal,
+                'lsop': None,
+                'open': True,
+                'cn': None
+            }
+        except HighCoordinationNumber:
+            descriptors = {
+                'metal': metal,
+                'lsop': None,
+                'open': None,
+                'cn': None
+            }
         return descriptors
 
     def get_metal_descriptors_for_site(self, site_index):

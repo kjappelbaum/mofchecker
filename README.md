@@ -1,11 +1,20 @@
-# omsdetector
+# mofchecker
 
 [//]: # "Badges"
 
 ![Python package](https://github.com/kjappelbaum/omsdetector/workflows/Python%20package/badge.svg)
 [![codecov](https://codecov.io/gh/kjablonk/omsdetector/branch/master/graph/badge.svg)](https://codecov.io/gh/kjablonk/omsdetector/branch/master)
 
-Find open metal sites (OMS) in metal-organic frameworks (MOFs).
+## What does it do?
+
+Perform quick sanity checks on your MOF:
+
+- Find open metal sites (OMS) in metal-organic frameworks (MOFs).
+- Find atomic overlaps
+- Find overvalent (CN>4) carbons
+- Check if there is metal, carbon or hydrogen
+
+### OMS detection
 
 If works similar to the [OMS detector used for the CoRE-MOF database](https://github.com/emmhald/open_metal_detector) but it attempts to be a bit more lightweight and correct in some cases (like paddlewheels).
 

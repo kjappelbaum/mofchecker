@@ -20,7 +20,7 @@ with open('requirements.txt') as f:
 
 setup(
     # Self-descriptive entries which should always be present
-    name='omsdetector',
+    name='mofchecker',
     author='Kevin M. Jablonka',
     author_email='kevin.jablonka@epfl.ch',
     long_description=long_description,

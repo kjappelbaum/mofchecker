@@ -38,8 +38,25 @@ def get_testdict():
         str(os.path.join(THIS_DIR, 'test_files', 'DEJCIF_clean.cif')): True,
         str(os.path.join(THIS_DIR, 'test_files', 'DAWWEF_clean.cif')):
         True,  # CN=4 see-saw
+        str(os.path.join(THIS_DIR, 'test_files', 'UFEXOT_clean.cif')):
+        True,  # CN=4 see-saw
+        str(os.path.join(THIS_DIR, 'test_files', 'REHHIX_clean.cif')):
+        True,  # CN=4 see-saw
 
         #str(os.path.join(THIS_DIR, 'test_files', 'ELIYUU_clean.cif')): False
     }
 
     return d
+
+
+@pytest.fixture(scope='module')
+def get_clashing_structures():
+    structures = []
+
+    names = ['RUYGEZ_clean.cif', 'PADHIM_clean.cif']
+
+    for name in names:
+        structures.append(
+            Structure.from_file(os.path.join(THIS_DIR, 'test_files', name)))
+
+    return structures
