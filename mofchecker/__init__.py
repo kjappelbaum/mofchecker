@@ -233,12 +233,13 @@ class MOFChecker:
             'has_hydrogen': self.has_hydrogen,
             'has_atomic_overlaps': self.has_atomic_overlaps,
             'has_overcoordinated_c': self.has_overvalent_c,
+            'has_metal': self.has_metal,
             'density': self.density
         }
         return d
 
     def get_metal_descriptors_for_site(self, site_index: int) -> dict:
-        if not self.has_metal():
+        if not self.has_metal:
             raise NoMetal
         return self._get_metal_descriptors_for_site(site_index)
 
@@ -262,10 +263,11 @@ class MOFChecker:
         Returns:
             dict: Key is the site index.
         """
-        if not self.has_metal():
+        if not self.has_metal:
             raise NoMetal
         return self._get_metal_descriptors()
 
+    @property
     def has_metal(self):
         if self.metal_indices:
             return True
@@ -286,7 +288,7 @@ class MOFChecker:
         Returns:
             [bool]: True if the structure contains OMS
         """
-        if not self.has_metal():
+        if not self.has_metal:
             raise NoMetal('This structure does not contain a metal')
         if self._has_oms is not None:  # pylint:disable=no-else-return
             return self._has_oms

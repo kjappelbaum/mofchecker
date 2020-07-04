@@ -5,8 +5,13 @@ Changelog
 (unreleased)
 ------------
 
+BREAKING
+~~~~~~~~
+- BREAKING: has_metal is now a property and not a function. [Kevin]
+
 Changes
 ~~~~~~~
+- Chore: added mof descriptors. [Kevin]
 - Chore: changed changelog format. [Kevin]
 - Chore: added docstrings. [Kevin]
 - Chore: updated changelog config. [Kevin]

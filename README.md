@@ -43,4 +43,11 @@ mofchecker.has_oms
 
 # Test for clashing atoms
 mofchecker.has_overlapping_atoms
+
+# Run basic checks on a list of cif paths (sample_structures)
+results = []
+
+for structure in sample_structures:
+    mofchecker = MOFChecker.from_cif(structure)
+    results.append(mofchecker.get_mof_descriptors())
 ```

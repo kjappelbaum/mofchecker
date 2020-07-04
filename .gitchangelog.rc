@@ -1,4 +1,7 @@
 section_regexps = [
+    (
+        'BREAKING', [r'^BREAKING']
+    ),
     ('New', [
         r'^feat',
      ]),
