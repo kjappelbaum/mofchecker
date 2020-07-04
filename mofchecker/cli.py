@@ -7,11 +7,23 @@ from .utils import print_dict
 
 @click.command('cli')
 @click.argument('structure', type=click.Path(exists=True))
-@click.option('-c', '--check-mof', is_flag=True)
-@click.option('-oms', '--has-oms', is_flag=True)
-@click.option('-hc', '--has-carbon', is_flag=True)
-@click.option('-ovc', '--has-overvalent-c', is_flag=True)
-@click.option('-clash', '--has-clashing', is_flag=True)
+@click.option('-c', '--check-mof', is_flag=True, help='run all sanity checks')
+@click.option('-oms',
+              '--has-oms',
+              is_flag=True,
+              help='check for open metal sites')
+@click.option('-hc',
+              '--has-carbon',
+              is_flag=True,
+              help='check if there is carbon in the structure')
+@click.option('-ovc',
+              '--has-overvalent-c',
+              is_flag=True,
+              help='check if the structure has overcoordinated carbon')
+@click.option('-clash',
+              '--has-clashing',
+              is_flag=True,
+              help='check if the structure has clashing atoms')
 def main(  # pylint:disable=too-many-arguments
         structure, check_mof, has_oms, has_carbon, has_overvalent_c,
         has_clashing):

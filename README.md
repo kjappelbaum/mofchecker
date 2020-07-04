@@ -44,6 +44,8 @@ pip install git+https://github.com/kjappelbaum/mofchecker.git
 
 ## Usage
 
+### In Python
+
 ```(python)
 from mofchecker import MOFChecker
 mofchecker = MOFChecker.from_cif(<path_to_cif>)
@@ -60,4 +62,18 @@ results = []
 for structure in sample_structures:
     mofchecker = MOFChecker.from_cif(structure)
     results.append(mofchecker.get_mof_descriptors())
+```
+
+### CLI
+
+For example, you can use
+
+```(bash)
+mofchecker <cif> --has-oms
+```
+
+You can get an overview over all options with
+
+```(bash)
+mofchecker --help
 ```

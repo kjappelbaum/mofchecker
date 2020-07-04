@@ -2,6 +2,18 @@ Changelog
 =========
 
 
+(unreleased)
+------------
+
+New
+~~~
+- Feat: basic CLI implemented. [Kevin]
+
+Changes
+~~~~~~~
+- Chore: added help for the CLI. [Kevin]
+
+
 v0.1.1-alpha (2020-07-04)
 -------------------------
 
