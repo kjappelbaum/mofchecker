@@ -1,2 +1,2 @@
-pymatgen==2020.6.8
+pymatgen==2020.7.16
 click==7.1.2
