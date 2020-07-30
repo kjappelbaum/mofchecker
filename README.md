@@ -10,9 +10,9 @@
 Perform quick sanity checks on your MOF:
 
 - Find open metal sites (OMS) in metal-organic frameworks (MOFs).
-- Find atomic overlaps
-- Find overvalent (CN>4) carbons
-- Check if there is metal, carbon or hydrogen
+- Find atomic overlaps.
+- Find overvalent (CN>4) carbons.
+- Check if there is metal, carbon or hydrogen.
 
 The idea is to have nothing to fancy but a fast tool that we can run to eliminate the really unreasonable structures.
 

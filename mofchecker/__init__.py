@@ -228,8 +228,10 @@ class MOFChecker:
             dict: result of overall checks
         """
         d = {
+            'name': self.name,
+            'path': self._filename,
             'has_oms': self.has_oms,
-            'has_carbon': self.has_hydrogen,
+            'has_carbon': self.has_carbon,
             'has_hydrogen': self.has_hydrogen,
             'has_atomic_overlaps': self.has_atomic_overlaps,
             'has_overcoordinated_c': self.has_overvalent_c,

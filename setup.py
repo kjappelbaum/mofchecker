@@ -13,7 +13,7 @@ try:
     with open('README.md', 'r') as handle:
         long_description = handle.read()
 except:
-    long_description = '\n'.join(short_description[2:])
+    long_description = ''
 
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
