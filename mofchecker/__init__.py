@@ -42,7 +42,12 @@ class MOFChecker:
             i for i, species in enumerate(self.structure.species)
             if str(species) == 'H'
         ]
+        self.n_indices = [
+            i for i, species in enumerate(self.structure.species)
+            if str(species) == 'N'
+        ]
         self._overvalent_c = None
+        self._overvalent_n = None
 
     def _set_filename(self, path):
         self._filename = os.path.abspath(path)
@@ -109,6 +114,29 @@ class MOFChecker:
                 break
         self._overvalent_c = overvalent_c
 
+    @property
+    def has_overvalent_n(self) -> bool:
+        """Returns true if there is some nitrogen in the structure that has more than 4 neighbors.
+
+        Returns:
+            [bool]: True if nitrogen with CN > 4 in structure.
+        """
+        if self._overvalent_n is not None:
+            return self._overvalent_n
+
+        self._has_overvalent_n()
+        return self._overvalent_n
+
+    def _has_overvalent_n(self):
+        overvalent_n = False
+        for site_index in self.n_indices:
+            cn = self.get_cn(site_index)
+            if cn > 4:
+                overvalent_n = True
+                break
+        self._overvalent_n = overvalent_n
+
+        
     @classmethod
     def _from_file(cls, path: str, porous_adjustment: bool = True):
         s = Structure.from_file(path)
@@ -235,6 +263,7 @@ class MOFChecker:
             'has_hydrogen': self.has_hydrogen,
             'has_atomic_overlaps': self.has_atomic_overlaps,
             'has_overcoordinated_c': self.has_overvalent_c,
+            'has_overcoordinated_n': self.has_overvalent_n,
             'has_metal': self.has_metal,
             'density': self.density
         }
