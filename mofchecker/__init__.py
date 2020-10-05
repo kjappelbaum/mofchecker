@@ -136,7 +136,6 @@ class MOFChecker:
                 break
         self._overvalent_n = overvalent_n
 
-        
     @classmethod
     def _from_file(cls, path: str, porous_adjustment: bool = True):
         s = Structure.from_file(path)
