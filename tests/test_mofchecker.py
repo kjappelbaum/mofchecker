@@ -2,6 +2,7 @@
 import os
 
 import pytest
+from pymatgen import Structure
 
 from mofchecker import MOFChecker
 
@@ -41,6 +42,7 @@ def test_no_h(get_no_h):
         mofchecker = MOFChecker(structure)
         assert mofchecker.has_hydrogen == False
 
+
 def test_no_c(get_no_c):
     for structure in get_no_c:
         mofchecker = MOFChecker(structure)
@@ -51,3 +53,10 @@ def test_overvalent_c(get_overvalent_c_structures):
     for structure in get_overvalent_c_structures:
         mofchecker = MOFChecker(structure)
         assert mofchecker.has_overvalent_c == True
+
+
+def test_lone_atom():
+    mofchecker = MOFChecker(
+        Structure.from_file(
+            os.path.join(THIS_DIR, 'test_files', 'ABAVIJ_clean.cif')))
+    assert mofchecker.has_lone_atom == False

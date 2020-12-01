@@ -5,6 +5,7 @@ from pathlib import Path
 
 import numpy as np
 from pymatgen import Structure
+from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.analysis.local_env import CrystalNN, LocalStructOrderParams
 from pymatgen.io.cif import CifParser
 
@@ -31,6 +32,7 @@ class MOFChecker:
         self.metal_features = None
         self._open_indices = set()
         self._has_oms = None
+        self._cnn = None
         self._filename = None
         self._atomic_overlaps = None
         self._name = None
@@ -127,6 +129,20 @@ class MOFChecker:
         self._has_overvalent_n()
         return self._overvalent_n
 
+    @property
+    def has_lone_atom(self) -> bool:
+        return self._has_lone_atom()
+
+    def _has_lone_atom(self):
+        self._set_cnn()
+        graph = StructureGraph.with_local_env_strategy(self.structure,
+                                                       self._cnn)
+        for site in range(len(self.structure)):
+            nbr = graph.get_connected_sites(site)
+            if not nbr:
+                return True
+        return False
+
     def _has_overvalent_n(self):
         overvalent_n = False
         for site_index in self.n_indices:
@@ -153,6 +169,10 @@ class MOFChecker:
             omscls._set_filename(path)  # pylint:disable=protected-access
             return omscls
 
+    def _set_cnn(self):
+        if self._cnn is None:
+            self._cnn = CrystalNN(porous_adjustment=self.porous_adjustment)
+
     def get_cn(self, site_index: int) -> int:
         """Compute coordination number (CN) for site with CrystalNN method
 
@@ -164,8 +184,8 @@ class MOFChecker:
         """
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
-            cnn = CrystalNN(porous_adjustment=self.porous_adjustment)
-            return cnn.get_cn(self.structure, site_index)
+            self._set_cnn()
+            return self._cnn.get_cn(self.structure, site_index)
 
     def _get_ops_for_site(self, site_index):
         cn = self.get_cn(site_index)
@@ -264,6 +284,7 @@ class MOFChecker:
             'has_overcoordinated_c': self.has_overvalent_c,
             'has_overcoordinated_n': self.has_overvalent_n,
             'has_metal': self.has_metal,
+            'has_lone_atom': self.has_lone_atom,
             'density': self.density
         }
         return d
