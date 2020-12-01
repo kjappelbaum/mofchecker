@@ -1,8 +1,11 @@
-from glob import glob
-from mofchecker import MOFChecker, NoMetal
-import pandas as pd
+# -*- coding: utf-8 -*-
 import concurrent.futures
+from glob import glob
+
+import pandas as pd
 from tqdm import tqdm
+
+from mofchecker import MOFChecker, NoMetal
 
 all_structures = glob(
     '/Users/kevinmaikjablonka/Downloads/2019-11-01-ASR-public_12020/structure_10143/*.cif'
@@ -32,5 +35,5 @@ def main():
     df.to_csv('mof_feat.csv', index=False)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
