@@ -20,13 +20,17 @@ from .utils import print_dict
               '--has-overvalent-c',
               is_flag=True,
               help='check if the structure has overcoordinated carbon')
+@click.option('-ovn',
+              '--has-overvalent-n',
+              is_flag=True,
+              help='check if the structure has overcoordinated nitrogen')
 @click.option('-clash',
               '--has-clashing',
               is_flag=True,
               help='check if the structure has clashing atoms')
 def main(  # pylint:disable=too-many-arguments
-        structure, check_mof, has_oms, has_carbon, has_overvalent_c,
-        has_clashing):
+    structure, check_mof, has_oms, has_carbon, has_overvalent_c,
+    has_overvalent_n, has_clashing):
 
     mofchecker = MOFChecker.from_cif(structure)
 
@@ -42,6 +46,9 @@ def main(  # pylint:disable=too-many-arguments
 
     elif has_overvalent_c:
         print(mofchecker.has_overvalent_c)
+
+    elif has_overvalent_n:
+        print(mofchecker.has_overvalent_n)
 
     elif has_clashing:
         print(mofchecker.has_atomic_overlaps)
