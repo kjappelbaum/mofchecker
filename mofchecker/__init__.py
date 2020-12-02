@@ -398,3 +398,7 @@ class MOFChecker: # pylint:disable=too-many-instance-attributes
                     return True
             self._has_oms = False
             return False
+
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions
