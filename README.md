@@ -3,7 +3,9 @@
 [//]: # "Badges"
 
 ![Python package](https://github.com/kjappelbaum/omsdetector/workflows/Python%20package/badge.svg)
-[![codecov](https://codecov.io/gh/kjablonk/omsdetector/branch/master/graph/badge.svg)](https://codecov.io/gh/kjablonk/omsdetector/branch/master)
+[![codecov](https://codecov.io/gh/kjappelbaum/mofchecker/branch/master/graph/badge.svg?token=TQ82D3PFIU)](https://codecov.io/gh/kjappelbaum/mofchecker)
+[![Documentation Status](https://readthedocs.org/projects/mofchecker/badge/?version=latest)](https://mofchecker.readthedocs.io/en/latest/?badge=latest)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mofchecker)
 
 ## What does it do?
 
