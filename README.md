@@ -11,10 +11,11 @@ Perform quick sanity checks on your MOF:
 
 - Find open metal sites (OMS) in metal-organic frameworks (MOFs).
 - Find atomic overlaps.
-- Find overvalent (CN>4) carbons.
+- Find overvalent (CN>4) carbons or nitrogens.
 - Check if there is metal, carbon or hydrogen.
+- Check if there is floating atoms or molecules.
 
-The idea is to have nothing to fancy but a fast tool that we can run to eliminate the really unreasonable structures.
+The idea is to have nothing to fancy but a fast tool that we can run to eliminate the really unreasonable structures. The code is basically a rewrite of the checking tools that we implemented in [structure_comp](https://github.com/kjappelbaum/structure_comp).
 
 A basic CLI is in development.
 
@@ -32,13 +33,17 @@ Overlapping atoms are detected based on the pairwise distance matrix and the cov
 
 ### Why check for carbons?
 
-I think it is a pretty fast check if there is something organic ...
+I think it is a pretty fast check if there is something organic ... And we know that in both the CSD subset and the CoRE-MOF database there are several structures that do not contain carbon.
+
+### Floating molecule detection
+
+This check basically analyzes if there are unconnected subgraphs.
 
 ## Installation
 
 Development version:
 
-```(bash)
+```bash
 pip install git+https://github.com/kjappelbaum/mofchecker.git
 ```
 
@@ -46,7 +51,7 @@ pip install git+https://github.com/kjappelbaum/mofchecker.git
 
 ### In Python
 
-```(python)
+```python
 from mofchecker import MOFChecker
 mofchecker = MOFChecker.from_cif(<path_to_cif>)
 
@@ -68,12 +73,12 @@ for structure in sample_structures:
 
 For example, you can use
 
-```(bash)
+```bash
 mofchecker <cif> --has-oms
 ```
 
 You can get an overview over all options with
 
-```(bash)
+```bash
 mofchecker --help
 ```

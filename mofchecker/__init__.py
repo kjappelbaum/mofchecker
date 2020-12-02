@@ -2,15 +2,18 @@
 import os
 import warnings
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 from pymatgen import Structure
+from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.analysis.local_env import CrystalNN, LocalStructOrderParams
 from pymatgen.io.cif import CifParser
 
 from .definitions import OP_DEF
 from .utils import (HighCoordinationNumber, LowCoordinationNumber, NoMetal,
-                    NoOpenDefined, get_overlaps)
+                    NoOpenDefined, get_overlaps,
+                    get_subgraphs_as_molecules_all)
 
 
 class MOFChecker:
@@ -31,6 +34,7 @@ class MOFChecker:
         self.metal_features = None
         self._open_indices = set()
         self._has_oms = None
+        self._cnn = None
         self._filename = None
         self._atomic_overlaps = None
         self._name = None
@@ -127,6 +131,27 @@ class MOFChecker:
         self._has_overvalent_n()
         return self._overvalent_n
 
+    @property
+    def has_lone_atom(self) -> bool:
+        """Returns True if there is a isolated floating atom"""
+        return self._has_lone_atom()
+
+    @property
+    def has_lone_molecule(self) -> bool:
+        """Returns true if there is a isolated floating atom or molecule"""
+        return self._has_stray_molecules()
+
+
+    def _has_lone_atom(self):
+        self._set_cnn()
+        graph = StructureGraph.with_local_env_strategy(self.structure,
+                                                       self._cnn)
+        for site in range(len(self.structure)):
+            nbr = graph.get_connected_sites(site)
+            if not nbr:
+                return True
+        return False
+
     def _has_overvalent_n(self):
         overvalent_n = False
         for site_index in self.n_indices:
@@ -144,7 +169,17 @@ class MOFChecker:
         return omscls
 
     @classmethod
-    def from_cif(cls, path: str, porous_adjustment: bool = True):
+    def from_cif(cls, path: Union[str, Path], porous_adjustment: bool = True):
+        """Create a MOFChecker instance from a CIF file
+
+        Args:
+            path (Union[str, Path]): Path to string file
+            porous_adjustment (bool, optional):  If true, porous adjustment
+                is used for CrystalNN to find the coordination number. Defaults to True.
+
+        Returns:
+            MOFChecker: Instance of MOFChecker
+        """
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
             cifparser = CifParser(path)
@@ -152,6 +187,10 @@ class MOFChecker:
             omscls = cls(s, porous_adjustment)
             omscls._set_filename(path)  # pylint:disable=protected-access
             return omscls
+
+    def _set_cnn(self):
+        if self._cnn is None:
+            self._cnn = CrystalNN(porous_adjustment=self.porous_adjustment)
 
     def get_cn(self, site_index: int) -> int:
         """Compute coordination number (CN) for site with CrystalNN method
@@ -164,8 +203,8 @@ class MOFChecker:
         """
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
-            cnn = CrystalNN(porous_adjustment=self.porous_adjustment)
-            return cnn.get_cn(self.structure, site_index)
+            self._set_cnn()
+            return self._cnn.get_cn(self.structure, site_index)
 
     def _get_ops_for_site(self, site_index):
         cn = self.get_cn(site_index)
@@ -191,6 +230,15 @@ class MOFChecker:
             return cn, None, None, None, None
 
     def is_site_open(self, site_index: int) -> bool:
+        """Check for a site if is open (based on the values of
+        some coordination geomeetry fingerprints)
+
+        Args:
+            site_index (int): Index of the site in the structure
+
+        Returns:
+            bool: True if site is open
+        """
         if site_index not in self._open_indices:
             try:
                 _, _, lsop, is_open, weights = self._get_ops_for_site(
@@ -247,6 +295,14 @@ class MOFChecker:
             }
         return descriptors
 
+    def _has_stray_molecules(self) -> bool:
+        self._set_cnn()
+        sgraph = StructureGraph.with_local_env_strategy(self.structure, self._cnn)
+        molecules = get_subgraphs_as_molecules_all(sgraph)
+        if len(molecules) > 0:
+            return True
+        return False
+
     def get_mof_descriptors(self) -> dict:
         """Run most of the sanity checks
         and get a dictionary with the result
@@ -264,6 +320,8 @@ class MOFChecker:
             'has_overcoordinated_c': self.has_overvalent_c,
             'has_overcoordinated_n': self.has_overvalent_n,
             'has_metal': self.has_metal,
+            'has_lone_atom': self.has_lone_atom,
+            'has_lone_molecule': self.has_lone_molecule,
             'density': self.density
         }
         return d
