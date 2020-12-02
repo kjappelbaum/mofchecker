@@ -1,5 +1,7 @@
 ignore-paths:
   - docs
+  - versioneer.py
+  - mofchecker/_version.py
 
 pylint:
   run: true

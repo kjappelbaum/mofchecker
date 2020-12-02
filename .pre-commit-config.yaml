@@ -3,13 +3,6 @@ repos:
     rev: v2.2.3
     hooks:
       - id: trailing-whitespace
-      - id: double-quote-string-fixer
-      - id: check-json
-        name: Check JSON
-        description: This hook checks json files for parseable syntax.
-        entry: check-json
-        language: python
-        types: [json]
       - id: check-yaml
         name: Check Yaml
         description: This hook checks yaml files for parseable syntax.
@@ -41,23 +34,32 @@ repos:
         language: python
         types: [text]
 
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: "" # Use the sha / tag you want to point at
+    hooks:
+      - id: mypy
+        exclude: (versioneer.py|_version.py|^docs/)
+
   - repo: local
     hooks:
+      - id: black
+        language_version: python3
+        name: black
+        exclude: versioneer.py|mofchecker/_version.py|^docs/
+        entry: black
+        language: system
+        types: [python]
+
       - id: isort
         name: isort
         language: system
+        exclude: versioneer.py|mofchecker/_version.py|^docs/
         types: [python]
         entry: isort
-      - id: yapf
-        exclude: vversioneer.py|omsdetector/_version.py|setup.py|test/*
-        name: yapf
-        entry: yapf
-        language: system
-        types: [python]
-        args: ["-i"]
+
       - id: prospector
-        exclude: versioneer.py|omsdetector/_version.py|setup.py|test/*
         language: system
         types: [file, python]
+        exclude: versioneer.py|mofchecker/_version.py|^docs
         name: prospector
         entry: prospector
