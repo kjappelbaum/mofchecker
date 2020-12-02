@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""MOFChecker: Basic sanity checks for MOFs"""
 import os
 import warnings
 from pathlib import Path
@@ -11,12 +12,18 @@ from pymatgen.analysis.local_env import CrystalNN, LocalStructOrderParams
 from pymatgen.io.cif import CifParser
 
 from .definitions import OP_DEF
-from .utils import (HighCoordinationNumber, LowCoordinationNumber, NoMetal,
-                    NoOpenDefined, get_overlaps,
-                    get_subgraphs_as_molecules_all)
+from .utils import (
+    HighCoordinationNumber,
+    LowCoordinationNumber,
+    NoMetal,
+    NoOpenDefined,
+    get_overlaps,
+    get_subgraphs_as_molecules_all,
+)
 
 
-class MOFChecker:
+class MOFChecker: # pylint:disable=too-many-instance-attributes
+    """MOFChecker performs basic sanity checks for MOFs"""
     def __init__(self, structure: Structure, porous_adjustment: bool = True):
         """Class that can perform basic sanity checks for MOF structures
 
@@ -32,7 +39,7 @@ class MOFChecker:
         ]
         self.porous_adjustment = porous_adjustment
         self.metal_features = None
-        self._open_indices = set()
+        self._open_indices: set = set()
         self._has_oms = None
         self._cnn = None
         self._filename = None
@@ -40,15 +47,15 @@ class MOFChecker:
         self._name = None
         self.c_indices = [
             i for i, species in enumerate(self.structure.species)
-            if str(species) == 'C'
+            if str(species) == "C"
         ]
         self.h_indices = [
             i for i, species in enumerate(self.structure.species)
-            if str(species) == 'H'
+            if str(species) == "H"
         ]
         self.n_indices = [
             i for i, species in enumerate(self.structure.species)
-            if str(species) == 'N'
+            if str(species) == "N"
         ]
         self._overvalent_c = None
         self._overvalent_n = None
@@ -141,7 +148,6 @@ class MOFChecker:
         """Returns true if there is a isolated floating atom or molecule"""
         return self._has_stray_molecules()
 
-
     def _has_lone_atom(self):
         self._set_cnn()
         graph = StructureGraph.with_local_env_strategy(self.structure,
@@ -181,7 +187,7 @@ class MOFChecker:
             MOFChecker: Instance of MOFChecker
         """
         with warnings.catch_warnings():
-            warnings.simplefilter('ignore')
+            warnings.simplefilter("ignore")
             cifparser = CifParser(path)
             s = cifparser.get_structures()[0]
             omscls = cls(s, porous_adjustment)
@@ -202,29 +208,33 @@ class MOFChecker:
             int: Coordination number
         """
         with warnings.catch_warnings():
-            warnings.simplefilter('ignore')
+            warnings.simplefilter("ignore")
             self._set_cnn()
             return self._cnn.get_cn(self.structure, site_index)
 
     def _get_ops_for_site(self, site_index):
         cn = self.get_cn(site_index)
         try:
-            names = OP_DEF[cn]['names']
-            is_open = OP_DEF[cn]['open']
-            weights = OP_DEF[cn]['weights']
+            names = OP_DEF[cn]["names"]
+            is_open = OP_DEF[cn]["open"]
+            weights = OP_DEF[cn]["weights"]
             lsop = LocalStructOrderParams(names)
-            return (cn, names,
-                    lsop.get_order_parameters(self.structure,
-                                              site_index), is_open, weights)
+            return (
+                cn,
+                names,
+                lsop.get_order_parameters(self.structure, site_index),
+                is_open,
+                weights,
+            )
         except KeyError:
             # For a bit more fine grained error messages
             if cn <= 3:  # pylint:disable=no-else-raise
                 raise LowCoordinationNumber(
-                    'Coordination number {} is low and order parameters undefined'
+                    "Coordination number {} is low and order parameters undefined"
                     .format(cn))
             elif cn > 8:
                 raise HighCoordinationNumber(
-                    'Coordination number {} is high and order parameters undefined'
+                    "Coordination number {} is high and order parameters undefined"
                     .format(cn))
 
             return cn, None, None, None, None
@@ -261,8 +271,8 @@ class MOFChecker:
             lsop = np.array(lsop) * np.array(weights)
             open_contributions = lsop[is_open].sum()
             close_contributions = lsop.sum() - open_contributions
-            return open_contributions / (open_contributions +
-                                         close_contributions) > threshold
+            return (open_contributions /
+                    (open_contributions + close_contributions) > threshold)
         return None
 
     def _get_metal_descriptors_for_site(self, site_index: int):
@@ -274,30 +284,31 @@ class MOFChecker:
             if site_open:
                 self._open_indices.add(site_index)
             descriptors = {
-                'metal': metal,
-                'lsop': dict(zip(names, lsop)),
-                'open': site_open,
-                'cn': cn
+                "metal": metal,
+                "lsop": dict(zip(names, lsop)),
+                "open": site_open,
+                "cn": cn,
             }
         except LowCoordinationNumber:
             descriptors = {
-                'metal': metal,
-                'lsop': None,
-                'open': True,
-                'cn': None
+                "metal": metal,
+                "lsop": None,
+                "open": True,
+                "cn": None
             }
         except HighCoordinationNumber:
             descriptors = {
-                'metal': metal,
-                'lsop': None,
-                'open': None,
-                'cn': None
+                "metal": metal,
+                "lsop": None,
+                "open": None,
+                "cn": None
             }
         return descriptors
 
     def _has_stray_molecules(self) -> bool:
         self._set_cnn()
-        sgraph = StructureGraph.with_local_env_strategy(self.structure, self._cnn)
+        sgraph = StructureGraph.with_local_env_strategy(
+            self.structure, self._cnn)
         molecules = get_subgraphs_as_molecules_all(sgraph)
         if len(molecules) > 0:
             return True
@@ -311,18 +322,18 @@ class MOFChecker:
             dict: result of overall checks
         """
         d = {
-            'name': self.name,
-            'path': self._filename,
-            'has_oms': self.has_oms,
-            'has_carbon': self.has_carbon,
-            'has_hydrogen': self.has_hydrogen,
-            'has_atomic_overlaps': self.has_atomic_overlaps,
-            'has_overcoordinated_c': self.has_overvalent_c,
-            'has_overcoordinated_n': self.has_overvalent_n,
-            'has_metal': self.has_metal,
-            'has_lone_atom': self.has_lone_atom,
-            'has_lone_molecule': self.has_lone_molecule,
-            'density': self.density
+            "name": self.name,
+            "path": self._filename,
+            "has_oms": self.has_oms,
+            "has_carbon": self.has_carbon,
+            "has_hydrogen": self.has_hydrogen,
+            "has_atomic_overlaps": self.has_atomic_overlaps,
+            "has_overcoordinated_c": self.has_overvalent_c,
+            "has_overcoordinated_n": self.has_overvalent_n,
+            "has_metal": self.has_metal,
+            "has_lone_atom": self.has_lone_atom,
+            "has_lone_molecule": self.has_lone_molecule,
+            "density": self.density,
         }
         return d
 
@@ -377,7 +388,7 @@ class MOFChecker:
             [bool]: True if the structure contains OMS
         """
         if not self.has_metal:
-            raise NoMetal('This structure does not contain a metal')
+            raise NoMetal("This structure does not contain a metal")
         if self._has_oms is not None:  # pylint:disable=no-else-return
             return self._has_oms
         else:
