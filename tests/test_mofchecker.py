@@ -60,3 +60,27 @@ def test_lone_atom():
         Structure.from_file(
             os.path.join(THIS_DIR, 'test_files', 'ABAVIJ_clean.cif')))
     assert mofchecker.has_lone_atom == False
+
+
+    mofchecker = MOFChecker(
+        Structure.from_file(
+            os.path.join(THIS_DIR, 'test_files', 'HKUST_floating.cif')))
+    assert mofchecker.has_lone_atom == True
+
+
+def test_lone_molecule():
+    mofchecker = MOFChecker(
+        Structure.from_file(
+            os.path.join(THIS_DIR, 'test_files', 'ABAVIJ_clean.cif')))
+    assert mofchecker.has_lone_molecule == False
+
+
+    mofchecker = MOFChecker(
+        Structure.from_file(
+            os.path.join(THIS_DIR, 'test_files', 'HKUST_floating.cif')))
+    assert mofchecker.has_lone_molecule == True
+
+    mofchecker = MOFChecker(
+        Structure.from_file(
+            os.path.join(THIS_DIR, 'test_files', 'UiO_66_water.cif')))
+    assert mofchecker.has_lone_molecule == True

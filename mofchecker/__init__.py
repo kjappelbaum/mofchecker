@@ -2,6 +2,7 @@
 import os
 import warnings
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 from pymatgen import Structure
@@ -11,7 +12,8 @@ from pymatgen.io.cif import CifParser
 
 from .definitions import OP_DEF
 from .utils import (HighCoordinationNumber, LowCoordinationNumber, NoMetal,
-                    NoOpenDefined, get_overlaps)
+                    NoOpenDefined, get_overlaps,
+                    get_subgraphs_as_molecules_all)
 
 
 class MOFChecker:
@@ -131,7 +133,14 @@ class MOFChecker:
 
     @property
     def has_lone_atom(self) -> bool:
+        """Returns True if there is a isolated floating atom"""
         return self._has_lone_atom()
+
+    @property
+    def has_lone_molecule(self) -> bool:
+        """Returns true if there is a isolated floating atom or molecule"""
+        return self._has_stray_molecules()
+
 
     def _has_lone_atom(self):
         self._set_cnn()
@@ -160,7 +169,17 @@ class MOFChecker:
         return omscls
 
     @classmethod
-    def from_cif(cls, path: str, porous_adjustment: bool = True):
+    def from_cif(cls, path: Union[str, Path], porous_adjustment: bool = True):
+        """Create a MOFChecker instance from a CIF file
+
+        Args:
+            path (Union[str, Path]): Path to string file
+            porous_adjustment (bool, optional):  If true, porous adjustment
+                is used for CrystalNN to find the coordination number. Defaults to True.
+
+        Returns:
+            MOFChecker: Instance of MOFChecker
+        """
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
             cifparser = CifParser(path)
@@ -211,6 +230,15 @@ class MOFChecker:
             return cn, None, None, None, None
 
     def is_site_open(self, site_index: int) -> bool:
+        """Check for a site if is open (based on the values of
+        some coordination geomeetry fingerprints)
+
+        Args:
+            site_index (int): Index of the site in the structure
+
+        Returns:
+            bool: True if site is open
+        """
         if site_index not in self._open_indices:
             try:
                 _, _, lsop, is_open, weights = self._get_ops_for_site(
@@ -267,6 +295,14 @@ class MOFChecker:
             }
         return descriptors
 
+    def _has_stray_molecules(self) -> bool:
+        self._set_cnn()
+        sgraph = StructureGraph.with_local_env_strategy(self.structure, self._cnn)
+        molecules = get_subgraphs_as_molecules_all(sgraph)
+        if len(molecules) > 0:
+            return True
+        return False
+
     def get_mof_descriptors(self) -> dict:
         """Run most of the sanity checks
         and get a dictionary with the result
@@ -285,6 +321,7 @@ class MOFChecker:
             'has_overcoordinated_n': self.has_overvalent_n,
             'has_metal': self.has_metal,
             'has_lone_atom': self.has_lone_atom,
+            'has_lone_molecule': self.has_lone_molecule,
             'density': self.density
         }
         return d

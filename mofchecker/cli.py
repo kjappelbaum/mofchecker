@@ -28,9 +28,13 @@ from .utils import print_dict
               '--has-clashing',
               is_flag=True,
               help='check if the structure has clashing atoms')
+@click.option('-la',
+              '--has-lone-atom',
+              is_flag=True,
+              help='check if the structure has floating atoms')
 def main(  # pylint:disable=too-many-arguments
     structure, check_mof, has_oms, has_carbon, has_overvalent_c,
-    has_overvalent_n, has_clashing):
+    has_overvalent_n, has_clashing, has_lone_atom):
 
     mofchecker = MOFChecker.from_cif(structure)
 
@@ -52,6 +56,9 @@ def main(  # pylint:disable=too-many-arguments
 
     elif has_clashing:
         print(mofchecker.has_atomic_overlaps)
+
+    elif has_lone_atom:
+        print(mofchecker.has_lone_atom)
 
 
 if __name__ == '__main__':
