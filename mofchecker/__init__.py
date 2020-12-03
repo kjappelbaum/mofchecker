@@ -30,7 +30,6 @@ __all__ = ["__version__", "MOFChecker"]
 
 class MOFChecker:  # pylint:disable=too-many-instance-attributes
     """MOFChecker performs basic sanity checks for MOFs"""
-
     def __init__(self, structure: Structure, porous_adjustment: bool = True):
         """Class that can perform basic sanity checks for MOF structures
 
@@ -41,7 +40,8 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes
         """
         self.structure = structure
         self.metal_indices = [
-            i for i, species in enumerate(self.structure.species) if species.is_metal
+            i for i, species in enumerate(self.structure.species)
+            if species.is_metal
         ]
         self.porous_adjustment = porous_adjustment
         self.metal_features = None
@@ -52,13 +52,16 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes
         self._atomic_overlaps = None
         self._name = None
         self.c_indices = [
-            i for i, species in enumerate(self.structure.species) if str(species) == "C"
+            i for i, species in enumerate(self.structure.species)
+            if str(species) == "C"
         ]
         self.h_indices = [
-            i for i, species in enumerate(self.structure.species) if str(species) == "H"
+            i for i, species in enumerate(self.structure.species)
+            if str(species) == "H"
         ]
         self.n_indices = [
-            i for i, species in enumerate(self.structure.species) if str(species) == "N"
+            i for i, species in enumerate(self.structure.species)
+            if str(species) == "N"
         ]
         self._overvalent_c = None
         self._overvalent_n = None
@@ -119,6 +122,19 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes
         self._has_overvalent_c()
         return self._overvalent_c
 
+    @property
+    def has_overvalent_h(self) -> bool:
+        """Returns true if there is some hydrogen in the structure that has more than 1 neighbor.
+
+        Returns:
+            [bool]: True if hydrogen with CN > 1 in structure.
+        """
+        if self._overvalent_h is not None:
+            return self._overvalent_h
+
+        self._has_overvalent_h()
+        return self._overvalent_h
+
     def _has_overvalent_c(self):
         overvalent_c = False
         for site_index in self.c_indices:
@@ -127,6 +143,15 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes
                 overvalent_c = True
                 break
         self._overvalent_c = overvalent_c
+
+    def _has_overvalent_h(self):
+        overvalent_h = False
+        for site_index in self.h_indices:
+            cn = self.get_cn(site_index)
+            if cn > 1:
+                overvalent_h = True
+                break
+        self._overvalent_h = overvalent_h
 
     @property
     def has_overvalent_n(self) -> bool:
@@ -153,7 +178,8 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes
 
     def _has_lone_atom(self):
         self._set_cnn()
-        graph = StructureGraph.with_local_env_strategy(self.structure, self._cnn)
+        graph = StructureGraph.with_local_env_strategy(self.structure,
+                                                       self._cnn)
         for site in range(len(self.structure)):
             nbr = graph.get_connected_sites(site)
             if not nbr:
@@ -232,16 +258,12 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes
             # For a bit more fine grained error messages
             if cn <= 3:  # pylint:disable=no-else-raise
                 raise LowCoordinationNumber(
-                    "Coordination number {} is low and order parameters undefined".format(
-                        cn
-                    )
-                )
+                    "Coordination number {} is low and order parameters undefined"
+                    .format(cn))
             elif cn > 8:
                 raise HighCoordinationNumber(
-                    "Coordination number {} is high and order parameters undefined".format(
-                        cn
-                    )
-                )
+                    "Coordination number {} is high and order parameters undefined"
+                    .format(cn))
 
             return cn, None, None, None, None
 
@@ -257,7 +279,8 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes
         """
         if site_index not in self._open_indices:
             try:
-                _, _, lsop, is_open, weights = self._get_ops_for_site(site_index)
+                _, _, lsop, is_open, weights = self._get_ops_for_site(
+                    site_index)
                 site_open = MOFChecker._check_if_open(lsop, is_open, weights)
                 if site_open:
                     self._open_indices.add(site_index)
@@ -276,16 +299,15 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes
             lsop = np.array(lsop) * np.array(weights)
             open_contributions = lsop[is_open].sum()
             close_contributions = lsop.sum() - open_contributions
-            return (
-                open_contributions / (open_contributions + close_contributions)
-                > threshold
-            )
+            return (open_contributions /
+                    (open_contributions + close_contributions) > threshold)
         return None
 
     def _get_metal_descriptors_for_site(self, site_index: int):
         metal = str(self.structure[site_index].species)
         try:
-            cn, names, lsop, is_open, weights = self._get_ops_for_site(site_index)
+            cn, names, lsop, is_open, weights = self._get_ops_for_site(
+                site_index)
             site_open = MOFChecker._check_if_open(lsop, is_open, weights)
             if site_open:
                 self._open_indices.add(site_index)
@@ -296,14 +318,25 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes
                 "cn": cn,
             }
         except LowCoordinationNumber:
-            descriptors = {"metal": metal, "lsop": None, "open": True, "cn": None}
+            descriptors = {
+                "metal": metal,
+                "lsop": None,
+                "open": True,
+                "cn": None
+            }
         except HighCoordinationNumber:
-            descriptors = {"metal": metal, "lsop": None, "open": None, "cn": None}
+            descriptors = {
+                "metal": metal,
+                "lsop": None,
+                "open": None,
+                "cn": None
+            }
         return descriptors
 
     def _has_stray_molecules(self) -> bool:
         self._set_cnn()
-        sgraph = StructureGraph.with_local_env_strategy(self.structure, self._cnn)
+        sgraph = StructureGraph.with_local_env_strategy(
+            self.structure, self._cnn)
         molecules = get_subgraphs_as_molecules_all(sgraph)
         if len(molecules) > 0:
             return True
@@ -341,8 +374,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes
         descriptordict = {}
         for site_index in self.metal_indices:
             descriptordict[site_index] = self._get_metal_descriptors_for_site(
-                site_index
-            )
+                site_index)
 
         self.metal_features = descriptordict
 
