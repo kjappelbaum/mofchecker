@@ -34,11 +34,11 @@ repos:
         language: python
         types: [text]
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "" # Use the sha / tag you want to point at
-    hooks:
-      - id: mypy
-        exclude: (versioneer.py|_version.py|^docs/)
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: "" # Use the sha / tag you want to point at
+  #   hooks:
+  #     - id: mypy
+  #       exclude: (versioneer.py|_version.py|^docs/)
 
   - repo: local
     hooks:

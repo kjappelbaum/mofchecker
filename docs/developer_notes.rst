@@ -36,4 +36,3 @@ New features
 .................
 
 Please make a new branch for the development of new features. `Rebase on the upstream master <https://medium.com/@ruthmpardee/git-fork-workflow-using-rebase-587a144be470>`_ and include a test for your new feature. (The CI checks for a drop in code coverage.)
-
