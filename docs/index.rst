@@ -6,10 +6,13 @@
 mofchecker: Basic sanity checks for MOFs
 ==========================================
 
+mofchecker attempts to provide a toolbox of simple checks that can flag the most common reasons for structures not being computationally ready.
+In this vein, mofchecker does not attempt to fix anything.
+
 .. toctree::
    :maxdepth: 3
    :caption: Contents:
-   
+
    api
    developer_notes
 

@@ -32,9 +32,9 @@ def test_clashing(get_clashing_structures):
 
 
 def test_name():
-    s = os.path.join(THIS_DIR, 'test_files', 'ABAVIJ_clean.cif')
+    s = os.path.join(THIS_DIR, "test_files", "ABAVIJ_clean.cif")
     mofchecker = MOFChecker.from_cif(s)
-    assert mofchecker.name == 'ABAVIJ_clean'
+    assert mofchecker.name == "ABAVIJ_clean"
 
 
 def test_no_h(get_no_h):
@@ -57,30 +57,52 @@ def test_overvalent_c(get_overvalent_c_structures):
 
 def test_lone_atom():
     mofchecker = MOFChecker(
-        Structure.from_file(
-            os.path.join(THIS_DIR, 'test_files', 'ABAVIJ_clean.cif')))
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAVIJ_clean.cif"))
+    )
     assert mofchecker.has_lone_atom == False
 
-
     mofchecker = MOFChecker(
-        Structure.from_file(
-            os.path.join(THIS_DIR, 'test_files', 'HKUST_floating.cif')))
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "HKUST_floating.cif"))
+    )
     assert mofchecker.has_lone_atom == True
 
 
 def test_lone_molecule():
     mofchecker = MOFChecker(
-        Structure.from_file(
-            os.path.join(THIS_DIR, 'test_files', 'ABAVIJ_clean.cif')))
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAVIJ_clean.cif"))
+    )
     assert mofchecker.has_lone_molecule == False
 
-
     mofchecker = MOFChecker(
-        Structure.from_file(
-            os.path.join(THIS_DIR, 'test_files', 'HKUST_floating.cif')))
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "HKUST_floating.cif"))
+    )
     assert mofchecker.has_lone_molecule == True
 
     mofchecker = MOFChecker(
-        Structure.from_file(
-            os.path.join(THIS_DIR, 'test_files', 'UiO_66_water.cif')))
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "UiO_66_water.cif"))
+    )
     assert mofchecker.has_lone_molecule == True
+
+
+def test_undercoordinated_c():
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAVIJ_clean.cif"))
+    )
+    assert mofchecker.has_undercoordinated_c == False
+
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "AHOKIR_clean.cif"))
+    )
+    assert mofchecker.has_undercoordinated_c == True
+
+
+def test_undercoordinated_n():
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "VUGYED_clean.cif"))
+    )
+    assert mofchecker.has_undercoordinated_n == False
+
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "mil-53-al-nh2.cif"))
+    )
+    assert mofchecker.has_undercoordinated_n == True
