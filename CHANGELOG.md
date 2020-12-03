@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.1.0...v0.2.0) (2020-12-03)
+
+
+### Features
+
+* heuristics for missing H on C and N  ([#33](https://www.github.com/kjappelbaum/mofchecker/issues/33)) ([db14cbb](https://www.github.com/kjappelbaum/mofchecker/commit/db14cbb86f69d19cc361b2db20a35e5fe02c17fd))
+
 ## 0.1.0 (2020-12-02)
 
 
