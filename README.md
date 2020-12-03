@@ -27,6 +27,12 @@ Development version:
 pip install git+https://github.com/kjappelbaum/mofchecker.git
 ```
 
+Latest stable release
+
+```bash
+pip install mofchecker
+```
+
 ## Usage
 
 ### In Python
