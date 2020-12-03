@@ -13,9 +13,10 @@ Perform quick sanity checks on your MOF:
 
 - Find open metal sites (OMS) in metal-organic frameworks (MOFs).
 - Find atomic overlaps.
-- Find overvalent (CN>4) carbons or nitrogens.
+- Find overvalent (CN>4) carbons, nitrogens, or hydrogen.
 - Check if there is metal, carbon or hydrogen.
 - Check if there is floating atoms or molecules.
+- Check if there is missing hydrogen on common coordination geometries of C and N.
 
 The idea is to have nothing to fancy but a fast tool that we can run to eliminate the really unreasonable structures. The code is basically a rewrite of the checking tools that we implemented in [structure_comp](https://github.com/kjappelbaum/structure_comp).
 
