@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.2.2](https://www.github.com/kjappelbaum/mofchecker/compare/v0.2.1...v0.2.2) (2020-12-03)
+
+
+### Documentation
+
+* Readme links to webapp ([#39](https://www.github.com/kjappelbaum/mofchecker/issues/39)) ([97383be](https://www.github.com/kjappelbaum/mofchecker/commit/97383be40086c64c41b4155aac24ecf8fc56926c))
+
 ### [0.2.1](https://www.github.com/kjappelbaum/mofchecker/compare/v0.2.0...v0.2.1) (2020-12-03)
 
 
