@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.2.1](https://www.github.com/kjappelbaum/mofchecker/compare/v0.2.0...v0.2.1) (2020-12-03)
+
+
+### Documentation
+
+* updated installation section in readme ([443f1b2](https://www.github.com/kjappelbaum/mofchecker/commit/443f1b259f25c75298984f41e23437fd9c1da5d0))
+* updated the features in readme ([de653dc](https://www.github.com/kjappelbaum/mofchecker/commit/de653dcf035e193022326c1f50261ca024f3ee87))
+
 ## [0.2.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.1.0...v0.2.0) (2020-12-03)
 
 
