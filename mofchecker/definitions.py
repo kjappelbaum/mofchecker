@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Constants for the MOFChecker"""
 
 # see Zimmermann, N. E. R.; Jain, A.
 # Local Structure Order Parameters and Site Fingerprints
@@ -127,4 +128,34 @@ COVALENT_RADII = {
     "Pu": 1.87,
     "Am": 1.8,
     "Cm": 1.69,
+}
+
+EXPECTED_CHECK_VALUES = {
+    "has_oms": False,
+    "has_carbon": True,
+    "has_hydrogen": True,
+    "has_atomic_overlaps": False,
+    "has_overcoordinated_c": False,
+    "has_overcoordinated_n": False,
+    "has_overcoordinated_h": False,
+    "has_undercoordinated_c": False,
+    "has_undercoordinated_n": False,
+    "has_metal": True,
+    "has_lone_atom": False,
+    "has_lone_molecule": False,
+}
+
+CHECK_DESCRIPTIONS = {
+    "has_oms": "Uses heuristics of order parameter to estimate if there is an uncordinated metal site",
+    "has_carbon": "Checks if there is any carbon in the structure",
+    "has_hydrogen": "Checks of there is any hydrogen in the structure",
+    "has_atomic_overlaps": "Checks if there are atomic overlaps in the structure (estimated based on the adjacency matrix)",
+    "has_overcoordinated_c": "Checks if there is any carbon number with coordination number > 4",
+    "has_overcoordinated_n": "Checks if there is any nitrogen with coordination number > 4",
+    "has_overcoordinated_h": "Checks if there is any carbon with coordination number > 1",
+    "has_undercoordinated_c": "Checks with there is any carbon non-linear (i.e., sp2, sp3) carbon with less than two neighbors",
+    "has_undercoordinated_n": "Checks if there is a nitrogen that likely misses a hydrogen (e.g., coordinated to a sp2, sp3 carbon)",
+    "has_metal": "Checks if there is any metal in the structure",
+    "has_lone_atom": "Checks if there is floating atom in the structure",
+    "has_lone_molecule": "Checks if there is a floating atom or molecule in the structure",
 }

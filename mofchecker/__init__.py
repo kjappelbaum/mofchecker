@@ -12,7 +12,7 @@ from pymatgen.analysis.local_env import CrystalNN, JmolNN, LocalStructOrderParam
 from pymatgen.io.cif import CifParser
 
 from ._version import get_versions
-from .definitions import OP_DEF
+from .definitions import CHECK_DESCRIPTIONS, EXPECTED_CHECK_VALUES, OP_DEF
 from .utils import (
     HighCoordinationNumber,
     LowCoordinationNumber,
@@ -64,6 +64,8 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._overvalent_h = None
         self._undercoordinated_carbon = None
         self._undercoordinated_nitrogen = None
+        self.check_expected_values = EXPECTED_CHECK_VALUES
+        self.check_descriptions = CHECK_DESCRIPTIONS
 
     def _set_filename(self, path):
         self._filename = os.path.abspath(path)
@@ -226,7 +228,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                     self.structure, self._cnn
                 )
                 neighbors = graph.get_connected_sites(site_index)
-                if (self.get_cn(neighbors[0].index) > 1) and (
+                if (self.get_cn(neighbors[0].index) > 2) and (
                     str(neighbors[0].periodic_site.specie) == "C"
                 ):
                     undercoordinated_nitrogen = True
@@ -457,6 +459,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             "has_overcoordinated_n": self.has_overvalent_n,
             "has_overcoordinated_h": self.has_overvalent_h,
             "has_undercoordinated_c": self.has_undercoordinated_c,
+            "has_undercoordinated_n": self.has_undercoordinated_n,
             "has_metal": self.has_metal,
             "has_lone_atom": self.has_lone_atom,
             "has_lone_molecule": self.has_lone_molecule,
