@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.2.2...v0.3.0) (2020-12-07)
+
+
+### Features
+
+* expected values and descriptions for checks  ([#42](https://www.github.com/kjappelbaum/mofchecker/issues/42)) ([4f2c33e](https://www.github.com/kjappelbaum/mofchecker/commit/4f2c33e8d36c34c865824df6f3a74b4a5bdc9b08))
+
 ### [0.2.2](https://www.github.com/kjappelbaum/mofchecker/compare/v0.2.1...v0.2.2) (2020-12-03)
 
 
