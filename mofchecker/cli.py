@@ -56,24 +56,24 @@ def main(  # pylint:disable=too-many-arguments
     if check_mof:
         mof_desc = mofchecker.get_mof_descriptors()
         print_dict(mof_desc)
+    else:
+        if has_oms:
+            print(mofchecker.has_oms)
 
-    elif has_oms:
-        print(mofchecker.has_oms)
+        if has_carbon:
+            print(mofchecker.has_carbon)
 
-    elif has_carbon:
-        print(mofchecker.has_carbon)
+        if has_overvalent_c:
+            print(mofchecker.has_overvalent_c)
 
-    elif has_overvalent_c:
-        print(mofchecker.has_overvalent_c)
+        if has_overvalent_n:
+            print(mofchecker.has_overvalent_n)
 
-    elif has_overvalent_n:
-        print(mofchecker.has_overvalent_n)
+        if has_clashing:
+            print(mofchecker.has_atomic_overlaps)
 
-    elif has_clashing:
-        print(mofchecker.has_atomic_overlaps)
-
-    elif has_lone_atom:
-        print(mofchecker.has_lone_atom)
+        if has_lone_atom:
+            print(mofchecker.has_lone_atom)
 
 
 if __name__ == "__main__":
