@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+"""pytest fixtures"""
+# pylint: disable=missing-function-docstring
 import os
 
 import pytest
@@ -22,7 +24,7 @@ def get_cn4_structre():
 @pytest.fixture(scope="module")
 def get_testdict():
 
-    d = {
+    dct = {
         str(os.path.join(THIS_DIR, "test_files", "ABEXEM_clean.cif")): True,
         str(os.path.join(THIS_DIR, "test_files", "ABEXIQ_clean.cif")): True,
         str(os.path.join(THIS_DIR, "test_files", "ZUSNOS_clean.cif")): True,
@@ -33,7 +35,8 @@ def get_testdict():
         str(os.path.join(THIS_DIR, "test_files", "ABAVIJ_clean.cif")): False,
         str(os.path.join(THIS_DIR, "test_files", "FAPXIG_clean.cif")): False,
         # str(os.path.join(THIS_DIR, 'test_files', 'ADABIS_clean.cif')):
-        # False,  # https://onlinelibrary.wiley.com/doi/epdf/10.1002/anie.201202992 -> I feel one there is actually True
+        # False,  # https://onlinelibrary.wiley.com/doi/epdf/10.1002/anie.201202992
+        # -> I feel one there is actually True
         str(os.path.join(THIS_DIR, "test_files", "ALUJOH_clean.cif")): True,
         str(
             os.path.join(THIS_DIR, "test_files", "AMUFIZ_clean.cif")
@@ -58,7 +61,7 @@ def get_testdict():
         ): False,  # wrong in CoRE
     }
 
-    return d
+    return dct
 
 
 @pytest.fixture(scope="module")

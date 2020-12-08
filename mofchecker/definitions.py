@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Constants for the MOFChecker"""
+# pylint: disable=line-too-long
 
 # see Zimmermann, N. E. R.; Jain, A.
 # Local Structure Order Parameters and Site Fingerprints

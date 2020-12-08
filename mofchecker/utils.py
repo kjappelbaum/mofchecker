@@ -32,7 +32,9 @@ def compute_overlap_matrix(
 ):
     """
     Find atomic overlap based on pairwise distance and Covalent radii.
-    Criterion: if dist < min (CovR_1,CovR_2) -> overlap (this function is used in molsimplify)
+
+    Criterion: if dist < min (CovR_1,CovR_2) -> overlap
+        (this function is used in molsimplify)
     """
     overlap_matrix = np.zeros(distance_matrix.shape)
     for i, elem_1 in enumerate(allatomtypes[:-1]):
