@@ -32,7 +32,9 @@ def compute_overlap_matrix(
 ):
     """
     Find atomic overlap based on pairwise distance and Covalent radii.
-    Criterion: if dist < min (CovR_1,CovR_2) -> overlap (this function is used in molsimplify)
+
+    Criterion: if dist < min (CovR_1,CovR_2) -> overlap
+        (this function is used in molsimplify)
     """
     overlap_matrix = np.zeros(distance_matrix.shape)
     for i, elem_1 in enumerate(allatomtypes[:-1]):
@@ -45,7 +47,7 @@ def compute_overlap_matrix(
     return sparse.csr_matrix(overlap_matrix)
 
 
-def get_overlaps(s: Structure) -> list:
+def get_overlaps(s: Structure) -> list:  # pylint: disable=invalid-name
     """Find overlapping atoms in a structure."""
     distance_matrix = s.distance_matrix
     atomtypes = [str(species) for species in s.species]
@@ -58,7 +60,7 @@ def get_overlaps(s: Structure) -> list:
 
 def print_dict(dictionary):
     """Print a dictionary to stdout line by line."""
-    for k, v in sorted(dictionary.items()):
+    for k, v in dictionary.items():  # pylint: disable=invalid-name
         print(k, v)
 
 
@@ -102,8 +104,8 @@ def get_subgraphs_as_molecules_all(
 
     # add specie names to graph to be able to test for isomorphism
     for subgraph in molecule_subgraphs:
-        for n in subgraph:
-            subgraph.add_node(n, specie=str(supercell_sg.structure[n].specie))
+        for node in subgraph:
+            subgraph.add_node(node, specie=str(supercell_sg.structure[node].specie))
 
     # get Molecule objects for each subgraph
     molecules = []

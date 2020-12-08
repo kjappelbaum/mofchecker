@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+"""Tests of mofchecker"""
+# pylint: disable=missing-function-docstring,singleton-comparison,invalid-name
 import os
 
-import pytest
 from pymatgen import Structure
 
 from mofchecker import MOFChecker
