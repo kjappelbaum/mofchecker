@@ -4,7 +4,7 @@ import concurrent.futures
 from glob import glob
 
 import pandas as pd
-from tqdm import tqdm
+from tqdm import tqdm  # pylint:disable=import-error
 
 from mofchecker import MOFChecker, NoMetal
 
