@@ -2,12 +2,13 @@
 """MOFChecker: Basic sanity checks for MOFs"""
 import os
 import warnings
+from collections import OrderedDict
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
 import numpy as np
 from pymatgen import Structure
-from pymatgen.analysis.graphs import StructureGraph
+from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
 from pymatgen.analysis.local_env import CrystalNN, JmolNN, LocalStructOrderParams
 from pymatgen.io.cif import CifParser
 
@@ -66,6 +67,10 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._undercoordinated_nitrogen = None
         self.check_expected_values = EXPECTED_CHECK_VALUES
         self.check_descriptions = CHECK_DESCRIPTIONS
+
+        self._graph = None
+        self._connected_sites = {}
+        self._cns = {}
 
     def _set_filename(self, path):
         self._filename = os.path.abspath(path)
@@ -193,14 +198,12 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         case of benzene rings with missing hydrogens.
         """
         undercoordinated_carbon = False
+
         for site_index in self.c_indices:
             cn = self.get_cn(site_index)  # pylint:disable=invalid-name
             if cn == 2:
                 # ToDo: Check if it is bound to metal, then it might be a carbide
-                graph = StructureGraph.with_local_env_strategy(
-                    self.structure, self._cnn
-                )
-                neighbors = graph.get_connected_sites(site_index)
+                neighbors = self.get_connected_sites(site_index)
                 angle = self.structure.get_angle(
                     site_index, neighbors[0].index, neighbors[1].index
                 )
@@ -221,13 +224,10 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         for site_index in self.n_indices:
             cn = self.get_cn(site_index)  # pylint:disable=invalid-name
             if cn == 1:
-                # this is suspicous, but it also might a CN wish is perfectly fine
+                # this is suspicous, but it also might a CN which is perfectly fine.
                 # to check this, we first see if the neighbor is carbon
                 # and then what its coordination number is
-                graph = StructureGraph.with_local_env_strategy(
-                    self.structure, self._cnn
-                )
-                neighbors = graph.get_connected_sites(site_index)
+                neighbors = self.get_connected_sites(site_index)
                 if (self.get_cn(neighbors[0].index) > 2) and (
                     str(neighbors[0].periodic_site.specie) == "C"
                 ):
@@ -235,10 +235,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                     break
             if cn == 2:
                 # ToDo: Check if it is bound to metal, then it might be a nitride
-                graph = StructureGraph.with_local_env_strategy(
-                    self.structure, self._cnn
-                )
-                neighbors = graph.get_connected_sites(site_index)
+                neighbors = self.get_connected_sites(site_index)
                 angle = self.structure.get_angle(
                     site_index, neighbors[0].index, neighbors[1].index
                 )
@@ -246,6 +243,44 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                     undercoordinated_nitrogen = True
                     break
         self._undercoordinated_nitrogen = undercoordinated_nitrogen
+
+    @property
+    def graph(self) -> StructureGraph:
+        """pymatgen structure graph."""
+        if self._graph is None:
+            self._graph = StructureGraph.with_local_env_strategy(
+                self.structure, self._cnn
+            )
+        return self._graph
+
+    def get_connected_sites(self, site_index) -> List[ConnectedSite]:
+        """Get connected sites for given index.
+
+        Uses internal cache for speedup.
+        """
+        if site_index not in self._connected_sites:
+            self._connected_sites[site_index] = self.graph.get_connected_sites(
+                site_index
+            )
+        return self._connected_sites[site_index]
+
+    def get_cn(self, site_index) -> int:
+        """Get coordination number for site with CrystalNN method
+
+        Uses internal cache for speedup.
+
+        Args:
+            site_index (int): index of site in pymatgen Structure
+
+        Returns:
+            int: Coordination number
+        """
+        if site_index not in self._cns:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                self._set_cnn()
+                self._cns[site_index] = self._cnn.get_cn(self.structure, site_index)
+        return self._cns[site_index]
 
     @property
     def has_overvalent_n(self) -> bool:
@@ -271,11 +306,10 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         """Returns true if there is a isolated floating atom or molecule"""
         return self._has_stray_molecules()
 
-    def _has_lone_atom(self):
+    def _has_lone_atom(self) -> bool:
         self._set_cnn()
-        graph = StructureGraph.with_local_env_strategy(self.structure, self._cnn)
         for site in range(len(self.structure)):
-            nbr = graph.get_connected_sites(site)
+            nbr = self.get_connected_sites(site)
             if not nbr:
                 return True
         return False
@@ -315,27 +349,15 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             return omscls
 
     def _set_cnn(self, method="JmolNN", porous_adjustment: bool = True):
+        if self._cnn_method == method.lower():
+            return
+        self._cnn_method = method.lower()
+
         self.porous_adjustment = porous_adjustment
-        if self._cnn is None or self._cnn_method != method.lower():
-            if method.lower() == "crystalnn":
-                self._cnn = CrystalNN(porous_adjustment=self.porous_adjustment)
-            else:
-                self._cnn = JmolNN()
-            self._cnn_method = method.lower()
-
-    def get_cn(self, site_index: int) -> int:
-        """Compute coordination number (CN) for site with CrystalNN method
-
-        Args:
-            site_index (int): index of site in pymatgen Structure
-
-        Returns:
-            int: Coordination number
-        """
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            self._set_cnn()
-            return self._cnn.get_cn(self.structure, site_index)
+        if method.lower() == "crystalnn":
+            self._cnn = CrystalNN(porous_adjustment=self.porous_adjustment)
+        else:
+            self._cnn = JmolNN()
 
     def _get_ops_for_site(self, site_index):
         cn = self.get_cn(site_index)  # pylint:disable=invalid-name
@@ -351,7 +373,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 is_open,
                 weights,
             )
-        except KeyError:
+        except KeyError as exc:
             # For a bit more fine grained error messages
             if cn <= 3:  # pylint:disable=no-else-raise
                 raise LowCoordinationNumber(
@@ -359,14 +381,14 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                         and order parameters undefined".format(
                         cn
                     )
-                )
+                ) from exc
             elif cn > 8:
                 raise HighCoordinationNumber(
                     "Coordination number {} is high \
                         and order parameters undefined".format(
                         cn
                     )
-                )
+                ) from exc
 
             return cn, None, None, None, None
 
@@ -382,8 +404,8 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         """
         if site_index not in self._open_indices:
             try:
-                _, names, lsop, is_open, weights = self._get_ops_for_site(site_index)
-                print(list(zip(names, lsop)))
+                _, _names, lsop, is_open, weights = self._get_ops_for_site(site_index)
+                # print(list(zip(names, lsop)))
                 site_open = MOFChecker._check_if_open(lsop, is_open, weights)
                 if site_open:
                     self._open_indices.add(site_index)
@@ -435,8 +457,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
     def _has_stray_molecules(self) -> bool:
         self._set_cnn()
-        sgraph = StructureGraph.with_local_env_strategy(self.structure, self._cnn)
-        molecules = get_subgraphs_as_molecules_all(sgraph)
+        molecules = get_subgraphs_as_molecules_all(self.graph)
         if len(molecules) > 0:
             return True
         return False
@@ -448,23 +469,25 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             dict: result of overall checks
         """
-        result_dict = {
-            "name": self.name,
-            "path": self._filename,
-            "has_oms": self.has_oms,
-            "has_carbon": self.has_carbon,
-            "has_hydrogen": self.has_hydrogen,
-            "has_atomic_overlaps": self.has_atomic_overlaps,
-            "has_overcoordinated_c": self.has_overvalent_c,
-            "has_overcoordinated_n": self.has_overvalent_n,
-            "has_overcoordinated_h": self.has_overvalent_h,
-            "has_undercoordinated_c": self.has_undercoordinated_c,
-            "has_undercoordinated_n": self.has_undercoordinated_n,
-            "has_metal": self.has_metal,
-            "has_lone_atom": self.has_lone_atom,
-            "has_lone_molecule": self.has_lone_molecule,
-            "density": self.density,
-        }
+        result_dict = OrderedDict(
+            (
+                ("name", self.name),
+                ("path", self._filename),
+                ("density", self.density),
+                ("has_oms", self.has_oms),
+                ("has_carbon", self.has_carbon),
+                ("has_hydrogen", self.has_hydrogen),
+                ("has_atomic_overlaps", self.has_atomic_overlaps),
+                ("has_overcoordinated_c", self.has_overvalent_c),
+                ("has_overcoordinated_n", self.has_overvalent_n),
+                ("has_overcoordinated_h", self.has_overvalent_h),
+                ("has_undercoordinated_c", self.has_undercoordinated_c),
+                ("has_undercoordinated_n", self.has_undercoordinated_n),
+                ("has_metal", self.has_metal),
+                ("has_lone_atom", self.has_lone_atom),
+                ("has_lone_molecule", self.has_lone_molecule),
+            )
+        )
         return result_dict
 
     def get_metal_descriptors_for_site(self, site_index: int) -> dict:
