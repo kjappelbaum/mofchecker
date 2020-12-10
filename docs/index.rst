@@ -13,6 +13,7 @@ In this vein, mofchecker does not attempt to fix anything.
    :maxdepth: 3
    :caption: Contents:
 
+   getting_started
    api
    developer_notes
 

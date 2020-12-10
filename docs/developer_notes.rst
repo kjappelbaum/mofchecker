@@ -25,7 +25,7 @@ to automatically
 
 - format the code with `black <https://github.com/psf/black>`_
 - sort the imports with `isort <https://pycqa.github.io/isort/>`_
-- lint the code with `prospector <http://prospector.landscape.io/en/master/>`_
+- lint the code with `pylint <https://pylint.org/>`_
 
 We use type hints, which we feel is a good way of documentation and helps us find bugs using `mypy <http://mypy-lang.org/>`_.
 
