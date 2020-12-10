@@ -18,11 +18,5 @@ formats:
   - pdf
 
 # Need to install the package itself such that the entry points are installed and the API doc can build properly
-python:
-  version: 3.8
-  install:
-    - method: pip
-      path: .
-      extra_requirements:
-        - all
-        - docs
+conda:
+  environment: docs/environment.yml

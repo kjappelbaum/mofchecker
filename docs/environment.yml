@@ -1,0 +1,14 @@
+name: mofchecker
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.7
+  - pip
+  - pip:
+      - pymatgen~=2020.11.11
+      - click~=7.1.2
+      - sphinx~=3.3.1
+      - sphinx-book-theme~=0.0.39
+      - sphinx-autodoc-typehints~=1.11.1
+      - sphinx-copybutton~=0.3.1
