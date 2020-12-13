@@ -32,7 +32,7 @@ jobs:
           conda-channels: anaconda, conda-forge
       - name: Install dependencies
         run: |
-          conda install openbabel
+          conda install openbabel ruamel.yaml
           pip install pytest pytest-cov
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Test with pytest
@@ -60,6 +60,7 @@ jobs:
           conda-channels: anaconda, conda-forge
       - name: Install dependencies
         run: |
+          conda install openbabel ruamel.yaml
           pip install -e .[pre-commit,testing]
           pip freeze
 
