@@ -13,17 +13,37 @@ from scipy import sparse
 from .definitions import COVALENT_RADII
 
 
+def _check_metal_coordination(site, coordination_number: int) -> bool:
+    # Lanthanides like to have many neighbors
+    # Low coordinatio number is usually only
+    # possible with really bulky ligands
+    # for this reason, a Lanthanide with low
+    # coordination number, e.g., <= 4 can be considered "interesting"
+    if (site.specie.is_lanthanoid) or (site.specie.is_actinoid):
+        if coordination_number <= 4:
+            return True
+
+    # Also for the alkaline/alkaline earth metals,
+    # I would find a low coordination number surprising
+    elif site.specie.is_alkali or site.specie.is_alkaline:
+        if coordination_number <= 4:
+            return True
+
+    return False
+
+
 def _maximum_angle(angle):
     diff_to_180 = np.abs(180 - angle)
     return max([angle, diff_to_180])
 
 
 def get_charges(structure: Structure):
+    """Compute EqEq charges for a pymatgen structure"""
     try:
-        from openbabel import pybel
+        from openbabel import pybel  # pylint:disable=import-outside-toplevel
 
-        m = str(CifWriter(structure))
-        mol = pybel.readstring("cif", m)
+        cif_structure = str(CifWriter(structure))
+        mol = pybel.readstring("cif", cif_structure)
         mol.calccharges("eqeq")
         charges = [a.partialcharge for a in mol]
         print(charges)
@@ -34,8 +54,8 @@ def get_charges(structure: Structure):
             This can be done, for example using conda install openbabel"
         )
         return None
-    except Exception as e:
-        warnings.warn(f"Exception occured during the charge calculation {e}")
+    except Exception as execp:  # pylint:disable=broad-except
+        warnings.warn(f"Exception occured during the charge calculation {execp}")
         return None
 
 
