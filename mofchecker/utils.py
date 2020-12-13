@@ -9,23 +9,25 @@ from scipy import sparse
 
 from .definitions import COVALENT_RADII
 
-def _check_metal_coordination(site, cn: int) -> bool:
+
+def _check_metal_coordination(site, coordination_number: int) -> bool:
     # Lanthanides like to have many neighbors
     # Low coordinatio number is usually only
     # possible with really bulky ligands
     # for this reason, a Lanthanide with low
     # coordination number, e.g., <= 4 can be considered "interesting"
     if (site.specie.is_lanthanoid) or (site.specie.is_actinoid):
-        if cn <= 4:
+        if coordination_number <= 4:
             return True
 
     # Also for the alkaline/alkaline earth metals,
     # I would find a low coordination number surprising
     elif site.specie.is_alkali or site.specie.is_alkaline:
-        if cn <= 4:
+        if coordination_number <= 4:
             return True
 
     return False
+
 
 def _maximum_angle(angle):
     diff_to_180 = np.abs(180 - angle)

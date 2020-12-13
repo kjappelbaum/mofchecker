@@ -125,12 +125,12 @@ def test_undercoordinated_n():
     )
     assert mofchecker.has_undercoordinated_n == True
 
+
 def test_undercoordinated_metal():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "GADRAH_clean.cif"))
     )
     assert mofchecker.has_undercoordinated_metal == True
-
 
 
 def test_dicts():
