@@ -3,7 +3,9 @@
 import networkx as nx
 import numpy as np
 import pymatgen
+import warnings
 from pymatgen import Structure
+from pymatgen.io.cif import CifWriter
 from pymatgen.core import Molecule
 from scipy import sparse
 
@@ -15,9 +17,28 @@ def _maximum_angle(angle):
     return max([angle, diff_to_180])
 
 
-def _guess_underbound_nitrogen_cn3(
-    structure: Structure, site_index: int, neighbors: list, tolerance: int = 10
-) -> bool:
+def get_charges(structure: Structure):
+    try:
+        from openbabel import pybel
+        m = str(CifWriter(structure))
+        mol = pybel.readstring('cif', m)
+        mol.calccharges('eqeq')
+        charges = [a.partialcharge for a in mol]
+        print(charges)
+        return charges
+    except ImportError:
+        warnings.warn('For the charge check openbabel needs to be installed. \
+            This can be done, for example using conda install openbabel')
+        return None
+    except Exception as e:
+        warnings.warn(f'Exception occured during the charge calculation {e}')
+        return None
+
+
+def _guess_underbound_nitrogen_cn3(structure: Structure,
+                                   site_index: int,
+                                   neighbors: list,
+                                   tolerance: int = 10) -> bool:
     """Check if there is a nitrogen with three neighbors
     that likely misses some coordination.
 
@@ -31,9 +52,12 @@ def _guess_underbound_nitrogen_cn3(
     Returns:
         bool: True if the nitrogen is likely missing some coordination partner
     """
-    angle_a = structure.get_angle(site_index, neighbors[0].index, neighbors[1].index)
-    angle_b = structure.get_angle(site_index, neighbors[0].index, neighbors[2].index)
-    angle_c = structure.get_angle(site_index, neighbors[1].index, neighbors[2].index)
+    angle_a = structure.get_angle(site_index, neighbors[0].index,
+                                  neighbors[1].index)
+    angle_b = structure.get_angle(site_index, neighbors[0].index,
+                                  neighbors[2].index)
+    angle_c = structure.get_angle(site_index, neighbors[1].index,
+                                  neighbors[2].index)
     min_angle = np.min([angle_a, angle_b, angle_c])
 
     any_metal = False
@@ -80,10 +104,11 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
     Returns:
         bool: True if there is a nitrogen that likely misses some coordination.
     """
-    angle = structure.get_angle(site_index, neighbors[0].index, neighbors[1].index)
+    angle = structure.get_angle(site_index, neighbors[0].index,
+                                neighbors[1].index)
     neighbor_species = set(
-        [str(neighbors[0].site.specie), str(neighbors[1].site.specie)]
-    )
+        [str(neighbors[0].site.specie),
+         str(neighbors[1].site.specie)])
     if np.abs(180 - angle) < tolerance:
         # sp hybridization if the nitrogen is linear
         # this could be a nitride or a nitrosyl
@@ -111,9 +136,8 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
             )
 
             mean_dihedral = np.mean([dihedral_a, dihedral_b])
-            if (np.abs(mean_dihedral - 180) < tolerance) or (
-                np.abs(mean_dihedral - 0) < tolerance
-            ):
+            if (np.abs(mean_dihedral - 180) <
+                    tolerance) or (np.abs(mean_dihedral - 0) < tolerance):
                 return False
             return True
 
@@ -146,9 +170,9 @@ class NoMetal(KeyError):
     """Error in case there is no metal in structure"""
 
 
-def compute_overlap_matrix(
-    distance_matrix: np.array, allatomtypes: list, tolerance: float = 1.0
-):
+def compute_overlap_matrix(distance_matrix: np.array,
+                           allatomtypes: list,
+                           tolerance: float = 1.0):
     """
     Find atomic overlap based on pairwise distance and Covalent radii.
 
@@ -157,10 +181,11 @@ def compute_overlap_matrix(
     """
     overlap_matrix = np.zeros(distance_matrix.shape)
     for i, elem_1 in enumerate(allatomtypes[:-1]):
-        for j, elem_2 in enumerate(allatomtypes[i + 1 :]):
+        for j, elem_2 in enumerate(allatomtypes[i + 1:]):
             dist = distance_matrix[i, i + j + 1]
             # check for atomic overlap:
-            if dist < tolerance * min(COVALENT_RADII[elem_1], COVALENT_RADII[elem_2]):
+            if dist < tolerance * min(COVALENT_RADII[elem_1],
+                                      COVALENT_RADII[elem_2]):
                 overlap_matrix[i, i + j + 1] = 1
                 overlap_matrix[i + j + 1, i] = 1
     return sparse.csr_matrix(overlap_matrix)
@@ -184,8 +209,7 @@ def print_dict(dictionary):
 
 
 def get_subgraphs_as_molecules_all(
-    structure_graph: pymatgen.analysis.graphs.StructureGraph,
-):
+    structure_graph: pymatgen.analysis.graphs.StructureGraph, ):
     """Copied from
     http://pymatgen.org/_modules/pymatgen/analysis/graphs.html#StructureGraph.get_subgraphs_as_molecules
     and removed the duplicate check
@@ -215,16 +239,18 @@ def get_subgraphs_as_molecules_all(
     # these will subgraphs representing crystals
     molecule_subgraphs = []
     for subgraph in all_subgraphs:
-        intersects_boundary = any(
-            [d["to_jimage"] != (0, 0, 0) for u, v, d in subgraph.edges(data=True)]
-        )
+        intersects_boundary = any([
+            d["to_jimage"] != (0, 0, 0)
+            for u, v, d in subgraph.edges(data=True)
+        ])
         if not intersects_boundary:
             molecule_subgraphs.append(nx.MultiDiGraph(subgraph))
 
     # add specie names to graph to be able to test for isomorphism
     for subgraph in molecule_subgraphs:
         for node in subgraph:
-            subgraph.add_node(node, specie=str(supercell_sg.structure[node].specie))
+            subgraph.add_node(node,
+                              specie=str(supercell_sg.structure[node].specie))
 
     # get Molecule objects for each subgraph
     molecules = []
