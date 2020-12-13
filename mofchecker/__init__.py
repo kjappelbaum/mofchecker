@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import List, Union
 
 import numpy as np
+from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
 from pymatgen import Structure
 from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
 from pymatgen.analysis.local_env import CrystalNN, JmolNN, LocalStructOrderParams
@@ -77,6 +78,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._graph = None
         self._connected_sites = {}
         self._cns = {}
+        self._set_cnn()
 
     def _set_filename(self, path):
         self._filename = os.path.abspath(path)
@@ -92,6 +94,14 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     def get_overlapping_indices(self):
         """Return the indices of overlapping atoms"""
         return self._get_atomic_overlaps()
+
+    @property
+    def graph_hash(self):
+        """Return the Weisfeiler-Lehman graph hash.
+        Hashes areidentical for isomorphic graphs and there are
+        guarantees that non-isomorphic graphs will get different hashes.
+        """
+        return weisfeiler_lehman_graph_hash(self.graph.graph)
 
     @property
     def has_atomic_overlaps(self):
@@ -312,7 +322,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         if site_index not in self._cns:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                self._set_cnn()
                 self._cns[site_index] = self._cnn.get_cn(self.structure, site_index)
         return self._cns[site_index]
 
@@ -341,7 +350,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return self._has_stray_molecules()
 
     def _has_lone_atom(self) -> bool:
-        self._set_cnn()
         for site in range(len(self.structure)):
             nbr = self.get_connected_sites(site)
             if not nbr:
@@ -489,7 +497,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return descriptors
 
     def _has_stray_molecules(self) -> bool:
-        self._set_cnn()
         molecules = get_subgraphs_as_molecules_all(self.graph)
         if len(molecules) > 0:
             return True

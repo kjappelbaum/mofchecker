@@ -140,6 +140,13 @@ def test_undercoordinated_metal():
     assert mofchecker.has_undercoordinated_metal == True
 
 
+def test_has():
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif"))
+    )
+    assert mofchecker.graph_hash == "599fd5d18ebac2395d33bc68ad787e08"
+
+
 def test_dicts():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "VUGYED_clean.cif"))
