@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 """Helper functions for the MOFChecker"""
+import warnings
+
 import networkx as nx
 import numpy as np
 import pymatgen
 from pymatgen import Structure
 from pymatgen.core import Molecule
+from pymatgen.io.cif import CifWriter
 from scipy import sparse
 
 from .definitions import COVALENT_RADII
@@ -32,6 +35,28 @@ def _check_metal_coordination(site, coordination_number: int) -> bool:
 def _maximum_angle(angle):
     diff_to_180 = np.abs(180 - angle)
     return max([angle, diff_to_180])
+
+
+def get_charges(structure: Structure):
+    """Compute EqEq charges for a pymatgen structure"""
+    try:
+        from openbabel import pybel  # pylint:disable=import-outside-toplevel
+
+        cif_structure = str(CifWriter(structure))
+        mol = pybel.readstring("cif", cif_structure)
+        mol.calccharges("eqeq")
+        charges = [a.partialcharge for a in mol]
+        print(charges)
+        return charges
+    except ImportError:
+        warnings.warn(
+            "For the charge check openbabel needs to be installed. \
+            This can be done, for example using conda install openbabel"
+        )
+        return None
+    except Exception as execp:  # pylint:disable=broad-except
+        warnings.warn(f"Exception occured during the charge calculation {execp}")
+        return None
 
 
 def _guess_underbound_nitrogen_cn3(

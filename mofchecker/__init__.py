@@ -23,6 +23,7 @@ from .utils import (
     _guess_underbound_nitrogen_cn2,
     _guess_underbound_nitrogen_cn3,
     _maximum_angle,
+    get_charges,
     get_overlaps,
     get_subgraphs_as_molecules_all,
 )
@@ -47,6 +48,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             i for i, species in enumerate(self.structure.species) if species.is_metal
         ]
         self.porous_adjustment = True
+        self.charges = None
         self.metal_features = None
         self._open_indices: set = set()
         self._has_oms = None
@@ -258,6 +260,23 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                     break
 
         self._undercoordinated_nitrogen = undercoordinated_nitrogen
+
+    def _has_high_charges(self, threshold=3):
+        if self.charges is None:
+            self.charges = get_charges(self.structure)
+
+        if isinstance(self.charges, list):
+            if np.sum(np.abs(self.charges) > threshold):
+                return True
+        else:
+            return None
+
+        return False
+
+    @property
+    def has_high_charges(self):
+        """Check if the structure has unreasonably high EqEq charges"""
+        return self._has_high_charges()
 
     @property
     def graph(self) -> StructureGraph:
@@ -501,6 +520,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 ("has_metal", self.has_metal),
                 ("has_lone_atom", self.has_lone_atom),
                 ("has_lone_molecule", self.has_lone_molecule),
+                ("has_high_charges", self.has_high_charges),
                 ("has_undercoordinated_metal", self.has_undercoordinated_metal),
             )
         )
