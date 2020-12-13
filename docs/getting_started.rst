@@ -21,7 +21,7 @@ or the latest development version using
     pip install git+https://github.com/kjappelbaum/mofchecker.git
 
 
-If you want to use the charge check (based on the EqEq method), you'll need to install openbabel, for example using 
+If you want to use the charge check (based on the EqEq method), you'll need to install openbabel, for example using
 
 .. code-block:: bash
 

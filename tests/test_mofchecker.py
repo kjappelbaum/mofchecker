@@ -132,6 +132,7 @@ def test_chargecheck():
     )
     assert mofchecker.has_high_charges == False
 
+
 def test_dicts():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "VUGYED_clean.cif"))
