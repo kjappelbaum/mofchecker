@@ -108,6 +108,23 @@ def test_undercoordinated_n():
     )
     assert mofchecker.has_undercoordinated_n == True
 
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif"))
+    )
+    assert mofchecker.has_undercoordinated_n == False
+
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "1246903.cif"))
+    )
+    assert mofchecker.has_undercoordinated_n == False
+
+    mofchecker = MOFChecker(
+        Structure.from_file(
+            os.path.join(THIS_DIR, "test_files", "1246903_missing_H.cif")
+        )
+    )
+    assert mofchecker.has_undercoordinated_n == True
+
 
 def test_dicts():
     mofchecker = MOFChecker(

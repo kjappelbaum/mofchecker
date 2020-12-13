@@ -19,6 +19,9 @@ from .utils import (
     LowCoordinationNumber,
     NoMetal,
     NoOpenDefined,
+    _guess_underbound_nitrogen_cn2,
+    _guess_underbound_nitrogen_cn3,
+    _maximum_angle,
     get_overlaps,
     get_subgraphs_as_molecules_all,
 )
@@ -190,7 +193,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 break
         self._overvalent_h = overvalent_h
 
-    def _has_undercoordinated_carbon(self, tolerance=10):
+    def _has_undercoordinated_carbon(self, tolerance: int = 10):
         """Idea is that carbon should at least have three neighbors if it is not sp1.
         In sp1 case it is linear. So we can just check if there are carbons with
         non-linear coordination with less than three neighbors. An example in CoRE
@@ -204,44 +207,55 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             if cn == 2:
                 # ToDo: Check if it is bound to metal, then it might be a carbide
                 neighbors = self.get_connected_sites(site_index)
-                angle = self.structure.get_angle(
-                    site_index, neighbors[0].index, neighbors[1].index
+                angle = _maximum_angle(
+                    self.structure.get_angle(
+                        site_index, neighbors[0].index, neighbors[1].index
+                    )
                 )
-                if np.abs(90 - angle) > tolerance:
+                if np.abs(180 - angle) > tolerance:
                     undercoordinated_carbon = True
                     break
         self._undercoordinated_carbon = undercoordinated_carbon
 
-    def _has_undercoordinated_nitrogen(self, tolerance=10):
+    def _has_undercoordinated_nitrogen(self, tolerance: int = 15):
         """
-        Captures missing hydrogens on amino groups.
-        Basically two common cases:
-            1. Have the N on a carbon and no hydrogen at all
-            2. (not that common) due to incorrect symmetry resolution
-                we have only one h in a bent orientation
+        Attempts to captures missing hydrogens on nitrogen groups
+        using heuristics
         """
         undercoordinated_nitrogen = False
         for site_index in self.n_indices:
             cn = self.get_cn(site_index)  # pylint:disable=invalid-name
+            neighbors = self.get_connected_sites(site_index)
             if cn == 1:
                 # this is suspicous, but it also might a CN which is perfectly fine.
                 # to check this, we first see if the neighbor is carbon
-                # and then what its coordination number is
-                neighbors = self.get_connected_sites(site_index)
-                if (self.get_cn(neighbors[0].index) > 2) and (
-                    str(neighbors[0].periodic_site.specie) == "C"
-                ):
+                # and then what its coordination number is. If it is greater than 2
+                # then we likely do not have a CN for which the carbon should be a
+                # linear sp one
+                if (self.get_cn(neighbors[0].index) > 2) and not neighbors[
+                    0
+                ].site.specie.is_metal():
                     undercoordinated_nitrogen = True
                     break
-            if cn == 2:
-                # ToDo: Check if it is bound to metal, then it might be a nitride
-                neighbors = self.get_connected_sites(site_index)
-                angle = self.structure.get_angle(
-                    site_index, neighbors[0].index, neighbors[1].index
+            elif cn == 2:
+                undercoordinated_nitrogen = _guess_underbound_nitrogen_cn2(
+                    self.structure,
+                    site_index,
+                    neighbors,
+                    self.get_connected_sites(neighbors[0].index),
+                    self.get_connected_sites(neighbors[1].index),
+                    tolerance,
                 )
-                if np.abs(90 - angle) > tolerance:
-                    undercoordinated_nitrogen = True
+                if undercoordinated_nitrogen:
                     break
+            elif cn == 3:
+                print("CN3 found")
+                undercoordinated_nitrogen = _guess_underbound_nitrogen_cn3(
+                    self.structure, site_index, neighbors, tolerance
+                )
+                if undercoordinated_nitrogen:
+                    break
+
         self._undercoordinated_nitrogen = undercoordinated_nitrogen
 
     @property
