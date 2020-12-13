@@ -33,7 +33,7 @@ Latest stable release
 ```bash
 pip install mofchecker
 ```
-A web app is currently being developed [in another repository](https://github.com/kjappelbaum/webmofchecker).
+A web app is currently being developed [in another repository](https://github.com/kjappelbaum/webmofchecker) and deployed on [MatCloud](http://mofchecker.matcloud.xyz/).
 
 ## Usage
 
