@@ -19,6 +19,7 @@ from .utils import (
     LowCoordinationNumber,
     NoMetal,
     NoOpenDefined,
+    _check_metal_coordination,
     _guess_underbound_nitrogen_cn2,
     _guess_underbound_nitrogen_cn3,
     _maximum_angle,
@@ -500,6 +501,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 ("has_metal", self.has_metal),
                 ("has_lone_atom", self.has_lone_atom),
                 ("has_lone_molecule", self.has_lone_molecule),
+                ("has_undercoordinated_metal", self.has_undercoordinated_metal),
             )
         )
         return result_dict
@@ -520,6 +522,20 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self.metal_features = descriptordict
 
         return descriptordict
+
+    def _has_low_metal_coordination(self):
+        for site_index in self.metal_indices:
+            if _check_metal_coordination(
+                self.structure[site_index], self.get_cn(site_index)
+            ):
+                if self.is_site_open(site_index):
+                    return True
+        return False
+
+    @property
+    def has_undercoordinated_metal(self):
+        """Check if a metal has unusually low coordination"""
+        return self._has_low_metal_coordination()
 
     def get_metal_descriptors(self) -> dict:
         """Return local structure order parameters for coordination number (CN),
