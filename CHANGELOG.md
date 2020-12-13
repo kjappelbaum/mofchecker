@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.3.2](https://www.github.com/kjappelbaum/mofchecker/compare/v0.3.1...v0.3.2) (2020-12-13)
+
+
+### Bug Fixes
+
+* underbound N check, closes [#48](https://www.github.com/kjappelbaum/mofchecker/issues/48) ([8c1ba0e](https://www.github.com/kjappelbaum/mofchecker/commit/8c1ba0ef10b9fc6c60b6e155b408cbdb9c722a7c))
+
 ### [0.3.1](https://www.github.com/kjappelbaum/mofchecker/compare/v0.3.0...v0.3.1) (2020-12-10)
 
 
