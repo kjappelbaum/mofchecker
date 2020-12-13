@@ -4,3 +4,7 @@ disable = C0330, C0326, locally-disabled, fixme
 
 [format]
 max-line-length = 88
+
+
+[master]
+optimize-ast=yes
