@@ -46,7 +46,6 @@ def get_charges(structure: Structure):
         mol = pybel.readstring("cif", cif_structure)
         mol.calccharges("eqeq")
         charges = [a.partialcharge for a in mol]
-        print(charges)
         return charges
     except ImportError:
         warnings.warn(

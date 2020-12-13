@@ -439,7 +439,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         if site_index not in self._open_indices:
             try:
                 _, _names, lsop, is_open, weights = self._get_ops_for_site(site_index)
-                # print(list(zip(names, lsop)))
                 site_open = MOFChecker._check_if_open(lsop, is_open, weights)
                 if site_open:
                     self._open_indices.add(site_index)
