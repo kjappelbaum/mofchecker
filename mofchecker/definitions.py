@@ -144,6 +144,7 @@ EXPECTED_CHECK_VALUES = {
     "has_metal": True,
     "has_lone_atom": False,
     "has_lone_molecule": False,
+    "has_undercoordinated_metal": False
 }
 
 CHECK_DESCRIPTIONS = {
@@ -159,4 +160,5 @@ CHECK_DESCRIPTIONS = {
     "has_metal": "Checks if there is any metal in the structure",
     "has_lone_atom": "Checks if there is floating atom in the structure",
     "has_lone_molecule": "Checks if there is a floating atom or molecule in the structure",
+    "has_undercoordinated_metal": "Checks for lanthanides, alkali and alkaline metals with surprisingly low coordination"
 }
