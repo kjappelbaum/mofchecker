@@ -17,6 +17,7 @@ from pymatgen.analysis.local_env import (
     EconNN,
     JmolNN,
     LocalStructOrderParams,
+    MinimumDistanceNN,
 )
 from pymatgen.io.cif import CifParser
 
@@ -383,11 +384,22 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         """Returns true if there is a isolated floating atom or molecule"""
         return self._has_stray_molecules()
 
-    def _has_lone_atom(self) -> bool:
-        for site in range(len(self.structure)):
-            nbr = self.get_connected_sites(site)
+    def _has_lone_atom(self, safe: bool = True) -> bool:
+        for site_index in range(len(self.structure)):
+            nbr = self.get_connected_sites(site_index)
             if not nbr:
-                return True
+                lone = True
+                # safe option checks if there is really nothing around 1.5 * VdW radius
+                # this is useful as sometimes the NN method is off, one example for this
+                # is FEZTIP
+                if safe:
+                    radius = self.structure[site_index].specie.van_der_waals_radius
+                    if self.structure.get_neighbors(
+                        self.structure[site_index], 1.5 * radius
+                    ):
+                        lone = False
+                if lone:
+                    return True
         return False
 
     @classmethod
@@ -427,6 +439,8 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             self._cnn = EconNN()
         elif method.lower() == "brunnernn":
             self._cnn = BrunnerNN_relative()
+        elif method.lower() == "minimumdistance":
+            self._cnn = MinimumDistanceNN()
         else:
             self._cnn = JmolNN()
 

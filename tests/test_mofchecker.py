@@ -72,6 +72,11 @@ def test_lone_atom():
     )
     assert mofchecker.has_lone_atom == True
 
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "FEZTIP_clean.cif"))
+    )
+    assert mofchecker.has_lone_atom == False
+
 
 def test_lone_molecule():
     mofchecker = MOFChecker(
