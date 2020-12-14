@@ -25,9 +25,9 @@ def _check_metal_coordination(site, coordination_number: int) -> bool:
 
     # Also for the alkaline/alkaline earth metals,
     # I would find a low coordination number surprising
-    elif site.specie.is_alkali or site.specie.is_alkaline:
-        if coordination_number <= 4:
-            return True
+    # elif site.specie.is_alkali or site.specie.is_alkaline:
+    #     if coordination_number <= 4:
+    #         return True
 
     return False
 
