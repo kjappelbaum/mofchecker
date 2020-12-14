@@ -60,6 +60,12 @@ def test_overvalent_c(get_overvalent_c_structures):
     )
     assert mofchecker.has_overvalent_c == False
 
+    # alkine ligand
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "RUDQUD_clean.cif"))
+    )
+    assert mofchecker.has_overvalent_c == False
+
 
 def test_lone_atom():
     mofchecker = MOFChecker(
@@ -105,6 +111,12 @@ def test_undercoordinated_c():
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "AHOKIR_clean.cif"))
     )
     assert mofchecker.has_undercoordinated_c == True
+
+    # alkine ligand
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "RUDQUD_clean.cif"))
+    )
+    assert mofchecker.has_undercoordinated_c == False
 
 
 def test_undercoordinated_n():
