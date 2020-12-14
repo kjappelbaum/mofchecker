@@ -66,6 +66,12 @@ def test_overvalent_c(get_overvalent_c_structures):
     )
     assert mofchecker.has_overvalent_c == False
 
+    # based on issue https://github.com/kjappelbaum/mofchecker/issues/63
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "AGARUW_clean.cif"))
+    )
+    assert mofchecker.has_overvalent_c == False
+
 
 def test_lone_atom():
     mofchecker = MOFChecker(
