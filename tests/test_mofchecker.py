@@ -125,6 +125,11 @@ def test_undercoordinated_n():
     )
     assert mofchecker.has_undercoordinated_n == True
 
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABOVOF_FSR.cif"))
+    )
+    assert mofchecker.has_undercoordinated_n == False
+
 
 def test_chargecheck():
     mofchecker = MOFChecker(

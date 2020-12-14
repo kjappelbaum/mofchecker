@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """MOFChecker: Basic sanity checks for MOFs"""
+import logging
 import os
 import warnings
 from collections import OrderedDict
@@ -33,6 +34,9 @@ __version__ = get_versions()["version"]
 del get_versions
 
 __all__ = ["__version__", "MOFChecker"]
+
+MOFCheckLogger = logging.getLogger(__name__)
+MOFCheckLogger.setLevel(logging.DEBUG)
 
 
 class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-public-methods
