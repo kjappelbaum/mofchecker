@@ -48,10 +48,6 @@ def get_charges(structure: Structure):
         charges = [a.partialcharge for a in mol]
         return charges
     except ImportError:
-        warnings.warn(
-            "For the charge check openbabel needs to be installed. \
-            This can be done, for example using conda install openbabel"
-        )
         return None
     except Exception as execp:  # pylint:disable=broad-except
         warnings.warn(f"Exception occured during the charge calculation {execp}")

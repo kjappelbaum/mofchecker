@@ -80,6 +80,16 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._cns = {}
         self._set_cnn()
 
+        try:
+            from openbabel import (  # pylint:disable=import-outside-toplevel, unused-import
+                pybel,
+            )
+        except ImportError:
+            warnings.warn(
+                "For the charge check openbabel needs to be installed. \
+            This can be done, for example using conda install -c openbabel openbabel"
+            )
+
     def _set_filename(self, path):
         self._filename = os.path.abspath(path)
         self._name = Path(path).stem
@@ -262,7 +272,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 if undercoordinated_nitrogen:
                     break
             elif cn == 3:
-                print("CN3 found")
                 undercoordinated_nitrogen = _guess_underbound_nitrogen_cn3(
                     self.structure, site_index, neighbors, tolerance
                 )
