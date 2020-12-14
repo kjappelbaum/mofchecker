@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.4.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.3.1...v0.4.0) (2020-12-14)
+
+
+### Features
+
+* added option to return the Weisfeiler-Lehman hash of the structure graph ([#58](https://www.github.com/kjappelbaum/mofchecker/issues/58)) ([74463bb](https://www.github.com/kjappelbaum/mofchecker/commit/74463bb8f5b4107cf2f0178b92fdf952d8e0ba5d))
+* implement check for low metal coordination ([#53](https://www.github.com/kjappelbaum/mofchecker/issues/53)) ([c1676f6](https://www.github.com/kjappelbaum/mofchecker/commit/c1676f632baf54e81d30775897a5fad65b556155))
+* implemented charge check ([#52](https://www.github.com/kjappelbaum/mofchecker/issues/52)) ([cd0dbce](https://www.github.com/kjappelbaum/mofchecker/commit/cd0dbce861e206c83081be5d1d4af1f5b7cf7efd))
+
+
+### Bug Fixes
+
+* patches linear CN=2 case, [#48](https://www.github.com/kjappelbaum/mofchecker/issues/48) ([711cd17](https://www.github.com/kjappelbaum/mofchecker/commit/711cd17eea9951b5acc48aee47f3e83a7807e811))
+* underbound N check, closes [#48](https://www.github.com/kjappelbaum/mofchecker/issues/48) ([8c1ba0e](https://www.github.com/kjappelbaum/mofchecker/commit/8c1ba0ef10b9fc6c60b6e155b408cbdb9c722a7c))
+
+
+### Documentation
+
+* updated features in readme ([3a4be5e](https://www.github.com/kjappelbaum/mofchecker/commit/3a4be5ed2a0caf7b11f388a80029e583ca2bd199))
+
 ### [0.3.1](https://www.github.com/kjappelbaum/mofchecker/compare/v0.3.0...v0.3.1) (2020-12-10)
 
 
