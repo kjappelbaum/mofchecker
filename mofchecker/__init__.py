@@ -11,7 +11,13 @@ import numpy as np
 from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
 from pymatgen import Structure
 from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
-from pymatgen.analysis.local_env import CrystalNN, JmolNN, LocalStructOrderParams
+from pymatgen.analysis.local_env import (
+    BrunnerNN_relative,
+    CrystalNN,
+    EconNN,
+    JmolNN,
+    LocalStructOrderParams,
+)
 from pymatgen.io.cif import CifParser
 
 from ._version import get_versions
@@ -24,6 +30,7 @@ from .utils import (
     _check_metal_coordination,
     _guess_underbound_nitrogen_cn2,
     _guess_underbound_nitrogen_cn3,
+    _is_any_neighbor_metal,
     _maximum_angle,
     get_charges,
     get_overlaps,
@@ -52,7 +59,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self.metal_indices = [
             i for i, species in enumerate(self.structure.species) if species.is_metal
         ]
-        self.porous_adjustment = True
+        self.porous_adjustment = False
         self.charges = None
         self.metal_features = None
         self._open_indices: set = set()
@@ -207,8 +214,9 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         for site_index in self.c_indices:
             cn = self.get_cn(site_index)  # pylint:disable=invalid-name
             if cn > 4:
-                overvalent_c = True
-                break
+                if not _is_any_neighbor_metal(self.get_connected_sites(site_index)):
+                    overvalent_c = True
+                    break
         self._overvalent_c = overvalent_c
 
     def _has_overvalent_h(self):
@@ -216,9 +224,20 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         for site_index in self.h_indices:
             cn = self.get_cn(site_index)  # pylint:disable=invalid-name
             if cn > 1:
-                overvalent_h = True
-                break
+                if not _is_any_neighbor_metal(self.get_connected_sites(site_index)):
+                    overvalent_h = True
+                    break
         self._overvalent_h = overvalent_h
+
+    def _has_overvalent_n(self):
+        overvalent_n = False
+        for site_index in self.n_indices:
+            cn = self.get_cn(site_index)  # pylint:disable=invalid-name
+            if cn > 4:
+                if not _is_any_neighbor_metal(self.get_connected_sites(site_index)):
+                    overvalent_n = True
+                    break
+        self._overvalent_n = overvalent_n
 
     def _has_undercoordinated_carbon(self, tolerance: int = 10):
         """Idea is that carbon should at least have three neighbors if it is not sp1.
@@ -232,16 +251,18 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         for site_index in self.c_indices:
             cn = self.get_cn(site_index)  # pylint:disable=invalid-name
             if cn == 2:
-                # ToDo: Check if it is bound to metal, then it might be a carbide
                 neighbors = self.get_connected_sites(site_index)
                 angle = _maximum_angle(
                     self.structure.get_angle(
                         site_index, neighbors[0].index, neighbors[1].index
                     )
                 )
-                if np.abs(180 - angle) > tolerance:
-                    undercoordinated_carbon = True
-                    break
+                if (np.abs(180 - angle) > tolerance) or (np.abs(180 - 0) > tolerance):
+                    if (not neighbors[0].site.specie.is_metal) or (
+                        not neighbors[0].site.specie.is_metal
+                    ):
+                        undercoordinated_carbon = True
+                        break
         self._undercoordinated_carbon = undercoordinated_carbon
 
     def _has_undercoordinated_nitrogen(self, tolerance: int = 15):
@@ -369,15 +390,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 return True
         return False
 
-    def _has_overvalent_n(self):
-        overvalent_n = False
-        for site_index in self.n_indices:
-            cn = self.get_cn(site_index)  # pylint:disable=invalid-name
-            if cn > 4:
-                overvalent_n = True
-                break
-        self._overvalent_n = overvalent_n
-
     @classmethod
     def _from_file(cls, path: str):
         structure = Structure.from_file(path)
@@ -403,7 +415,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             omscls._set_filename(path)  # pylint:disable=protected-access
             return omscls
 
-    def _set_cnn(self, method="JmolNN", porous_adjustment: bool = True):
+    def _set_cnn(self, method="jmolnn", porous_adjustment: bool = False):
         if self._cnn_method == method.lower():
             return
         self._cnn_method = method.lower()
@@ -411,6 +423,10 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self.porous_adjustment = porous_adjustment
         if method.lower() == "crystalnn":
             self._cnn = CrystalNN(porous_adjustment=self.porous_adjustment)
+        elif method.lower() == "econnn":
+            self._cnn = EconNN()
+        elif method.lower() == "brunnernn":
+            self._cnn = BrunnerNN_relative()
         else:
             self._cnn = JmolNN()
 
@@ -526,6 +542,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             (
                 ("name", self.name),
                 ("graph_hash", self.graph_hash),
+                ("fromula", self.formula),
                 ("path", self._filename),
                 ("density", self.density),
                 ("has_oms", self.has_oms),

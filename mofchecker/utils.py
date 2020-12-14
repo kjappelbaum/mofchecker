@@ -13,6 +13,14 @@ from scipy import sparse
 from .definitions import COVALENT_RADII
 
 
+def _is_any_neighbor_metal(neighbors):
+    for neighbor in neighbors:
+        if neighbor.site.specie.is_metal:
+            return True
+
+    return False
+
+
 def _check_metal_coordination(site, coordination_number: int) -> bool:
     # Lanthanides like to have many neighbors
     # Low coordinatio number is usually only
