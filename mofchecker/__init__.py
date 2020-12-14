@@ -87,7 +87,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         except ImportError:
             warnings.warn(
                 "For the charge check openbabel needs to be installed. \
-            This can be done, for example using conda install -c openbabel openbabel"
+            This can be done, for example using conda install openbabel"
             )
 
     def _set_filename(self, path):
