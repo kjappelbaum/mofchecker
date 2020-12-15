@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.4.1](https://www.github.com/kjappelbaum/mofchecker/compare/v0.4.0...v0.4.1) (2020-12-15)
+
+
+### Bug Fixes
+
+* typo, closes [#65](https://www.github.com/kjappelbaum/mofchecker/issues/65) ([b43f589](https://www.github.com/kjappelbaum/mofchecker/commit/b43f589ff966a6c8b59a32c8c72a7ec50b630ad7))
+
 ## [0.4.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.3.1...v0.4.0) (2020-12-14)
 
 
