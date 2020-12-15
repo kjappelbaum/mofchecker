@@ -13,6 +13,11 @@ from scipy import sparse
 from .definitions import COVALENT_RADII
 
 
+def _vdw_radius_neighbors(structure, site_index, tolerance: float = 1.5):
+    radius = structure[site_index].specie.van_der_waals_radius
+    return structure.get_neighbors(structure[site_index], tolerance * radius)
+
+
 def _is_any_neighbor_metal(neighbors):
     for neighbor in neighbors:
         if neighbor.site.specie.is_metal:

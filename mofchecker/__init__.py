@@ -33,6 +33,7 @@ from .utils import (
     _guess_underbound_nitrogen_cn3,
     _is_any_neighbor_metal,
     _maximum_angle,
+    _vdw_radius_neighbors,
     get_charges,
     get_overlaps,
     get_subgraphs_as_molecules_all,
@@ -260,10 +261,11 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 )
                 if (np.abs(180 - angle) > tolerance) or (np.abs(180 - 0) > tolerance):
                     if (not neighbors[0].site.specie.is_metal) or (
-                        not neighbors[0].site.specie.is_metal
+                        not neighbors[1].site.specie.is_metal
                     ):
-                        undercoordinated_carbon = True
-                        break
+                        if len(_vdw_radius_neighbors(self.structure, site_index)) <= 2:
+                            undercoordinated_carbon = True
+                            break
         self._undercoordinated_carbon = undercoordinated_carbon
 
     def _has_undercoordinated_nitrogen(self, tolerance: int = 15):
@@ -284,8 +286,9 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 if (self.get_cn(neighbors[0].index) > 2) and not neighbors[
                     0
                 ].site.specie.is_metal():
-                    undercoordinated_nitrogen = True
-                    break
+                    if len(_vdw_radius_neighbors(self.structure, site_index)) <= 2:
+                        undercoordinated_nitrogen = True
+                        break
             elif cn == 2:
                 undercoordinated_nitrogen = _guess_underbound_nitrogen_cn2(
                     self.structure,
@@ -393,10 +396,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 # this is useful as sometimes the NN method is off, one example for this
                 # is FEZTIP
                 if safe:
-                    radius = self.structure[site_index].specie.van_der_waals_radius
-                    if self.structure.get_neighbors(
-                        self.structure[site_index], 1.5 * radius
-                    ):
+                    if _vdw_radius_neighbors(self.structure, site_index):
                         lone = False
                 if lone:
                     return True
