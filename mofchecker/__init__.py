@@ -556,7 +556,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             (
                 ("name", self.name),
                 ("graph_hash", self.graph_hash),
-                ("fromula", self.formula),
+                ("formula", self.formula),
                 ("path", self._filename),
                 ("density", self.density),
                 ("has_oms", self.has_oms),
