@@ -32,7 +32,11 @@ def _check_metal_coordination(site, coordination_number: int) -> bool:
     # possible with really bulky ligands
     # for this reason, a Lanthanide with low
     # coordination number, e.g., <= 4 can be considered "interesting"
-    if (site.specie.is_lanthanoid) or (site.specie.is_actinoid):
+    if (
+        (site.specie.is_lanthanoid)
+        or (site.specie.is_actinoid)
+        or (site.specie.symbol in ("Mo", "Cr", "Hf", "Mb"))
+    ):
         if coordination_number <= 4:
             return True
 
@@ -136,7 +140,7 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
     neighbor_species = set(
         [str(neighbors[0].site.specie), str(neighbors[1].site.specie)]
     )
-
+    print(angle)
     if (np.abs(180 - angle) < tolerance) or (np.abs(0 - angle) < tolerance):
         # sp hybridization if the nitrogen is linear
         # this could be a nitride or a nitrosyl
@@ -148,28 +152,26 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
         # sp3 this is suspicious
         # to be sure we will check if it is planar (pyridine) or
         # not (piperazine) in the case the two neighbors are carbon
-        if neighbor_species == set(["C", "C"]):
+        # if neighbor_species == set(["C", "C"]):
 
-            dihedral_a = structure.get_dihedral(
-                site_index,
-                neighbors[0].index,
-                neighbors[1].index,
-                connected_sites_a[0].index,
-            )
-            dihedral_b = structure.get_dihedral(
-                site_index,
-                neighbors[0].index,
-                neighbors[1].index,
-                connected_sites_b[0].index,
-            )
+        dihedral_a = structure.get_dihedral(
+            site_index,
+            neighbors[0].index,
+            neighbors[1].index,
+            connected_sites_a[0].index,
+        )
+        dihedral_b = structure.get_dihedral(
+            site_index,
+            neighbors[0].index,
+            neighbors[1].index,
+            connected_sites_b[0].index,
+        )
 
-            mean_dihedral = np.mean([dihedral_a, dihedral_b])
-            if (np.abs(mean_dihedral - 180) < tolerance) or (
-                np.abs(mean_dihedral - 0) < tolerance
-            ):
-                return False
-            return True
-
+        mean_dihedral = np.mean([dihedral_a, dihedral_b])
+        if (np.abs(mean_dihedral - 180) < tolerance) or (
+            np.abs(mean_dihedral - 0) < tolerance
+        ):
+            return False
         return True
 
     # larger angles should indicate sp2 hybridization

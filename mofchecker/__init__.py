@@ -286,7 +286,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 if (self.get_cn(neighbors[0].index) > 2) and not neighbors[
                     0
                 ].site.specie.is_metal():
-                    if len(_vdw_radius_neighbors(self.structure, site_index)) <= 2:
+                    if len(_vdw_radius_neighbors(self.structure, site_index)) <= 1:
                         undercoordinated_nitrogen = True
                         break
             elif cn == 2:
