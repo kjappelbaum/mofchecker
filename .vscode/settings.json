@@ -1,4 +1,5 @@
 {
     "python.formatting.provider": "yapf",
-    "restructuredtext.confPath": ""
+    "restructuredtext.confPath": "",
+    "python.linting.pylintEnabled": true
 }
