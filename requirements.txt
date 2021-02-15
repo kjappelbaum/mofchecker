@@ -1,2 +1,2 @@
-pymatgen~=2020.12.31
+pymatgen~=2021.2.13
 click==7.*
