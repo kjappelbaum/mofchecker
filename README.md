@@ -45,6 +45,7 @@ A web app is currently being developed [in another repository](https://github.co
 ```python
 from mofchecker import MOFChecker
 mofchecker = MOFChecker.from_cif(<path_to_cif>)
+# or: MOFChecker(structure=my_pymatgen_structure)
 
 # Test for OMS
 mofchecker.has_oms
