@@ -3,6 +3,7 @@
 # pylint: disable=missing-function-docstring,singleton-comparison,invalid-name
 import os
 
+import numpy as np
 from pymatgen import Structure
 
 from mofchecker import MOFChecker
@@ -178,11 +179,25 @@ def test_chargecheck():
 #     assert mofchecker.has_undercoordinated_metal == True
 
 
-def test_has():
+def test_graph_hash():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif"))
     )
     assert isinstance(mofchecker.graph_hash, str)
+
+
+def test_graph_hash_robustness():
+    """Check that duplicating or rotating the structure produces the same hash."""
+    structure = Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif"))
+    original_hash = MOFChecker(structure).graph_hash
+
+    # rotate structure
+    structure.rotate_sites(theta=0.69 * np.pi)
+    assert MOFChecker(structure).graph_hash == original_hash
+
+    # create supercell
+    structure.make_supercell([1, 2, 1])
+    assert MOFChecker(structure).graph_hash == original_hash
 
 
 def test_dicts():
