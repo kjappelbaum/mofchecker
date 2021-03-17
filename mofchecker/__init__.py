@@ -7,6 +7,7 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import List, Union
 
+import networkx as nx
 import numpy as np
 from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
 from pymatgen import Structure
@@ -46,6 +47,19 @@ __all__ = ["__version__", "MOFChecker"]
 
 MOFCheckLogger = logging.getLogger(__name__)
 MOFCheckLogger.setLevel(logging.DEBUG)
+
+
+def construct_clean_graph(
+    structure: Structure, structure_graph: StructureGraph
+) -> nx.Graph:
+    """Creates a networkx graph with atom numbers as node labels"""
+    edges = {
+        (str(structure[u].specie), str(structure[v].specie))
+        for u, v, d in structure_graph.graph.edges(keys=False, data=True)
+    }
+    graph = nx.Graph()
+    graph.add_edges_from(edges)
+    return graph
 
 
 class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-public-methods
@@ -89,6 +103,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self.check_descriptions = CHECK_DESCRIPTIONS
 
         self._graph = None
+        self._nx_graph = None
         self._connected_sites = {}
         self._cns = {}
         self._set_cnn()
@@ -124,7 +139,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Hashes areidentical for isomorphic graphs and there are
         guarantees that non-isomorphic graphs will get different hashes.
         """
-        return weisfeiler_lehman_graph_hash(self.graph.graph)
+        return weisfeiler_lehman_graph_hash(self.nx_graph)
 
     @property
     def has_atomic_overlaps(self):
@@ -327,12 +342,20 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return self._has_high_charges()
 
     @property
+    def nx_graph(self) -> nx.Graph:
+        """Returns a networkx graph with atom numbers as node labels"""
+        if self._nx_graph is None:
+            _ = self.graph
+        return self._nx_graph
+
+    @property
     def graph(self) -> StructureGraph:
         """pymatgen structure graph."""
         if self._graph is None:
             self._graph = StructureGraph.with_local_env_strategy(
                 self.structure, self._cnn
             )
+            self._nx_graph = construct_clean_graph(self.structure, self._graph)
         return self._graph
 
     def get_connected_sites(self, site_index) -> List[ConnectedSite]:

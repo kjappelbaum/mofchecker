@@ -271,7 +271,7 @@ def get_subgraphs_as_molecules_all(
     molecule_subgraphs = []
     for subgraph in all_subgraphs:
         intersects_boundary = any(
-            [d["to_jimage"] != (0, 0, 0) for u, v, d in subgraph.edges(data=True)]
+            (d["to_jimage"] != (0, 0, 0) for u, v, d in subgraph.edges(data=True))
         )
         if not intersects_boundary:
             molecule_subgraphs.append(nx.MultiDiGraph(subgraph))

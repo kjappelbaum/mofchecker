@@ -4,6 +4,7 @@
 import os
 
 from pymatgen import Structure
+from pymatgen.transformations.standard_transformations import RotationTransformation
 
 from mofchecker import MOFChecker
 
@@ -158,11 +159,6 @@ def test_undercoordinated_n():
     )
     assert mofchecker.has_undercoordinated_n == False
 
-    # mofchecker = MOFChecker(
-    #     Structure.from_file(os.path.join(THIS_DIR, "test_files", "OTOXIF_clean.cif"))
-    # )
-    # assert mofchecker.has_undercoordinated_n == False
-
 
 def test_chargecheck():
     mofchecker = MOFChecker(
@@ -170,19 +166,44 @@ def test_chargecheck():
     )
     assert mofchecker.has_high_charges == False
 
+    # check the MOF-74 structures
+    mohgoi_checker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "MOHGOI.cif"))
+    )
 
-# def test_undercoordinated_metal():
-#     mofchecker = MOFChecker(
-#         Structure.from_file(
-#             os.path.join(THIS_DIR, "test_files", "GADRAH_clean.cif")))
-#     assert mofchecker.has_undercoordinated_metal == True
+    todyuj_checker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "TODYUJ.cif"))
+    )
+
+    vogtiv_checker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "VOGTIV.cif"))
+    )
+
+    # There water on TODYUJ
+    assert mohgoi_checker.graph_hash != todyuj_checker.graph_hash
+    assert mohgoi_checker.graph_hash == vogtiv_checker.graph_hash
 
 
-def test_has():
+def test_graph_hash():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif"))
     )
     assert isinstance(mofchecker.graph_hash, str)
+
+
+def test_graph_hash_robustness():
+    """Check that duplicating or rotating the structure produces the same hash."""
+    structure = Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif"))
+    original_hash = MOFChecker(structure).graph_hash
+
+    # rotate structure
+    rotation_transformer = RotationTransformation([1, 0, 0], 10)
+    rotated_structure = rotation_transformer.apply_transformation(structure)
+    assert MOFChecker(rotated_structure).graph_hash == original_hash
+
+    # create supercell
+    structure.make_supercell([1, 2, 1])
+    assert MOFChecker(structure).graph_hash == original_hash
 
 
 def test_dicts():
