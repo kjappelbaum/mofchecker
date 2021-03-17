@@ -2,9 +2,7 @@
 """Tests of mofchecker"""
 # pylint: disable=missing-function-docstring,singleton-comparison,invalid-name
 import os
-from re import S
 
-import numpy as np
 from pymatgen import Structure
 from pymatgen.transformations.standard_transformations import RotationTransformation
 

@@ -49,14 +49,17 @@ MOFCheckLogger = logging.getLogger(__name__)
 MOFCheckLogger.setLevel(logging.DEBUG)
 
 
-def construct_clean_graph(structure, structure_graph):
+def construct_clean_graph(
+    structure: Structure, structure_graph: StructureGraph
+) -> nx.Graph:
+    """Creates a networkx graph with atom numbers as node labels"""
     edges = {
         (str(structure[u].specie), str(structure[v].specie))
         for u, v, d in structure_graph.graph.edges(keys=False, data=True)
     }
-    g = nx.Graph()
-    g.add_edges_from(edges)
-    return g
+    graph = nx.Graph()
+    graph.add_edges_from(edges)
+    return graph
 
 
 class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-public-methods
@@ -339,7 +342,8 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return self._has_high_charges()
 
     @property
-    def nx_graph(self):
+    def nx_graph(self) -> nx.Graph:
+        """Returns a networkx graph with atom numbers as node labels"""
         if self._nx_graph is None:
             _ = self.graph
         return self._nx_graph
