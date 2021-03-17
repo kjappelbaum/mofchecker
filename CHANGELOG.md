@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.5.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.4.0...v0.5.0) (2021-03-17)
+
+
+### Features
+
+* extend check for undercoordinated metals, closes [#67](https://www.github.com/kjappelbaum/mofchecker/issues/67) ([#70](https://www.github.com/kjappelbaum/mofchecker/issues/70)) ([ceae03b](https://www.github.com/kjappelbaum/mofchecker/commit/ceae03b1afb31d5f02b2c463c836cc2d303365d3))
+
+
+### Bug Fixes
+
+* fixed graph hash implementation ([#85](https://www.github.com/kjappelbaum/mofchecker/issues/85)) ([46a647f](https://www.github.com/kjappelbaum/mofchecker/commit/46a647f074a9aaf3b7e6ded86ff0e5682faee068))
+* typo, closes [#65](https://www.github.com/kjappelbaum/mofchecker/issues/65) ([b43f589](https://www.github.com/kjappelbaum/mofchecker/commit/b43f589ff966a6c8b59a32c8c72a7ec50b630ad7))
+
 ## [0.4.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.3.1...v0.4.0) (2020-12-14)
 
 
