@@ -207,6 +207,14 @@ def test_chargecheck():
     )
     assert mof_5.graph_hash != zif_8.graph_hash
 
+    # Mn-MOF-74 and UiO-67
+    coknun = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "coknun01.cif"))
+    )
+    wizmac = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "WIZMAV02_auto.cif"))
+    )
+    assert coknun.graph_hash != wizmac.graph_hash
 
 def test_graph_hash():
     mofchecker = MOFChecker(
