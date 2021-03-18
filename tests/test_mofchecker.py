@@ -198,6 +198,15 @@ def test_chargecheck():
     assert uio_66.graph_hash != vogtiv_checker.graph_hash
     assert uio_66.graph_hash != mof_74_zr.graph_hash
 
+    # MOF-5 is not ZIF-8
+    mof_5 = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "mof-5_cellopt.cif"))
+    )
+    zif_8 = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ZIF-8-RASPA.cif"))
+    )
+    assert mof_5.graph_hash != zif_8.graph_hash
+
 
 def test_graph_hash():
     mofchecker = MOFChecker(
