@@ -38,7 +38,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Test with pytest
         run: |
-          pytest -v --cov=mofchecker --cov-report=xml --color=yes tests
+          pytest -v --cov=mofchecker --cov-report=xml --color=yes tests --durations=10
       - name: CodeCov
         uses: codecov/codecov-action@v1
         with:
