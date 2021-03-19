@@ -76,6 +76,9 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
         Args:
             structure (Structure): pymatgen Structure object
+
+        Raises:
+            NotImplementedError in the case of partial occupancies
         """
         self.structure = structure
         _check_if_ordered(structure)
