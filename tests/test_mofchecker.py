@@ -3,12 +3,18 @@
 # pylint: disable=missing-function-docstring,singleton-comparison,invalid-name
 import os
 
+import pytest
 from pymatgen import Structure
 from pymatgen.transformations.standard_transformations import RotationTransformation
 
 from mofchecker import MOFChecker
 
 from .conftest import THIS_DIR
+
+
+def test_partial_occupancy():
+    with pytest.raises(NotImplementedError):
+        MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "ABUBIK.cif"))
 
 
 def test_has_oms(get_cn4_structre, get_cn5_paddlewheel_structure):

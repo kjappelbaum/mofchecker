@@ -308,3 +308,11 @@ def get_subgraphs_as_molecules_all(
         molecules.append(molecule)
 
     return molecules
+
+
+def _check_if_ordered(structure):
+    if not structure.is_ordered:
+        raise NotImplementedError(
+            "Support of unordered structures with partial occupancies \
+                is not implemented (yet)."
+        )
