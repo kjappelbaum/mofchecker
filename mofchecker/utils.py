@@ -140,7 +140,7 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
     neighbor_species = set(
         [str(neighbors[0].site.specie), str(neighbors[1].site.specie)]
     )
-    print(angle)
+
     if (np.abs(180 - angle) < tolerance) or (np.abs(0 - angle) < tolerance):
         # sp hybridization if the nitrogen is linear
         # this could be a nitride or a nitrosyl

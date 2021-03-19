@@ -22,7 +22,6 @@ def test_has_oms(get_cn4_structre, get_cn5_paddlewheel_structure):
 
 def test_has_oms_multiple(get_testdict):
     for k, v in get_testdict.items():
-        print(k)
         omsdetector = MOFChecker.from_cif(k)
         assert omsdetector.has_oms == v
 
@@ -215,6 +214,7 @@ def test_chargecheck():
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "WIZMAV02_auto.cif"))
     )
     assert coknun.graph_hash != wizmac.graph_hash
+
 
 def test_graph_hash():
     mofchecker = MOFChecker(
