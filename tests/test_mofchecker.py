@@ -11,6 +11,12 @@ from mofchecker import MOFChecker
 from .conftest import THIS_DIR
 
 
+def test_read_structure():
+    _mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABUBIK.cif"))
+    )
+
+
 def test_has_oms(get_cn4_structre, get_cn5_paddlewheel_structure):
 
     omsdetector = MOFChecker(get_cn4_structre)
