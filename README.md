@@ -9,18 +9,23 @@
 
 ## What does it do?
 
-Perform quick sanity checks on your MOF:
+`mofchecker` performs quick sanity checks on crystal structures of metal-organic frameworks (MOFs).
 
-- Find open metal sites (OMS) in metal-organic frameworks (MOFs).
-- Find atomic overlaps.
-- Find overvalent (CN>4) carbons, nitrogens, or hydrogen.
-- Check if there is metal, carbon or hydrogen.
-- Check if there is floating atoms or molecules.
-- Check if there is missing hydrogen on common coordination geometries of C and N.
-- Check if there is unusually high EqEq charge on some atom (using openbabel).
-- Computes structure graph hashes (to potentially identify duplicates)
+Sanity checks:
 
-The idea is to have nothing to fancy but a fast tool that we can run to eliminate the really unreasonable structures. The code is basically a rewrite of the checking tools that we implemented in [structure_comp](https://github.com/kjappelbaum/structure_comp).
+- Presence of at least one metal, carbon and hydrogen atom
+- Overlapping atoms (distance between atoms above covalent *radius* of the smaller atom)
+- Overvalent carbons (coordination number above 4), nitrogens (heuristics), or hydrogens (CN > 1)
+- Missing hydrogen on common coordination geometries of C and N (heuristics)
+- Atoms with excessive [EQeq partial charge](https://pubs.acs.org/doi/10.1021/jz3008485) (using [openbabel](http://openbabel.org/wiki/Main_Page), if installed)
+
+Basic analysis:
+- Presence of open metal sites
+- Presence of floating atoms or molecules
+- Hash of the atomic structure graph (useful to identify duplicates)
+
+The sanity checks can be used to weed out really unreasonable structures (nothing too fancy).
+The code is a rewrite of similar tools in [structure_comp](https://github.com/kjappelbaum/structure_comp).
 
 ## Installation
 

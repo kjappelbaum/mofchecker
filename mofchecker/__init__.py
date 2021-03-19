@@ -516,7 +516,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
     def is_site_open(self, site_index: int) -> bool:
         """Check for a site if is open (based on the values of
-        some coordination geomeetry fingerprints)
+        some coordination geometry fingerprints)
 
         Args:
             site_index (int): Index of the site in the structure
@@ -670,9 +670,9 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     def has_oms(self) -> bool:
         """True if the structure contains open metal sites (OMS).
         Also returns True in case of low coordination numbers (CN <=3)
-        which typically also means open coordination for MOFs.
-        For high coordination numbers, for which we do not have a good order
-        parameter for open structures. For this reason we return None even though
+        which typically indicate open coordination for MOFs.
+        For high coordination numbers, no good order parameter for open
+        structures is available, and so we return `None` even though
         this might change in a future release.
 
         Raises:
