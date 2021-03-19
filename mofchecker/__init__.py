@@ -29,6 +29,7 @@ from .utils import (
     LowCoordinationNumber,
     NoMetal,
     NoOpenDefined,
+    _check_if_ordered,
     _check_metal_coordination,
     _guess_underbound_nitrogen_cn2,
     _guess_underbound_nitrogen_cn3,
@@ -77,9 +78,11 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             structure (Structure): pymatgen Structure object
         """
         self.structure = structure
+        _check_if_ordered(structure)
         self.metal_indices = [
             i for i, species in enumerate(self.structure.species) if species.is_metal
         ]
+
         self.porous_adjustment = False
         self.charges = None
         self.metal_features = None
