@@ -59,6 +59,11 @@ def construct_clean_graph(
     }
     graph = nx.Graph()
     graph.add_edges_from(edges)
+
+    for node in graph.nodes:
+
+        graph.nodes[node]["label"] = node
+
     return graph
 
 
@@ -136,7 +141,16 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     @property
     def graph_hash(self):
         """Return the Weisfeiler-Lehman graph hash.
-        Hashes areidentical for isomorphic graphs and there are
+        Hashes are identical for isomorphic graphs
+        (taking the atomic kinds into account)
+        and there are guarantees that non-isomorphic graphs will get different hashes.
+        """
+        return weisfeiler_lehman_graph_hash(self.nx_graph, node_attr="label")
+
+    @property
+    def scaffold_hash(self):
+        """Return the Weisfeiler-Lehman graph hash.
+        Hashes are identical for isomorphic graphs and there are
         guarantees that non-isomorphic graphs will get different hashes.
         """
         return weisfeiler_lehman_graph_hash(self.nx_graph)
