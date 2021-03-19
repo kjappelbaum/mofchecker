@@ -189,6 +189,13 @@ def test_chargecheck():
     assert mof_74_zr.graph_hash != todyuj_checker.graph_hash
     assert mof_74_zr.graph_hash != vogtiv_checker.graph_hash
 
+    # MOF-74-Zn.cif
+    mof_74_zn = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "MOF-74-Zn.cif"))
+    )
+    assert mof_74_zr.scaffold_hash == mof_74_zn.scaffold_hash
+    assert mof_74_zr.graph_hash != mof_74_zn.graph_hash
+
     # UiO-66 is not MOF-74
     uio_66 = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "UiO_66_water.cif"))
