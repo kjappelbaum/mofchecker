@@ -312,12 +312,18 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 # and then what its coordination number is. If it is greater than 2
                 # then we likely do not have a CN for which the carbon should be a
                 # linear sp one
+                print(
+                    site_index,
+                    cn,
+                    neighbors,
+                    self.get_cn(neighbors[0].index),
+                    self.get_connected_sites(neighbors[0].index),
+                )
                 if (self.get_cn(neighbors[0].index) > 2) and not neighbors[
                     0
-                ].site.specie.is_metal():
-                    if len(_vdw_radius_neighbors(self.structure, site_index)) <= 1:
-                        undercoordinated_nitrogen = True
-                        break
+                ].site.specie.is_metal:
+                    undercoordinated_nitrogen = True
+                    break
             elif cn == 2:
                 undercoordinated_nitrogen = _guess_underbound_nitrogen_cn2(
                     self.structure,
