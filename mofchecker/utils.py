@@ -10,11 +10,24 @@ from pymatgen.core import Molecule
 from pymatgen.io.cif import CifWriter
 from scipy import sparse
 
-from .definitions import COVALENT_RADII
+from .definitions import COVALENT_RADII, VDW_RADII
+
+
+def _get_vdw_radius(element):
+    try:
+        radius = VDW_RADII[element]
+
+    except KeyError:
+        radius = 2.1
+        warnings.warn(
+            f"Using median VdW radius because did not find VdW radius for {element}"
+        )
+    return radius
 
 
 def _vdw_radius_neighbors(structure, site_index, tolerance: float = 1.5):
-    radius = structure[site_index].specie.van_der_waals_radius
+    elem = str(structure[site_index].specie)
+    radius = _get_vdw_radius(elem)
     return structure.get_neighbors(structure[site_index], tolerance * radius)
 
 

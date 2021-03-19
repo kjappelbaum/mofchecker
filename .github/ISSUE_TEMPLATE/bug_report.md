@@ -8,6 +8,6 @@ about: Create a report to help us improve the library.
 
 ## Specifications
 
-- pyepal version:
-- operation system:
+- mofchecker version:
+- operating system:
 - python version:
