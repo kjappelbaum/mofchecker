@@ -1,5 +1,14 @@
 # Changelog
 
+### [0.5.1](https://www.github.com/kjappelbaum/mofchecker/compare/v0.5.0...v0.5.1) (2021-03-20)
+
+
+### Bug Fixes
+
+* dealing with partial occupancy ([#97](https://www.github.com/kjappelbaum/mofchecker/issues/97)) ([98e8357](https://www.github.com/kjappelbaum/mofchecker/commit/98e8357b793a915fc62e4118dc21973cce715ee6))
+* graph hash and scaffold hash are now separate properties ([#90](https://www.github.com/kjappelbaum/mofchecker/issues/90)) ([bd76a63](https://www.github.com/kjappelbaum/mofchecker/commit/bd76a6390bc7fce9f7ea367392f413b93f38b94b))
+* is_metal choked on D, was not consistent with CSD ([#99](https://www.github.com/kjappelbaum/mofchecker/issues/99)) ([a01519a](https://www.github.com/kjappelbaum/mofchecker/commit/a01519a305cd79fb79dfa915149f56b50bf145ca))
+
 ## [0.5.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.4.0...v0.5.0) (2021-03-17)
 
 
