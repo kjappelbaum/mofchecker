@@ -17,9 +17,9 @@ def test_partial_occupancy():
         MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "ABUBIK.cif"))
 
 
-def test_has_oms(get_cn4_structre, get_cn5_paddlewheel_structure):
+def test_has_oms(get_cn4_structure, get_cn5_paddlewheel_structure):
 
-    omsdetector = MOFChecker(get_cn4_structre)
+    omsdetector = MOFChecker(get_cn4_structure)
     assert omsdetector.has_oms == True
 
     omsdetector = MOFChecker(get_cn5_paddlewheel_structure)
@@ -54,6 +54,16 @@ def test_no_c(get_no_c):
     for structure in get_no_c:
         mofchecker = MOFChecker(structure)
         assert mofchecker.has_carbon == False
+
+
+def test_unknown_elements():
+    """Parsing structure with unknown element raises warning for covalent radius."""
+    with pytest.warns(UserWarning) as record:
+        mofchecker = MOFChecker.from_cif(
+            os.path.join(THIS_DIR, "test_files", "GUPQOA.cif")
+        )
+        mofchecker.get_mof_descriptors()
+    assert len(record) >= 1
 
 
 def test_overvalent_c(get_overvalent_c_structures):
