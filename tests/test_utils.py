@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# pylint:disable=R0801
+# pylint: disable=duplicate-code
 """Test for the utils module"""
 from mofchecker.utils import _get_vdw_radius
 

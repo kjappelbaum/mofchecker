@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-# pylint:disable=R0801
 """Constants for the MOFChecker"""
-# pylint: disable=line-too-long
+# pylint: disable=line-too-long, duplicate-code
 
 # see Zimmermann, N. E. R.; Jain, A.
 # Local Structure Order Parameters and Site Fingerprints
