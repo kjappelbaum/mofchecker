@@ -50,6 +50,17 @@ __all__ = ["__version__", "MOFChecker"]
 MOFCheckLogger = logging.getLogger(__name__)
 MOFCheckLogger.setLevel(logging.DEBUG)
 
+try:
+    from openbabel import pybel  # pylint:disable=import-outside-toplevel, unused-import
+
+    HAS_OPENBABEL = True
+except ImportError:
+    warnings.warn(
+        "For the charge check openbabel needs to be installed. \
+    This can be done, for example using conda install openbabel"
+    )
+    HAS_OPENBABEL = False
+
 
 def construct_clean_graph(
     structure: Structure, structure_graph: StructureGraph
@@ -121,16 +132,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._connected_sites = {}
         self._cns = {}
         self._set_cnn()
-
-        try:
-            from openbabel import (  # pylint:disable=import-outside-toplevel, unused-import
-                pybel,
-            )
-        except ImportError:
-            warnings.warn(
-                "For the charge check openbabel needs to be installed. \
-            This can be done, for example using conda install openbabel"
-            )
 
     def _set_filename(self, path):
         self._filename = os.path.abspath(path)
@@ -354,7 +355,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._undercoordinated_nitrogen = undercoordinated_nitrogen
 
     def _has_high_charges(self, threshold=3):
-        if self.charges is None:
+        if (self.charges is None) and HAS_OPENBABEL:
             self.charges = get_charges(self.structure)
 
         if isinstance(self.charges, list):
