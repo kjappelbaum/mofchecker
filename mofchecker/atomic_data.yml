@@ -1,0 +1,881 @@
+#------------------------------------------------------------------------------
+#$Author$
+#$Date$
+#$Rev$
+#$URL$
+#------------------------------------------------------------------------------
+#*
+# Data for this dataset was extrated from Los Alamos National Lab website,
+# http://periodic.lanl.gov/index.shtml
+---
+H:
+  atomic_number: 1
+  atomic_weight: 1
+  common_charge:
+    - -1
+    - 1
+  name: Hydrogen
+  vdw_radius: 1.1
+He:
+  atomic_number: 2
+  atomic_weight: 4
+  name: Helium
+  vdw_radius: 1.4
+Li:
+  atomic_number: 3
+  atomic_weight: 6
+  common_charge:
+    - 1
+  name: Lithium
+  vdw_radius: 1.81
+Be:
+  atomic_number: 4
+  atomic_weight: 9
+  common_charge:
+    - 2
+  name: Beryllium
+  vdw_radius: 1.53
+B:
+  atomic_number: 5
+  atomic_weight: 10
+  common_charge:
+    - 3
+  name: Boron
+  vdw_radius: 1.92
+C:
+  atomic_number: 6
+  atomic_weight: 12
+  common_charge:
+    - -4
+    - 2
+    - 4
+  name: Carbon
+  vdw_radius: 1.7
+N:
+  atomic_number: 7
+  atomic_weight: 14
+  common_charge:
+    - -3
+    - 5
+  name: Nitrogen
+  vdw_radius: 1.55
+O:
+  atomic_number: 8
+  atomic_weight: 16
+  common_charge:
+    - -2
+  name: Oxygen
+  vdw_radius: 1.52
+F:
+  atomic_number: 9
+  atomic_weight: 19
+  common_charge:
+    - -1
+  name: Fluorine
+  vdw_radius: 1.47
+Ne:
+  atomic_number: 10
+  atomic_weight: 20
+  name: Neon
+  vdw_radius: 1.54
+Na:
+  atomic_number: 11
+  atomic_weight: 22
+  common_charge:
+    - 1
+  name: Sodium
+  vdw_radius: 2.27
+Mg:
+  atomic_number: 12
+  atomic_weight: 24
+  common_charge:
+    - 2
+  name: Magnesium
+  vdw_radius: 1.73
+Al:
+  atomic_number: 13
+  atomic_weight: 26
+  common_charge:
+    - 3
+  name: Aluminum
+  vdw_radius: 1.84
+Si:
+  atomic_number: 14
+  atomic_weight: 28
+  common_charge:
+    - -4
+    - 2
+    - 4
+  name: Silicon
+  vdw_radius: 2.1
+P:
+  atomic_number: 15
+  atomic_weight: 30
+  common_charge:
+    - -3
+    - 3
+    - 5
+  name: Phosphorus
+  vdw_radius: 1.8
+S:
+  atomic_number: 16
+  atomic_weight: 32
+  common_charge:
+    - -2
+    - 2
+    - 4
+    - 6
+  name: Sulfur
+  vdw_radius: 1.8
+Cl:
+  atomic_number: 17
+  atomic_weight: 35
+  common_charge:
+    - -1
+    - 1
+    - 5
+    - 7
+  name: Chlorine
+  vdw_radius: 1.75
+Ar:
+  atomic_number: 18
+  atomic_weight: 39
+  name: Argon
+  vdw_radius: 1.88
+K:
+  atomic_number: 19
+  atomic_weight: 39
+  common_charge:
+    - 1
+  name: Potassium
+  vdw_radius: 2.75
+Ca:
+  atomic_number: 20
+  atomic_weight: 40
+  common_charge:
+    - 2
+  name: Calcium
+  vdw_radius: 2.31
+Sc:
+  atomic_number: 21
+  atomic_weight: 44
+  common_charge:
+    - 3
+  name: Scandium
+  vdw_radius: 2.16
+Ti:
+  atomic_number: 22
+  atomic_weight: 47
+  common_charge:
+    - 2
+    - 3
+    - 4
+  name: Titanium
+  vdw_radius: 1.87
+V:
+  atomic_number: 23
+  atomic_weight: 50
+  common_charge:
+    - 2
+    - 3
+    - 4
+    - 5
+  name: Vanadium
+  vdw_radius: 1.79
+Cr:
+  atomic_number: 24
+  atomic_weight: 52
+  common_charge:
+    - 2
+    - 3
+    - 6
+  name: Chromium
+  vdw_radius: 1.89
+Mn:
+  atomic_number: 25
+  atomic_weight: 54
+  common_charge:
+    - 2
+    - 3
+    - 4
+    - 7
+  name: Manganese
+  vdw_radius: 1.97
+Fe:
+  atomic_number: 26
+  atomic_weight: 55
+  common_charge:
+    - 2
+    - 3
+  name: Iron
+  vdw_radius: 1.94
+Co:
+  atomic_number: 27
+  atomic_weight: 58
+  common_charge:
+    - 2
+    - 3
+  name: Cobalt
+  vdw_radius: 1.92
+Ni:
+  atomic_number: 28
+  atomic_weight: 58
+  common_charge:
+    - 2
+    - 3
+  name: Nickel
+  vdw_radius: 1.84
+Cu:
+  atomic_number: 29
+  atomic_weight: 63
+  common_charge:
+    - 1
+    - 2
+  name: Copper
+  vdw_radius: 1.86
+Zn:
+  atomic_number: 30
+  atomic_weight: 65
+  common_charge:
+    - 2
+  name: Zinc
+  vdw_radius: 2.1
+Ga:
+  atomic_number: 31
+  atomic_weight: 69
+  common_charge:
+    - 3
+  name: Gallium
+  vdw_radius: 1.87
+Ge:
+  atomic_number: 32
+  atomic_weight: 72
+  common_charge:
+    - 2
+    - 4
+  name: Germanium
+  vdw_radius: 2.11
+As:
+  atomic_number: 33
+  atomic_weight: 74
+  common_charge:
+    - -3
+    - 3
+    - 5
+  name: Arsenic
+  vdw_radius: 1.85
+Se:
+  atomic_number: 34
+  atomic_weight: 78
+  common_charge:
+    - -2
+    - 4
+    - 6
+  name: Selenium
+  vdw_radius: 1.9
+Br:
+  atomic_number: 35
+  atomic_weight: 79
+  common_charge:
+    - -1
+    - 1
+    - 5
+  name: Bromine
+  vdw_radius: 1.83
+Kr:
+  atomic_number: 36
+  atomic_weight: 83
+  name: Krypton
+  vdw_radius: 2.02
+Rb:
+  atomic_number: 37
+  atomic_weight: 85
+  common_charge:
+    - 1
+  name: Rubidium
+  vdw_radius: 3.03
+Sr:
+  atomic_number: 38
+  atomic_weight: 87
+  common_charge:
+    - 2
+  name: Strontium
+  vdw_radius: 2.49
+Y:
+  atomic_number: 39
+  atomic_weight: 88
+  common_charge:
+    - 3
+  name: Yttrium
+  vdw_radius: 2.19
+Zr:
+  atomic_number: 40
+  atomic_weight: 91
+  common_charge:
+    - 4
+  name: Zirconium
+  vdw_radius: 1.86
+Nb:
+  atomic_number: 41
+  atomic_weight: 92
+  common_charge:
+    - 3
+    - 5
+  name: Niobium
+  vdw_radius: 2.07
+Mo:
+  atomic_number: 42
+  atomic_weight: 95
+  common_charge:
+    - 6
+  name: Molybdenum
+  vdw_radius: 2.09
+Tc:
+  atomic_number: 43
+  atomic_weight: 98
+  common_charge:
+    - 4
+    - 6
+    - 7
+  name: Technetium
+  vdw_radius: 2.09
+Ru:
+  atomic_number: 44
+  atomic_weight: 101
+  common_charge:
+    - 3
+  name: Ruthenium
+  vdw_radius: 2.07
+Rh:
+  atomic_number: 45
+  atomic_weight: 102
+  common_charge:
+    - 3
+  name: Rhodium
+  vdw_radius: 1.95
+Pd:
+  atomic_number: 46
+  atomic_weight: 106
+  common_charge:
+    - 2
+    - 3
+  name: Palladium
+  vdw_radius: 2.02
+Ag:
+  atomic_number: 47
+  atomic_weight: 107
+  common_charge:
+    - 1
+  name: Silver
+  vdw_radius: 2.03
+Cd:
+  atomic_number: 48
+  atomic_weight: 112
+  common_charge:
+    - 2
+  name: Cadmium
+  vdw_radius: 2.3
+In:
+  atomic_number: 49
+  atomic_weight: 114
+  common_charge:
+    - 3
+  name: Indium
+  vdw_radius: 1.93
+Sn:
+  atomic_number: 50
+  atomic_weight: 118
+  common_charge:
+    - 2
+    - 4
+  name: Tin
+  vdw_radius: 2.17
+Sb:
+  atomic_number: 51
+  atomic_weight: 121
+  common_charge:
+    - -3
+    - 3
+    - 5
+  name: Antimony
+  vdw_radius: 2.06
+Te:
+  atomic_number: 52
+  atomic_weight: 127
+  common_charge:
+    - -2
+    - 4
+    - 6
+  name: Tellurium
+  vdw_radius: 2.06
+I:
+  atomic_number: 53
+  atomic_weight: 126
+  common_charge:
+    - -1
+    - 5
+    - 7
+  name: Iodine
+  vdw_radius: 1.98
+Xe:
+  atomic_number: 54
+  atomic_weight: 131
+  name: Xenon
+  vdw_radius: 2.16
+Cs:
+  atomic_number: 55
+  atomic_weight: 132
+  common_charge:
+    - 1
+  name: Cesium
+  vdw_radius: 3.43
+Ba:
+  atomic_number: 56
+  atomic_weight: 137
+  common_charge:
+    - 2
+  name: Barium
+  vdw_radius: 2.68
+La:
+  atomic_number: 57
+  atomic_weight: 138
+  common_charge:
+    - 2
+  name: Lanthanum
+  vdw_radius: 2.4
+Ce:
+  atomic_number: 58
+  atomic_weight: 140
+  common_charge:
+    - 3
+    - 4
+  name: Cerium
+  vdw_radius: 2.35
+Pr:
+  atomic_number: 59
+  atomic_weight: 140
+  common_charge:
+    - 3
+  name: Praseodymium
+  vdw_radius: 2.39
+Nd:
+  atomic_number: 60
+  atomic_weight: 144
+  common_charge:
+    - 3
+  name: Neodymium
+  vdw_radius: 2.29
+Pm:
+  atomic_number: 61
+  atomic_weight: 145
+  common_charge:
+    - 2
+    - 3
+  name: Promethium
+  vdw_radius: 2.36
+Sm:
+  atomic_number: 62
+  atomic_weight: 150
+  common_charge:
+    - 2
+    - 3
+  name: Samarium
+  vdw_radius: 2.29
+Eu:
+  atomic_number: 63
+  atomic_weight: 152
+  common_charge:
+    - 2
+    - 3
+  name: Europium
+  vdw_radius: 2.33
+Gd:
+  atomic_number: 64
+  atomic_weight: 157
+  common_charge:
+    - 3
+  name: Gadolinium
+  vdw_radius: 2.37
+Tb:
+  atomic_number: 65
+  atomic_weight: 158
+  common_charge:
+    - 3
+  name: Terbium
+  vdw_radius: 2.21
+Dy:
+  atomic_number: 66
+  atomic_weight: 162
+  common_charge:
+    - 3
+  name: Dysprosium
+  vdw_radius: 2.29
+Ho:
+  atomic_number: 67
+  atomic_weight: 164
+  common_charge:
+    - 3
+  name: Holmium
+  vdw_radius: 2.16
+Er:
+  atomic_number: 68
+  atomic_weight: 167
+  common_charge:
+    - 3
+  name: Erbium
+  vdw_radius: 2.35
+Tm:
+  atomic_number: 69
+  atomic_weight: 168
+  common_charge:
+    - 2
+    - 3
+  name: Thulium
+  vdw_radius: 2.27
+Yb:
+  atomic_number: 70
+  atomic_weight: 173
+  common_charge:
+    - 2
+    - 3
+  name: Ytterbium
+  vdw_radius: 2.42
+Lu:
+  atomic_number: 71
+  atomic_weight: 175
+  common_charge:
+    - 3
+  name: Lutetium
+  vdw_radius: 2.21
+Hf:
+  atomic_number: 72
+  atomic_weight: 178
+  common_charge:
+    - 4
+  name: Hafnium
+  vdw_radius: 2.12
+Ta:
+  atomic_number: 73
+  atomic_weight: 180
+  common_charge:
+    - 5
+  name: Tantalum
+  vdw_radius: 2.17
+W:
+  atomic_number: 74
+  atomic_weight: 183
+  common_charge:
+    - 6
+  name: Tungsten
+  vdw_radius: 2.1
+Re:
+  atomic_number: 75
+  atomic_weight: 186
+  common_charge:
+    - 4
+    - 6
+    - 7
+  name: Rhenium
+  vdw_radius: 2.17
+Os:
+  atomic_number: 76
+  atomic_weight: 190
+  common_charge:
+    - 3
+    - 4
+  name: Osmium
+  vdw_radius: 2.16
+Ir:
+  atomic_number: 77
+  atomic_weight: 192
+  common_charge:
+    - 3
+    - 4
+  name: Iridium
+  vdw_radius: 2.02
+Pt:
+  atomic_number: 78
+  atomic_weight: 195
+  common_charge:
+    - 2
+    - 4
+  name: Platinum
+  vdw_radius: 2.09
+Au:
+  atomic_number: 79
+  atomic_weight: 197
+  common_charge:
+    - 1
+    - 3
+  name: Gold
+  vdw_radius: 2.17
+Hg:
+  atomic_number: 80
+  atomic_weight: 200
+  common_charge:
+    - 1
+    - 2
+  name: Mercury
+  vdw_radius: 2.09
+Tl:
+  atomic_number: 81
+  atomic_weight: 204
+  common_charge:
+    - 1
+    - 3
+  name: Thallium
+  vdw_radius: 1.96
+Pb:
+  atomic_number: 82
+  atomic_weight: 207
+  common_charge:
+    - 2
+    - 4
+  name: Lead
+  vdw_radius: 2.02
+Bi:
+  atomic_number: 83
+  atomic_weight: 209
+  common_charge:
+    - 3
+    - 5
+  name: Bismuth
+  vdw_radius: 2.07
+Po:
+  atomic_number: 84
+  atomic_weight: 209
+  common_charge:
+    - 2
+    - 4
+    - 6
+  name: Polonium
+  vdw_radius: 1.97
+At:
+  atomic_number: 85
+  atomic_weight: 210
+  common_charge:
+    - -1
+    - 1
+    - 3
+    - 5
+    - 7
+  name: Astatine
+  vdw_radius: 2.02
+Rn:
+  atomic_number: 86
+  atomic_weight: 222
+  name: Radon
+  vdw_radius: 2.2
+Fr:
+  atomic_number: 87
+  atomic_weight: 223
+  common_charge:
+    - 1
+  name: Francium
+  vdw_radius: 3.48
+Ra:
+  atomic_number: 88
+  atomic_weight: 226
+  common_charge:
+    - 2
+  name: Radium
+  vdw_radius: 2.83
+Ac:
+  atomic_number: 89
+  atomic_weight: 227
+  common_charge:
+    - 3
+  name: Actinium
+  vdw_radius: 2.6
+Th:
+  atomic_number: 90
+  atomic_weight: 232
+  common_charge:
+    - 0
+    - 4
+  name: Thorium
+  vdw_radius: 2.37
+Pa:
+  atomic_number: 91
+  atomic_weight: 231
+  common_charge:
+    - 0
+    - 2
+    - 3
+    - 4
+    - 5
+  name: Protactinium
+  vdw_radius: 2.43
+U:
+  atomic_number: 92
+  atomic_weight: 238
+  common_charge:
+    - 0
+    - 3
+    - 4
+    - 5
+    - 6
+  name: Uranium
+  vdw_radius: 2.4
+Np:
+  atomic_number: 93
+  atomic_weight: 237
+  common_charge:
+    - 0
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+  name: Neptunium
+  vdw_radius: 2.21
+Pu:
+  atomic_number: 94
+  atomic_weight: 244
+  common_charge:
+    - 0
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+  name: Plutonium
+  vdw_radius: 2.43
+Am:
+  atomic_number: 95
+  atomic_weight: 243
+  common_charge:
+    - 0
+    - 3
+    - 4
+    - 5
+    - 6
+  name: Americium
+  vdw_radius: 2.44
+Cm:
+  atomic_number: 96
+  atomic_weight: 247
+  common_charge:
+    - 3
+    - 4
+  name: Curium
+  vdw_radius: 2.45
+Bk:
+  atomic_number: 97
+  atomic_weight: 247
+  common_charge:
+    - 3
+    - 4
+  name: Berkelium
+  vdw_radius: 2.44
+Cf:
+  atomic_number: 98
+  atomic_weight: 251
+  common_charge:
+    - 2
+    - 3
+    - 4
+  name: Californium
+  vdw_radius: 2.45
+Es:
+  atomic_number: 99
+  atomic_weight: 252
+  common_charge:
+    - 2
+    - 3
+  name: Einsteinium
+  vdw_radius: 2.45
+Fm:
+  atomic_number: 100
+  atomic_weight: 257
+  common_charge:
+    - 0
+    - 2
+    - 3
+  name: Fermium
+  vdw_radius: 2.45
+Md:
+  atomic_number: 101
+  atomic_weight: 258
+  common_charge:
+    - 2
+    - 3
+  name: Mendelevium
+  vdw_radius: 2.46
+No:
+  atomic_number: 102
+  atomic_weight: 259
+  common_charge:
+    - 2
+    - 3
+  name: Nobelium
+  vdw_radius: 2.46
+Lr:
+  atomic_number: 103
+  atomic_weight: 262
+  common_charge:
+    - 3
+  name: Lawrencium
+  vdw_radius: 2.46
+Rf:
+  atomic_number: 104
+  atomic_weight: 265
+  common_charge:
+    - 4
+  name: Rutherfordium
+Db:
+  atomic_number: 105
+  atomic_weight: 268
+  name: Dubnium
+Sg:
+  atomic_number: 106
+  atomic_weight: 271
+  name: Seaborgium
+Bh:
+  atomic_number: 107
+  atomic_weight: 270
+  name: Bohrium
+Hs:
+  atomic_number: 108
+  atomic_weight: 277
+  name: Hassium
+Mt:
+  atomic_number: 109
+  atomic_weight: 276
+  name: Meitnerium
+Ds:
+  atomic_number: 110
+  atomic_weight: 281
+  name: Darmstadtium
+Rg:
+  atomic_number: 111
+  atomic_weight: 280
+  name: Roentgenium
+Cn:
+  atomic_number: 112
+  atomic_weight: 285
+  name: Copernicium
+Uut:
+  atomic_number: 113
+  atomic_weight: 284
+  name: Ununtrium
+Fl:
+  atomic_number: 114
+  atomic_weight: 289
+  name: Flerovium
+Uup:
+  atomic_number: 115
+  atomic_weight: 288
+  name: Ununpentium
+Lv:
+  atomic_number: 116
+  atomic_weight: 293
+  name: Livermorium
+Uus:
+  atomic_number: 117
+  atomic_weight: 294
+  name: Ununseptium
+Uuo:
+  atomic_number: 118
+  atomic_weight: 294
+  name: Ununoctium

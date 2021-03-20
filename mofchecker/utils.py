@@ -10,12 +10,40 @@ from pymatgen.core import Molecule
 from pymatgen.io.cif import CifWriter
 from scipy import sparse
 
-from .definitions import COVALENT_RADII
+from .definitions import COVALENT_RADII, VDW_RADII
+
+_COVALENT_RADII_MEDIAN = np.median(list(COVALENT_RADII.values()))
+_VDW_RADII_MEDIAN = np.median(list(VDW_RADII.values()))
+
+
+def _get_vdw_radius(element):
+    try:
+        radius = VDW_RADII[element]
+
+    except KeyError:
+        radius = _VDW_RADII_MEDIAN
+        warnings.warn(
+            f"Van-der-Waals radius for {element} unknown. Using median {radius:.2f}."
+        )
+    return radius
 
 
 def _vdw_radius_neighbors(structure, site_index, tolerance: float = 1.5):
-    radius = structure[site_index].specie.van_der_waals_radius
+    elem = str(structure[site_index].specie)
+    radius = _get_vdw_radius(elem)
     return structure.get_neighbors(structure[site_index], tolerance * radius)
+
+
+def _get_covalent_radius(element):
+    try:
+        radius = COVALENT_RADII[element]
+
+    except KeyError:
+        radius = _COVALENT_RADII_MEDIAN
+        warnings.warn(
+            f"Covalent radius for {element} unknown. Using median {radius:.2f}."
+        )
+    return radius
 
 
 def _is_any_neighbor_metal(neighbors):
@@ -210,14 +238,19 @@ def compute_overlap_matrix(
     Criterion: if dist < min (CovR_1,CovR_2) -> overlap
         (this function is used in molsimplify)
     """
-    overlap_matrix = np.zeros(distance_matrix.shape)
-    for i, elem_1 in enumerate(allatomtypes[:-1]):
-        for j, elem_2 in enumerate(allatomtypes[i + 1 :]):
-            dist = distance_matrix[i, i + j + 1]
-            # check for atomic overlap:
-            if dist < tolerance * min(COVALENT_RADII[elem_1], COVALENT_RADII[elem_2]):
-                overlap_matrix[i, i + j + 1] = 1
-                overlap_matrix[i + j + 1, i] = 1
+    with warnings.catch_warnings():
+        warnings.filterwarnings("once")  # only warn once for missing radius data
+
+        overlap_matrix = np.zeros(distance_matrix.shape)
+        for i, elem_1 in enumerate(allatomtypes[:-1]):
+            for j, elem_2 in enumerate(allatomtypes[i + 1 :]):
+                dist = distance_matrix[i, i + j + 1]
+                # check for atomic overlap:
+                if dist < tolerance * min(
+                    _get_covalent_radius(elem_1), _get_covalent_radius(elem_2)
+                ):
+                    overlap_matrix[i, i + j + 1] = 1
+                    overlap_matrix[i + j + 1, i] = 1
     return sparse.csr_matrix(overlap_matrix)
 
 
@@ -295,3 +328,11 @@ def get_subgraphs_as_molecules_all(
         molecules.append(molecule)
 
     return molecules
+
+
+def _check_if_ordered(structure):
+    if not structure.is_ordered:
+        raise NotImplementedError(
+            "Support of unordered structures with partial occupancies \
+                is not implemented (yet)."
+        )
