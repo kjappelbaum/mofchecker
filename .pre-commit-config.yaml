@@ -40,32 +40,31 @@ repos:
   #     - id: mypy
   #       exclude: (versioneer.py|_version.py|^docs/)
 
+  - repo: https://github.com/psf/black
+    rev: 20.8b1
+    hooks:
+      - id: black
+        language_version: python3
+        name: black
+        exclude: versioneer.py|mofchecker/_version.py|^docs/
+        entry: black
+        types: [python]
 
-  -   repo: https://github.com/psf/black
-      rev: 20.8b1
-      hooks:
-      -   id: black
-          language_version: python3
-          name: black
-          exclude: versioneer.py|mofchecker/_version.py|^docs/
-          entry: black
-          types: [python]
-
-  -   repo: https://github.com/pre-commit/mirrors-isort
-      rev: 'v5.6.4'  # Use the revision sha / tag you want to point at
-      hooks:
-      -   id: isort
-          name: isort
-          language: system
-          exclude: versioneer.py|mofchecker/_version.py|^docs/
-          types: [python]
-          entry: isort
+  - repo: https://github.com/pre-commit/mirrors-isort
+    rev: "v5.6.4" # Use the revision sha / tag you want to point at
+    hooks:
+      - id: isort
+        name: isort
+        language: system
+        exclude: versioneer.py|mofchecker/_version.py|^docs/
+        types: [python]
+        entry: isort
 
   - repo: local
     hooks:
       - id: pylint
         language: system
         types: [file, python]
-        exclude: versioneer.py|mofchecker/_version.py|^docs
+        exclude: versioneer.py|mofchecker/_version.py|^docs|tests/test_utils.py
         name: pylint
         entry: pylint
