@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint:disable=R0801
 """Test for the utils module"""
 from mofchecker.utils import _get_vdw_radius
 
