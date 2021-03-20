@@ -39,6 +39,7 @@ from .utils import (
     get_charges,
     get_overlaps,
     get_subgraphs_as_molecules_all,
+    is_metal,
 )
 
 __version__ = get_versions()["version"]
@@ -83,7 +84,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self.structure = structure
         _check_if_ordered(structure)
         self.metal_indices = [
-            i for i, species in enumerate(self.structure.species) if species.is_metal
+            i for i, site in enumerate(self.structure) if is_metal(site)
         ]
 
         self.porous_adjustment = False
@@ -100,7 +101,9 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             i for i, species in enumerate(self.structure.species) if str(species) == "C"
         ]
         self.h_indices = [
-            i for i, species in enumerate(self.structure.species) if str(species) == "H"
+            i
+            for i, species in enumerate(self.structure.species)
+            if str(species) in ["H", "D", "T"]
         ]
         self.n_indices = [
             i for i, species in enumerate(self.structure.species) if str(species) == "N"
@@ -295,8 +298,8 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                     )
                 )
                 if (np.abs(180 - angle) > tolerance) or (np.abs(180 - 0) > tolerance):
-                    if (not neighbors[0].site.specie.is_metal) or (
-                        not neighbors[1].site.specie.is_metal
+                    if (not is_metal(neighbors[0].site)) or (
+                        not is_metal(neighbors[1].site)
                     ):
                         if len(_vdw_radius_neighbors(self.structure, site_index)) <= 2:
                             undercoordinated_carbon = True
