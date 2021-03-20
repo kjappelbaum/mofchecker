@@ -17,7 +17,7 @@ def get_cn5_paddlewheel_structure():
 
 
 @pytest.fixture(scope="module")
-def get_cn4_structre():
+def get_cn4_structure():
     return Structure.from_file(os.path.join(THIS_DIR, "test_files", "cn4.cif"))
 
 
