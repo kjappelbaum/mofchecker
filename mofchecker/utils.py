@@ -10,7 +10,7 @@ from pymatgen.core import Molecule
 from pymatgen.io.cif import CifWriter
 from scipy import sparse
 
-from .definitions import COVALENT_RADII, VDW_RADII
+from .definitions import COVALENT_RADII, METALS, VDW_RADII
 
 _COVALENT_RADII_MEDIAN = np.median(list(COVALENT_RADII.values()))
 _VDW_RADII_MEDIAN = np.median(list(VDW_RADII.values()))
@@ -48,7 +48,7 @@ def _get_covalent_radius(element):
 
 def _is_any_neighbor_metal(neighbors):
     for neighbor in neighbors:
-        if neighbor.site.specie.is_metal:
+        if is_metal(neighbor.site):
             return True
 
     return False
@@ -122,7 +122,7 @@ def _guess_underbound_nitrogen_cn3(
 
     any_metal = False
     for neighbor in neighbors:
-        if neighbor.site.specie.is_metal:
+        if is_metal(neighbor.site):
             any_metal = True
 
     num_h = 0
@@ -336,3 +336,12 @@ def _check_if_ordered(structure):
             "Support of unordered structures with partial occupancies \
                 is not implemented (yet)."
         )
+
+
+def is_metal(site: pymatgen.core.Site) -> bool:
+    """according to conquest help:
+    transition metal, lanthanide, actinide,
+    or Al, Ga, In, Tl, Ge, Sn, Pb, Sb, Bi, Po"""
+    if str(site.specie) in METALS:
+        return True
+    return False

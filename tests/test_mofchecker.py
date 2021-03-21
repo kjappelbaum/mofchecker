@@ -272,3 +272,9 @@ def test_dicts():
     )
     assert isinstance(mofchecker.check_descriptions, dict)
     assert isinstance(mofchecker.check_expected_values, dict)
+
+
+def test_deuterium():
+    _descriptors = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "BIXVEM.cif"))
+    )

@@ -39,6 +39,7 @@ from .utils import (
     get_charges,
     get_overlaps,
     get_subgraphs_as_molecules_all,
+    is_metal,
 )
 
 __version__ = get_versions()["version"]
@@ -48,6 +49,17 @@ __all__ = ["__version__", "MOFChecker"]
 
 MOFCheckLogger = logging.getLogger(__name__)
 MOFCheckLogger.setLevel(logging.DEBUG)
+
+try:
+    from openbabel import pybel  # pylint:disable=import-outside-toplevel, unused-import
+
+    HAS_OPENBABEL = True
+except ImportError:
+    warnings.warn(
+        "For the charge check openbabel needs to be installed. \
+    This can be done, for example using conda install openbabel"
+    )
+    HAS_OPENBABEL = False
 
 
 def construct_clean_graph(
@@ -83,7 +95,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self.structure = structure
         _check_if_ordered(structure)
         self.metal_indices = [
-            i for i, species in enumerate(self.structure.species) if species.is_metal
+            i for i, site in enumerate(self.structure) if is_metal(site)
         ]
 
         self.porous_adjustment = False
@@ -100,7 +112,9 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             i for i, species in enumerate(self.structure.species) if str(species) == "C"
         ]
         self.h_indices = [
-            i for i, species in enumerate(self.structure.species) if str(species) == "H"
+            i
+            for i, species in enumerate(self.structure.species)
+            if str(species) in ["H", "D", "T"]
         ]
         self.n_indices = [
             i for i, species in enumerate(self.structure.species) if str(species) == "N"
@@ -118,16 +132,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._connected_sites = {}
         self._cns = {}
         self._set_cnn()
-
-        try:
-            from openbabel import (  # pylint:disable=import-outside-toplevel, unused-import
-                pybel,
-            )
-        except ImportError:
-            warnings.warn(
-                "For the charge check openbabel needs to be installed. \
-            This can be done, for example using conda install openbabel"
-            )
 
     def _set_filename(self, path):
         self._filename = os.path.abspath(path)
@@ -295,8 +299,8 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                     )
                 )
                 if (np.abs(180 - angle) > tolerance) or (np.abs(180 - 0) > tolerance):
-                    if (not neighbors[0].site.specie.is_metal) or (
-                        not neighbors[1].site.specie.is_metal
+                    if (not is_metal(neighbors[0].site)) or (
+                        not is_metal(neighbors[1].site)
                     ):
                         if len(_vdw_radius_neighbors(self.structure, site_index)) <= 2:
                             undercoordinated_carbon = True
@@ -351,7 +355,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._undercoordinated_nitrogen = undercoordinated_nitrogen
 
     def _has_high_charges(self, threshold=3):
-        if self.charges is None:
+        if (self.charges is None) and HAS_OPENBABEL:
             self.charges = get_charges(self.structure)
 
         if isinstance(self.charges, list):
