@@ -1,0 +1,26 @@
+# -*- coding: utf-8 -*-
+"""Testing the zeo++ module"""
+from mofchecker.zeopp import parse_zeopp, run_zeopp
+
+TEST_LINE = "output_file.res    1.70107 0.95106  1.64805"
+
+
+def test_parse_zeopp():
+    """Simple parsing of the pore output"""
+    res = parse_zeopp(TEST_LINE)
+    assert res == {
+        "lis": 1.70107,  # largest included sphere
+        "lifs": 0.95106,  # largest free sphere
+        "lifsp": 1.64805,  # largest included sphere along free sphere path
+    }
+
+
+def test_run_zeopp(get_cn5_paddlewheel_structure):
+    """Running the full analysis starting from a pmg structure"""
+    structure = get_cn5_paddlewheel_structure
+    res = run_zeopp(structure)
+    assert res == {
+        "lis": 7.65505,  # largest included sphere
+        "lifs": 5.81104,  # largest free sphere
+        "lifsp": 7.63730,  # largest included sphere along free sphere path
+    }

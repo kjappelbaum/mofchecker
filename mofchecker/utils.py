@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Helper functions for the MOFChecker"""
 import warnings
+from shutil import which
 
 import networkx as nx
 import numpy as np
@@ -345,3 +346,10 @@ def is_metal(site: pymatgen.core.Site) -> bool:
     if str(site.specie) in METALS:
         return True
     return False
+
+
+def is_tool(name):
+    """Check whether `name` is on PATH and marked as executable.
+    https://stackoverflow.com/questions/11210104/check-if-a-program-exists-from-a-python-script"""
+
+    return which(name) is not None
