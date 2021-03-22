@@ -41,6 +41,7 @@ from .utils import (
     get_subgraphs_as_molecules_all,
     is_metal,
 )
+from .zeopp import check_if_porous
 
 __version__ = get_versions()["version"]
 del get_versions
@@ -100,6 +101,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
         self.porous_adjustment = False
         self.charges = None
+        self._porous = None
         self.metal_features = None
         self._open_indices: set = set()
         self._has_oms = None
@@ -366,8 +368,18 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
         return False
 
+    def _is_porous(self) -> bool:
+        if self._porous is None:
+            self._porous = check_if_porous(self.structure)
+        return self._porous
+
     @property
-    def has_high_charges(self):
+    def is_porous(self) -> bool:
+        """Returns True if the MOF is porous according to the CoRE-MOF definition"""
+        return self._is_porous()
+
+    @property
+    def has_high_charges(self) -> bool:
         """Check if the structure has unreasonably high EqEq charges"""
         return self._has_high_charges()
 
@@ -626,6 +638,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 ("has_lone_molecule", self.has_lone_molecule),
                 ("has_high_charges", self.has_high_charges),
                 ("has_undercoordinated_metal", self.has_undercoordinated_metal),
+                ("is_porous", self.is_porous),
             )
         )
         return result_dict

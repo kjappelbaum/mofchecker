@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Testing the zeo++ module"""
-from mofchecker.zeopp import parse_zeopp, run_zeopp
+from mofchecker.zeopp import check_if_porous, parse_zeopp, run_zeopp
 
 TEST_LINE = "output_file.res    1.70107 0.95106  1.64805"
 
@@ -24,3 +24,9 @@ def test_run_zeopp(get_cn5_paddlewheel_structure):
         "lifs": 5.81104,  # largest free sphere
         "lifsp": 7.63730,  # largest included sphere along free sphere path
     }
+
+
+def test_check_if_porous(get_cn5_paddlewheel_structure):
+    """Run the porosity check"""
+    structure = get_cn5_paddlewheel_structure
+    assert check_if_porous(structure)

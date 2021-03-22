@@ -278,3 +278,9 @@ def test_deuterium():
     _descriptors = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "BIXVEM.cif"))
     )
+    # ToDo: implement me
+
+
+def test_is_porous(get_cn5_paddlewheel_structure):
+    mc = MOFChecker(get_cn5_paddlewheel_structure)
+    assert mc.is_porous == True
