@@ -25,6 +25,7 @@ from pymatgen.io.cif import CifParser
 from ._version import get_versions
 from .checks.zeopp import check_if_porous
 from .definitions import CHECK_DESCRIPTIONS, EXPECTED_CHECK_VALUES, OP_DEF
+from .hash import construct_clean_graph
 from .utils import (
     HighCoordinationNumber,
     LowCoordinationNumber,
@@ -61,24 +62,6 @@ except ImportError:
     This can be done, for example using conda install openbabel"
     )
     HAS_OPENBABEL = False
-
-
-def construct_clean_graph(
-    structure: Structure, structure_graph: StructureGraph
-) -> nx.Graph:
-    """Creates a networkx graph with atom numbers as node labels"""
-    edges = {
-        (str(structure[u].specie), str(structure[v].specie))
-        for u, v, d in structure_graph.graph.edges(keys=False, data=True)
-    }
-    graph = nx.Graph()
-    graph.add_edges_from(edges)
-
-    for node in graph.nodes:
-
-        graph.nodes[node]["label"] = node
-
-    return graph
 
 
 class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-public-methods
@@ -157,7 +140,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         (taking the atomic kinds into account)
         and there are guarantees that non-isomorphic graphs will get different hashes.
         """
-        return weisfeiler_lehman_graph_hash(self.nx_graph, node_attr="label")
+        return weisfeiler_lehman_graph_hash(self.nx_graph, node_attr="specie")
 
     @property
     def scaffold_hash(self):

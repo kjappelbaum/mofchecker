@@ -8,3 +8,8 @@ Porosity check
 For assembling the widely used CoRE-MOF database (see `first <https://pubs.acs.org/doi/10.1021/cm502594j>`_ and `second <https://pubs.acs.org/doi/10.1021/acs.jced.9b00835>`_ paper) Yongchul G. Chung et al. used a pore limiting diameter (PLD) of more than 2.4 Å (approximately the van der Waals diameter of a hydrogen molecule) as threshold for the distinction of porous and non-porous (or nanoporous) MOFs.
 
 In mofchecker, we follow this definition and use `zeopp <http://www.zeoplusplus.org/>`_ with the high-accuracy flag and the default atom radii to compute the largest free sphere. If it is above or equal to 2.4 Å the :py:attr`mofchecker.MOFChecker.is_porous` will return `True`.
+
+Graph hash
+-----------
+The structure graph hashes that mofchecker returns are calculated using the Weisfeiler Lehman (WL) algorithm.
+It is an algorithm that iteratively performs neighborhood aggregation and is guaranteed to give different hashes for different structure and hash strong guarantees that it will produce different hashes for different structure. Unfortunately, there might be cases where different structures are mapped to the same hash.
