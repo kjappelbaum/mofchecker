@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Testing the zeo++ module"""
+import pytest
+
 from mofchecker.zeopp import check_if_porous, parse_zeopp, run_zeopp
 
 TEST_LINE = "output_file.res    1.70107 0.95106  1.64805"
@@ -19,11 +21,9 @@ def test_run_zeopp(get_cn5_paddlewheel_structure):
     """Running the full analysis starting from a pmg structure"""
     structure = get_cn5_paddlewheel_structure
     res = run_zeopp(structure)
-    assert res == {
-        "lis": 7.65505,  # largest included sphere
-        "lifs": 5.81104,  # largest free sphere
-        "lifsp": 7.63730,  # largest included sphere along free sphere path
-    }
+    assert res["lis"] == pytest.approx(7.65505)
+    assert res["lifs"] == pytest.approx(5.81104)
+    assert res["lifsp"] == pytest.approx(7.63730)
 
 
 def test_check_if_porous(get_cn5_paddlewheel_structure):
