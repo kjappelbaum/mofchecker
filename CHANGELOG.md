@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.5.2](https://www.github.com/kjappelbaum/mofchecker/compare/v0.5.1...v0.5.2) (2021-03-24)
+
+
+### Bug Fixes
+
+* including requirements.txt in MANIFEST.in ([#109](https://www.github.com/kjappelbaum/mofchecker/issues/109)) ([a960d56](https://www.github.com/kjappelbaum/mofchecker/commit/a960d56dc000c2f4bc70a9f7df4742ea810ca11d))
+
 ### [0.5.1](https://www.github.com/kjappelbaum/mofchecker/compare/v0.5.0...v0.5.1) (2021-03-20)
 
 
