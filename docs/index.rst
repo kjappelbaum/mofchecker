@@ -14,6 +14,7 @@ In this vein, mofchecker does not attempt to fix anything.
    :caption: Contents:
 
    getting_started
+   background
    api
    developer_notes
 
