@@ -23,6 +23,7 @@ from pymatgen.analysis.local_env import (
 from pymatgen.io.cif import CifParser
 
 from ._version import get_versions
+from .checks.zeopp import check_if_porous
 from .definitions import CHECK_DESCRIPTIONS, EXPECTED_CHECK_VALUES, OP_DEF
 from .utils import (
     HighCoordinationNumber,
@@ -100,6 +101,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
         self.porous_adjustment = False
         self.charges = None
+        self._porous = ""
         self.metal_features = None
         self._open_indices: set = set()
         self._has_oms = None
@@ -354,7 +356,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
         self._undercoordinated_nitrogen = undercoordinated_nitrogen
 
-    def _has_high_charges(self, threshold=3):
+    def _has_high_charges(self, threshold=3) -> Union[bool, None]:
         if (self.charges is None) and HAS_OPENBABEL:
             self.charges = get_charges(self.structure)
 
@@ -366,9 +368,21 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
         return False
 
+    def _is_porous(self) -> Union[bool, None]:
+        if self._porous == "":
+            self._porous = check_if_porous(self.structure)
+        return self._porous
+
     @property
-    def has_high_charges(self):
-        """Check if the structure has unreasonably high EqEq charges"""
+    def is_porous(self) -> Union[bool, None]:
+        """Returns True if the MOF is porous according to the CoRE-MOF definition.
+        Returns None if the check could not be run successfully."""
+        return self._is_porous()
+
+    @property
+    def has_high_charges(self) -> Union[bool, None]:
+        """Check if the structure has unreasonably high EqEq charges.
+        Returns None if the check could not be run successfully."""
         return self._has_high_charges()
 
     @property
@@ -626,6 +640,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 ("has_lone_molecule", self.has_lone_molecule),
                 ("has_high_charges", self.has_high_charges),
                 ("has_undercoordinated_metal", self.has_undercoordinated_metal),
+                ("is_porous", self.is_porous),
             )
         )
         return result_dict

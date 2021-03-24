@@ -251,6 +251,7 @@ EXPECTED_CHECK_VALUES = {
     "has_lone_molecule": False,
     "hash_high_charge": False,
     "has_undercoordinated_metal": False,
+    "is_porous": True,
 }
 
 # VdW radii http://periodic.lanl.gov/index.shtml
@@ -270,6 +271,7 @@ CHECK_DESCRIPTIONS = {
     "has_lone_molecule": "Checks if there is a floating atom or molecule in the structure",
     "hash_high_charge": "Runs charge equilibration and check if any atom has a high charge (default >3 or <-3)",
     "has_undercoordinated_metal": "Checks for lanthanides, alkali and alkaline metals with surprisingly low coordination",
+    "is_porous": "Check if the largest included sphere is larger than 2.4 Angstrom",
 }
 
 METALS = (
