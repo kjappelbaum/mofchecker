@@ -4,6 +4,7 @@ import os
 import subprocess
 import warnings
 from tempfile import TemporaryDirectory
+from typing import Union
 
 import numpy as np
 from pymatgen import Structure
@@ -11,6 +12,10 @@ from pymatgen import Structure
 from .utils import is_tool
 
 ZEOPP_BASE_COMMAND = ["network", "-ha", "-res"]
+NO_ZEOPP_WARNING = "Did not find the zeo++ network binary in the path. \
+            Can not run pore analysis."
+
+__all__ = ["check_if_porous"]
 
 
 def run_zeopp(structure: Structure) -> dict:
@@ -40,14 +45,11 @@ def run_zeopp(structure: Structure) -> dict:
             with open(result_path, "r") as handle:
                 results = handle.read()
 
-            zeopp_results = parse_zeopp(results)
+            zeopp_results = _parse_zeopp(results)
 
             return zeopp_results
     else:
-        warnings.warn(
-            "Did not find the zeo++ network binary in the path. \
-            Can not run pore analysis."
-        )
+        warnings.warn(NO_ZEOPP_WARNING)
         return {
             "lis": np.nan,  # largest included sphere
             "lifs": np.nan,  # largest free sphere
@@ -55,7 +57,7 @@ def run_zeopp(structure: Structure) -> dict:
         }
 
 
-def parse_zeopp(filecontent: str) -> dict:
+def _parse_zeopp(filecontent: str) -> dict:
     """Parse the results line of a network call to zeopp
 
     Args:
@@ -77,7 +79,7 @@ def parse_zeopp(filecontent: str) -> dict:
     return results
 
 
-def check_if_porous(structure: Structure, threshold: float = 2.4) -> bool:
+def check_if_porous(structure: Structure, threshold: float = 2.4) -> Union[bool, None]:
     """Runs zeo++ to check if structure is porous according to the CoRE-MOF
     definition (PLD > 2.4, https://pubs.acs.org/doi/10.1021/acs.jced.9b00835)
 
@@ -89,7 +91,11 @@ def check_if_porous(structure: Structure, threshold: float = 2.4) -> bool:
     Returns:
         bool: True if porous.
     """
-    zeopp_results = run_zeopp(structure)
-    if zeopp_results["lifsp"] > threshold:
-        return True
-    return False
+    if is_tool("network"):
+        zeopp_results = run_zeopp(structure)
+        if zeopp_results["lifs"] >= threshold:
+            return True
+        return False
+
+    warnings.warn(NO_ZEOPP_WARNING)
+    return None
