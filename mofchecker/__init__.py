@@ -67,17 +67,21 @@ except ImportError:
 class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-public-methods
     """MOFChecker performs basic sanity checks for MOFs"""
 
-    def __init__(self, structure: Structure):
+    def __init__(self, structure: Structure, primitive: bool = True):
         """Class that can perform basic sanity checks for MOF structures
 
         Args:
             structure (Structure): pymatgen Structure object
+            primitive (bool): If True, it will perform the analysis
+                on the primitive structure
 
         Raises:
             NotImplementedError in the case of partial occupancies
         """
         self.structure = structure
         _check_if_ordered(structure)
+        if primitive:
+            self.structure = self.structure.get_primitive_structure()
         self.metal_indices = [
             i for i, site in enumerate(self.structure) if is_metal(site)
         ]
@@ -460,11 +464,13 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return omscls
 
     @classmethod
-    def from_cif(cls, path: Union[str, Path]):
+    def from_cif(cls, path: Union[str, Path], primitive: bool = True):
         """Create a MOFChecker instance from a CIF file
 
         Args:
             path (Union[str, Path]): Path to string file
+            primitive (bool): If True, it will perform the analysis
+                on the primitive structure
 
         Returns:
             MOFChecker: Instance of MOFChecker
@@ -473,7 +479,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             warnings.simplefilter("ignore")
             cifparser = CifParser(path)
             structure = cifparser.get_structures()[0]
-            omscls = cls(structure)
+            omscls = cls(structure, primitive=primitive)
             omscls._set_filename(path)  # pylint:disable=protected-access
             return omscls
 

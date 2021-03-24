@@ -26,9 +26,9 @@ def test_graph_hash_robustness():
     rotated_structure = rotation_transformer.apply_transformation(structure)
     assert MOFChecker(rotated_structure).graph_hash == original_hash
 
-    # # create supercell
-    # structure.make_supercell([1, 2, 1])
-    # assert MOFChecker(structure).graph_hash == original_hash
+    # create supercell
+    structure.make_supercell([1, 2, 1])
+    assert MOFChecker(structure).graph_hash == original_hash
 
     # check the MOF-74 structures
     mohgoi_checker = MOFChecker(
@@ -46,7 +46,7 @@ def test_graph_hash_robustness():
     # There water on TODYUJ
     assert mohgoi_checker.graph_hash != todyuj_checker.graph_hash
     # one is the supercell of the other
-    # assert mohgoi_checker.graph_hash == vogtiv_checker.graph_hash
+    assert mohgoi_checker.graph_hash == vogtiv_checker.graph_hash
 
     # MOF-74-Zr.cif
     mof_74_zr = MOFChecker(

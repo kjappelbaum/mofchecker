@@ -13,3 +13,20 @@ Graph hash
 -----------
 The structure graph hashes that mofchecker returns are calculated using the Weisfeiler Lehman (WL) algorithm.
 It is an algorithm that iteratively performs neighborhood aggregation and is guaranteed to give different hashes for different structure and hash strong guarantees that it will produce different hashes for different structure. Unfortunately, there might be cases where different structures are mapped to the same hash.
+
+What variants does mofchecker offer? 
+..........................................
+
+
+What can it be used for? 
+............................
+
+
+What can go wrong?
+.......................
+
+There are multiple ways in which the hash can yield results different from what one would expect.
+
+1. Incorrect bonding network
+2. Did not reduce to primitive cell
+3. Unlucky hash clash 
