@@ -2,10 +2,10 @@
 """Tests of mofchecker"""
 # pylint: disable=missing-function-docstring,singleton-comparison,invalid-name
 import os
+from collections import OrderedDict
 
 import pytest
 from pymatgen import Structure
-from pymatgen.transformations.standard_transformations import RotationTransformation
 
 from mofchecker import MOFChecker
 
@@ -196,10 +196,10 @@ def test_dicts():
 
 
 def test_deuterium():
-    _descriptors = MOFChecker(
+    mc = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "BIXVEM.cif"))
     )
-    # ToDo: implement me
+    assert isinstance(mc.get_mof_descriptors(), OrderedDict)
 
 
 def test_is_porous(get_cn5_paddlewheel_structure):

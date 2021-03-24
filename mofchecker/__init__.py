@@ -25,14 +25,13 @@ from pymatgen.analysis.local_env import (
 from pymatgen.io.cif import CifParser
 
 from ._version import get_versions
+from .checks.hash import construct_clean_graph
 from .checks.zeopp import check_if_porous
 from .definitions import CHECK_DESCRIPTIONS, EXPECTED_CHECK_VALUES, OP_DEF
-from .hash import construct_clean_graph
 from .utils import (
     HighCoordinationNumber,
     LowCoordinationNumber,
     NoMetal,
-    NoOpenDefined,
     _check_if_ordered,
     _check_metal_coordination,
     _guess_underbound_nitrogen_cn2,
@@ -600,12 +599,12 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             return True
         return False
 
-    def get_mof_descriptors(self) -> dict:
+    def get_mof_descriptors(self) -> OrderedDict:
         """Run most of the sanity checks
         and get a dictionary with the result
 
         Returns:
-            dict: result of overall checks
+            OrderedDict: result of overall checks
         """
         result_dict = OrderedDict(
             (
