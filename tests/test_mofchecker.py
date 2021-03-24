@@ -5,7 +5,6 @@ import os
 
 import pytest
 from pymatgen import Structure
-from pymatgen.transformations.standard_transformations import RotationTransformation
 
 from mofchecker import MOFChecker
 
@@ -186,85 +185,6 @@ def test_chargecheck():
     )
     assert mofchecker.has_high_charges == False
 
-    # check the MOF-74 structures
-    mohgoi_checker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "MOHGOI.cif"))
-    )
-
-    todyuj_checker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "TODYUJ.cif"))
-    )
-
-    vogtiv_checker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "VOGTIV.cif"))
-    )
-
-    # There water on TODYUJ
-    assert mohgoi_checker.graph_hash != todyuj_checker.graph_hash
-    assert mohgoi_checker.graph_hash == vogtiv_checker.graph_hash
-
-    # MOF-74-Zr.cif
-    mof_74_zr = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "MOF-74-Zr.cif"))
-    )
-    assert mof_74_zr.graph_hash != todyuj_checker.graph_hash
-    assert mof_74_zr.graph_hash != vogtiv_checker.graph_hash
-
-    # MOF-74-Zn.cif
-    mof_74_zn = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "MOF-74-Zn.cif"))
-    )
-    assert mof_74_zr.scaffold_hash == mof_74_zn.scaffold_hash
-    assert mof_74_zr.graph_hash != mof_74_zn.graph_hash
-
-    # UiO-66 is not MOF-74
-    uio_66 = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "UiO_66_water.cif"))
-    )
-    assert uio_66.graph_hash != todyuj_checker.graph_hash
-    assert uio_66.graph_hash != vogtiv_checker.graph_hash
-    assert uio_66.graph_hash != mof_74_zr.graph_hash
-
-    # MOF-5 is not ZIF-8
-    mof_5 = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "mof-5_cellopt.cif"))
-    )
-    zif_8 = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ZIF-8-RASPA.cif"))
-    )
-    assert mof_5.graph_hash != zif_8.graph_hash
-
-    # Mn-MOF-74 and UiO-67
-    coknun = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "coknun01.cif"))
-    )
-    wizmac = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "WIZMAV02_auto.cif"))
-    )
-    assert coknun.graph_hash != wizmac.graph_hash
-
-
-def test_graph_hash():
-    mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif"))
-    )
-    assert isinstance(mofchecker.graph_hash, str)
-
-
-def test_graph_hash_robustness():
-    """Check that duplicating or rotating the structure produces the same hash."""
-    structure = Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif"))
-    original_hash = MOFChecker(structure).graph_hash
-
-    # rotate structure
-    rotation_transformer = RotationTransformation([1, 0, 0], 10)
-    rotated_structure = rotation_transformer.apply_transformation(structure)
-    assert MOFChecker(rotated_structure).graph_hash == original_hash
-
-    # create supercell
-    structure.make_supercell([1, 2, 1])
-    assert MOFChecker(structure).graph_hash == original_hash
-
 
 def test_dicts():
     mofchecker = MOFChecker(
@@ -272,13 +192,6 @@ def test_dicts():
     )
     assert isinstance(mofchecker.check_descriptions, dict)
     assert isinstance(mofchecker.check_expected_values, dict)
-
-
-def test_deuterium():
-    _descriptors = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "BIXVEM.cif"))
-    )
-    # ToDo: implement me
 
 
 def test_is_porous(get_cn5_paddlewheel_structure):

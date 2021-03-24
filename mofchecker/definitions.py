@@ -10,12 +10,12 @@
 OP_DEF = {
     4: {
         "names": ["sq_plan", "sq", "see_saw_rect", "tet", "tri_pyr"],
-        "weights": [0.15, 0.15, 0.1, 0.5, 0.1],
+        "weights": [0.2, 0.1, 0.1, 0.5, 0.5],
         "open": [0, 1, 2, 4],
     },
     5: {
         "names": ["pent_plan", "sq_pyr", "tri_bipyr"],
-        "weights": [1, 1, 0.2],
+        "weights": [1, 0.5, 0.5],
         "open": [0, 1],
     },
     6: {"names": ["pent_pyr", "oct"], "weights": [0.3, 0.7], "open": [0]},

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """MOFChecker: Basic sanity checks for MOFs"""
+import json
 import logging
 import os
 import warnings
@@ -15,6 +16,7 @@ from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
 from pymatgen.analysis.local_env import (
     BrunnerNN_relative,
     CrystalNN,
+    CutOffDictNN,
     EconNN,
     JmolNN,
     LocalStructOrderParams,
@@ -23,13 +25,13 @@ from pymatgen.analysis.local_env import (
 from pymatgen.io.cif import CifParser
 
 from ._version import get_versions
+from .checks.hash import construct_clean_graph
 from .checks.zeopp import check_if_porous
 from .definitions import CHECK_DESCRIPTIONS, EXPECTED_CHECK_VALUES, OP_DEF
 from .utils import (
     HighCoordinationNumber,
     LowCoordinationNumber,
     NoMetal,
-    NoOpenDefined,
     _check_if_ordered,
     _check_metal_coordination,
     _guess_underbound_nitrogen_cn2,
@@ -50,7 +52,7 @@ __all__ = ["__version__", "MOFChecker"]
 
 MOFCheckLogger = logging.getLogger(__name__)
 MOFCheckLogger.setLevel(logging.DEBUG)
-
+VESTA_NN = CutOffDictNN.from_preset("vesta_2019")
 try:
     from openbabel import pybel  # pylint:disable=import-outside-toplevel, unused-import
 
@@ -63,38 +65,24 @@ except ImportError:
     HAS_OPENBABEL = False
 
 
-def construct_clean_graph(
-    structure: Structure, structure_graph: StructureGraph
-) -> nx.Graph:
-    """Creates a networkx graph with atom numbers as node labels"""
-    edges = {
-        (str(structure[u].specie), str(structure[v].specie))
-        for u, v, d in structure_graph.graph.edges(keys=False, data=True)
-    }
-    graph = nx.Graph()
-    graph.add_edges_from(edges)
-
-    for node in graph.nodes:
-
-        graph.nodes[node]["label"] = node
-
-    return graph
-
-
 class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-public-methods
     """MOFChecker performs basic sanity checks for MOFs"""
 
-    def __init__(self, structure: Structure):
+    def __init__(self, structure: Structure, primitive: bool = True):
         """Class that can perform basic sanity checks for MOF structures
 
         Args:
             structure (Structure): pymatgen Structure object
+            primitive (bool): If True, it will perform the analysis
+                on the primitive structure
 
         Raises:
             NotImplementedError in the case of partial occupancies
         """
         self.structure = structure
         _check_if_ordered(structure)
+        if primitive:
+            self.structure = self.structure.get_primitive_structure()
         self.metal_indices = [
             i for i, site in enumerate(self.structure) if is_metal(site)
         ]
@@ -157,7 +145,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         (taking the atomic kinds into account)
         and there are guarantees that non-isomorphic graphs will get different hashes.
         """
-        return weisfeiler_lehman_graph_hash(self.nx_graph, node_attr="label")
+        return weisfeiler_lehman_graph_hash(self.nx_graph, node_attr="specie")
 
     @property
     def scaffold_hash(self):
@@ -324,13 +312,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 # and then what its coordination number is. If it is greater than 2
                 # then we likely do not have a CN for which the carbon should be a
                 # linear sp one
-                print(
-                    site_index,
-                    cn,
-                    neighbors,
-                    self.get_cn(neighbors[0].index),
-                    self.get_connected_sites(neighbors[0].index),
-                )
                 if (self.get_cn(neighbors[0].index) > 2) and not neighbors[
                     0
                 ].site.specie.is_metal:
@@ -477,11 +458,13 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return omscls
 
     @classmethod
-    def from_cif(cls, path: Union[str, Path]):
+    def from_cif(cls, path: Union[str, Path], primitive: bool = True):
         """Create a MOFChecker instance from a CIF file
 
         Args:
             path (Union[str, Path]): Path to string file
+            primitive (bool): If True, it will perform the analysis
+                on the primitive structure
 
         Returns:
             MOFChecker: Instance of MOFChecker
@@ -490,11 +473,11 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             warnings.simplefilter("ignore")
             cifparser = CifParser(path)
             structure = cifparser.get_structures()[0]
-            omscls = cls(structure)
+            omscls = cls(structure, primitive=primitive)
             omscls._set_filename(path)  # pylint:disable=protected-access
             return omscls
 
-    def _set_cnn(self, method="jmolnn", porous_adjustment: bool = False):
+    def _set_cnn(self, method="vesta", porous_adjustment: bool = False):
         if self._cnn_method == method.lower():
             return
         self._cnn_method = method.lower()
@@ -508,6 +491,8 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             self._cnn = BrunnerNN_relative()
         elif method.lower() == "minimumdistance":
             self._cnn = MinimumDistanceNN()
+        elif method.lower() == "vesta":
+            self._cnn = VESTA_NN
         else:
             self._cnn = JmolNN()
 
@@ -557,6 +542,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         if site_index not in self._open_indices:
             try:
                 _, _names, lsop, is_open, weights = self._get_ops_for_site(site_index)
+                print(_names, lsop)
                 site_open = MOFChecker._check_if_open(lsop, is_open, weights)
                 if site_open:
                     self._open_indices.add(site_index)
@@ -600,6 +586,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 "open": site_open,
                 "cn": cn,
             }
+            print(descriptors)
         except LowCoordinationNumber:
             descriptors = {"metal": metal, "lsop": None, "open": True, "cn": None}
         except HighCoordinationNumber:
@@ -612,12 +599,12 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             return True
         return False
 
-    def get_mof_descriptors(self) -> dict:
+    def get_mof_descriptors(self) -> OrderedDict:
         """Run most of the sanity checks
         and get a dictionary with the result
 
         Returns:
-            dict: result of overall checks
+            OrderedDict: result of overall checks
         """
         result_dict = OrderedDict(
             (
