@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.6.0...v0.7.0) (2021-03-24)
+
+
+### Features
+
+* improve hash ([#108](https://www.github.com/kjappelbaum/mofchecker/issues/108)) ([7765aeb](https://www.github.com/kjappelbaum/mofchecker/commit/7765aeb921ed2d9afd4509a4b4a6687554caf69d))
+
+
+### Documentation
+
+* fixing links ([c43e919](https://www.github.com/kjappelbaum/mofchecker/commit/c43e919f7095dc0cd182cb8844227eacf6649dce))
+
 ## [0.6.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.5.1...v0.6.0) (2021-03-24)
 
 
