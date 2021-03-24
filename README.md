@@ -41,6 +41,14 @@ Latest stable release
 pip install mofchecker
 ```
 
+Note that you need to install [openbabel](https://anaconda.org/conda-forge/openbabel) and [zeopp](https://anaconda.org/conda-forge/zeopp-lsmo) if you want to use the charge and porosity features, respectively.
+
+```bash
+conda install -c conda-forge zeopp-lsmo openbabel
+```
+
+
+
 A web app is currently being developed [in another repository](https://github.com/kjappelbaum/webmofchecker) and deployed on [MatCloud](http://mofchecker.matcloud.xyz/).
 
 ## Usage

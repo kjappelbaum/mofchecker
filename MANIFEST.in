@@ -2,3 +2,4 @@ include LICENSE
 include MANIFEST.in
 include versioneer.py
 include mofchecker/_version.py
+include requirements.txt
