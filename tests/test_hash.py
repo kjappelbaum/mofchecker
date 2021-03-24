@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Testing the hash functions."""
 import os
 
 from pymatgen import Structure
@@ -10,13 +11,14 @@ from .conftest import THIS_DIR
 
 
 def test_graph_hash():
+    """Basic check that the function call works"""
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif"))
     )
     assert isinstance(mofchecker.graph_hash, str)
 
 
-def test_graph_hash_robustness():
+def test_graph_hash_robustness():  # pylint: disable=too-many-locals
     """Check that duplicating or rotating the structure produces the same hash."""
     structure = Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif"))
     original_hash = MOFChecker(structure).graph_hash
@@ -98,3 +100,15 @@ def test_graph_hash_robustness():
 
     assert mmpf7.graph_hash != mmpf8.graph_hash
     assert mmpf7.scaffold_hash != mmpf8.scaffold_hash
+
+    # issue 107
+    oriwet = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ORIWET.cif"))
+    )
+
+    coknun = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "COKNUN.cif"))
+    )
+
+    assert oriwet.graph_hash == coknun.graph_hash
+    assert oriwet.scaffold_hash == coknun.scaffold_hash

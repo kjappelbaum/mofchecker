@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """MOFChecker: Basic sanity checks for MOFs"""
+import json
 import logging
 import os
 import warnings
@@ -15,6 +16,7 @@ from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
 from pymatgen.analysis.local_env import (
     BrunnerNN_relative,
     CrystalNN,
+    CutOffDictNN,
     EconNN,
     JmolNN,
     LocalStructOrderParams,
@@ -51,7 +53,7 @@ __all__ = ["__version__", "MOFChecker"]
 
 MOFCheckLogger = logging.getLogger(__name__)
 MOFCheckLogger.setLevel(logging.DEBUG)
-
+VESTA_NN = CutOffDictNN.from_preset("vesta_2019")
 try:
     from openbabel import pybel  # pylint:disable=import-outside-toplevel, unused-import
 
@@ -311,13 +313,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 # and then what its coordination number is. If it is greater than 2
                 # then we likely do not have a CN for which the carbon should be a
                 # linear sp one
-                print(
-                    site_index,
-                    cn,
-                    neighbors,
-                    self.get_cn(neighbors[0].index),
-                    self.get_connected_sites(neighbors[0].index),
-                )
                 if (self.get_cn(neighbors[0].index) > 2) and not neighbors[
                     0
                 ].site.specie.is_metal:
@@ -483,7 +478,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             omscls._set_filename(path)  # pylint:disable=protected-access
             return omscls
 
-    def _set_cnn(self, method="jmolnn", porous_adjustment: bool = False):
+    def _set_cnn(self, method="vesta", porous_adjustment: bool = False):
         if self._cnn_method == method.lower():
             return
         self._cnn_method = method.lower()
@@ -497,6 +492,8 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             self._cnn = BrunnerNN_relative()
         elif method.lower() == "minimumdistance":
             self._cnn = MinimumDistanceNN()
+        elif method.lower() == "vesta":
+            self._cnn = VESTA_NN
         else:
             self._cnn = JmolNN()
 
@@ -546,6 +543,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         if site_index not in self._open_indices:
             try:
                 _, _names, lsop, is_open, weights = self._get_ops_for_site(site_index)
+                print(_names, lsop)
                 site_open = MOFChecker._check_if_open(lsop, is_open, weights)
                 if site_open:
                     self._open_indices.add(site_index)
@@ -589,6 +587,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 "open": site_open,
                 "cn": cn,
             }
+            print(descriptors)
         except LowCoordinationNumber:
             descriptors = {"metal": metal, "lsop": None, "open": True, "cn": None}
         except HighCoordinationNumber:
