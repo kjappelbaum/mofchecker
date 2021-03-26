@@ -14,8 +14,8 @@ Graph hash and scaffold hash
 
 For a given MOF structure
 
- * the scaffold hash (:py:attr:`~mofchecker.MOFChecker.scaffold_hash`) is unique for a given connectivity (bond network), independent of the atomic species in the graph
- * the structure graph hash (:py:attr:`~mofchecker.MOFChecker.graph_hash`) is like the scaffold hash, but also considers the atomic elements (nodes) in the graph
+* the scaffold hash (:py:attr:`~mofchecker.MOFChecker.scaffold_hash`) is unique for a given connectivity (bond network), independent of the atomic species in the graph
+* the structure graph hash (:py:attr:`~mofchecker.MOFChecker.graph_hash`) is like the scaffold hash, but also considers the atomic elements (nodes) in the graph
 
 What is it useful for?
 ......................
@@ -24,7 +24,7 @@ The scaffold and structure graph hashes allow to quickly identify duplicates in 
 
 The concept of duplicate structures, as defined by comparing their :py:attr:`~mofchecker.MOFChecker.graph_hash`, closely follows the one proposed by `Barthel et al. <https://pubs.acs.org/doi/pdf/10.1021/acs.cgd.7b01663>`_ :
 
-    However, from a MOF point of view two structures are considered identical if they share the same bond network, with respect to the atom types and their embedding:
+    [...], from a MOF point of view two structures are considered identical if they share the same bond network, with respect to the atom types and their embedding:
     i.e., if two structures can in principle be deformed into each other without breaking and forming bonds.
 
 The scaffold hash can be useful to find families of related MOFs.
@@ -39,9 +39,9 @@ How does it work?
 
 mofchecker
 
- #. reduces the structure to the primitive cell using `pymatgen <http://pymatgen.org/>`_ and `spglib <https://spglib.github.io/spglib/>`_ (use ``primitive=False`` to disable this)
- #. analyzes the bonding network and creates a corresponding structure graph using `pymatgen <http://pymatgen.org/>`_ (use :py:meth:`~mofchecker.MOFChecker._set_cnn` to switch to a different bond analysis method).
- #. computes the Weisfeiler-Lehman hash of the structure graph using `networkx <https://networkx.org/>`_.
+#. reduces the structure to the primitive cell using `pymatgen <http://pymatgen.org/>`_ and `spglib <https://spglib.github.io/spglib/>`_ (use ``primitive=False`` to disable this)
+#. analyzes the bonding network and creates a corresponding structure graph using `pymatgen <http://pymatgen.org/>`_ (use :py:meth:`~mofchecker.MOFChecker._set_cnn` to switch to a different bond analysis method).
+#. computes the Weisfeiler-Lehman hash of the structure graph using `networkx <https://networkx.org/>`_.
 
 The Weisfeiler Lehman algorithm is explained in the `English translation of the original paper <https://www.iti.zcu.cz/wl2018/pdf/wl_paper_translation.pdf>`_
 and a `popular blog post <https://davidbieber.com/post/2019-05-10-weisfeiler-lehman-isomorphism-test/#:~:text=The%20core%20idea%20of%20the,used%20to%20check%20for%20isomorphism>`_.
@@ -53,10 +53,10 @@ The figure below (adopted from `Michael Bronstein's blog <https://towardsdatasci
 
 Briefly:
 
- #. Start by labelling each atom (node) with its atomic number (`graph_hash`) or the number of its connected neighbors (`scaffold_hash`).
- #. Extend the labels with the labels of the nearest neighbors. Color nodes according to their labels.
- #. Continue until coloring converges or the maximum number of iterations is reached (we find that 3rd-nearest neighbors is enough)
- #. Create a histogram of colors of all nodes and return a (ideally unique) hash of it.
+#. Start by labelling each atom (node) with its atomic number (`graph_hash`) or the number of its connected neighbors (`scaffold_hash`).
+#. Extend the labels with the labels of the nearest neighbors. Color nodes according to their labels.
+#. Continue until coloring converges or the maximum number of iterations is reached (we find that 3rd-nearest neighbors is enough)
+#. Create a histogram of colors of all nodes and return a (ideally unique) hash of it.
 
 
 What can go wrong?
@@ -64,10 +64,8 @@ What can go wrong?
 
 Hashes of two structures may *differ unexpectedly* if
 
-*  The two structures were not reduced to the same primitive cell.
-   This can happen when the symmetry in one of the structures is broken.
-*  The bonding network of the two structures is not the same.
-   Bonds between atoms are assigned based on heuristics; you may want to try a different method using :py:meth:`~mofchecker.MOFChecker._set_cnn`.
+*  The two structures were not reduced to the same primitive cell. This can happen when the symmetry in one of the structures is broken.
+*  The bonding network of the two structures is not the same. Bonds between atoms are assigned based on heuristics; you may want to try a different method using :py:meth:`~mofchecker.MOFChecker._set_cnn`.
 
 It is also possible (but unlikely) that the hashes of two structures *coincide unexpectedly* if
 
