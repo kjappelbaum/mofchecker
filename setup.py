@@ -42,7 +42,7 @@ setup(
             "sphinx-copybutton",
         ],
         "dev": ["versioneer"],
-        "pre-commit": ["pylint>=2.6,<2.8", "pre-commit~=2.2"],
+        "pre-commit": ["pylint", "pre-commit"],
     },
     entry_points={
         "console_scripts": [
