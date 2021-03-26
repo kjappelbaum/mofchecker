@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.7.1](https://www.github.com/kjappelbaum/mofchecker/compare/v0.7.0...v0.7.1) (2021-03-26)
+
+
+### Documentation
+
+* update background on graph hashes ([#117](https://www.github.com/kjappelbaum/mofchecker/issues/117)) ([ec32b54](https://www.github.com/kjappelbaum/mofchecker/commit/ec32b541ba02c809a54546815ae021c241908e0d))
+
 ## [0.7.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.6.0...v0.7.0) (2021-03-24)
 
 
