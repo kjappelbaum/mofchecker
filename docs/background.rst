@@ -9,54 +9,67 @@ For assembling the widely used CoRE-MOF database (see `first <https://pubs.acs.o
 
 In mofchecker, we follow this definition and use `zeopp <http://www.zeoplusplus.org/>`_ with the high-accuracy flag and the default atom radii to compute the largest free sphere. If it is above or equal to 2.4 Å the :py:attr`~mofchecker.MOFChecker.is_porous` will return :code:`True`.
 
-Graph hash
------------
-The structure graph hashes that mofchecker returns are calculated using the Weisfeiler Lehman (WL) algorithm.
-It is an algorithm that iteratively performs neighborhood aggregation and is guaranteed to give different hashes for different structure and hash strong guarantees that it will produce different hashes for different structure. Unfortunately, there might be cases where different structures are mapped to the same hash.
+Graph hash and scaffold hash
+----------------------------
 
-What variants does mofchecker offer?
-..........................................
+For a given MOF structure
 
-Currently, mofchecker implements :py:attr:`~mofchecker.MOFChecker.graph_hash` and :py:attr:`~mofchecker.MOFChecker.scaffold_hash`. The :py:attr:`~mofchecker.MOFChecker.graph_hash` takes the atom labels into account and will, for example, return different hashes for Ni-MOF-74 and Mg-MOF-74. The :py:attr:`~mofchecker.MOFChecker.scaffold_hash` does not take atom labels into account and will return the same hash for structures with the same connectivity. That is, it will return the same hash for Ni-MOF-74 and Mg-MOF-74.
+ * the scaffold hash (:py:attr:`~mofchecker.MOFChecker.scaffold_hash`) is unique for a given connectivity (bond network), independent of the atomic species in the graph
+ * the structure graph hash (:py:attr:`~mofchecker.MOFChecker.graph_hash`) is like the scaffold hash, but also considers the atomic elements (nodes) in the graph
 
-.. image:: _static/hash_comparison_mof_74.jpg
-  :width: 600
-  :alt: Comparison of graph and scaffold hash.
+What is it useful for?
+......................
 
+The scaffold and structure graph hashes allow to quickly identify duplicates in large structure databases.
 
-What can it be used for?
-............................
-
-The most important use case for the hashes is to identify duplicates in databases for which it is unfeasible to perform :math:`N^2` graph isomorphirsm checks.
-Note that the definition of duplicate, under the :py:attr:`~mofchecker.MOFChecker.graph_hash`, is similar to the one proposed by `Barthel et al. <https://pubs.acs.org/doi/pdf/10.1021/acs.cgd.7b01663>`_ :
+The concept of duplicate structures, as defined by comparing their :py:attr:`~mofchecker.MOFChecker.graph_hash`, closely follows the one proposed by `Barthel et al. <https://pubs.acs.org/doi/pdf/10.1021/acs.cgd.7b01663>`_ :
 
     However, from a MOF point of view two structures are considered identical if they share the same bond network, with respect to the atom types and their embedding:
     i.e., if two structures can in principle be deformed into each other without breaking and forming bonds.
 
-The scaffold hash can be useful to find families of related MOFs. For example, all members of the unfunctionalized MOF-74 familiy would group under the same hash. Similarly, all functionalized UiO-66 structures would group under the same hash as long as the position and the size (e.g., one atom) of the functionalization is the same.
+The scaffold hash can be useful to find families of related MOFs.
+For example, all members of the (unfunctionalized) MOF-74 family, such as Ni-MOF-74 or Mg-MOF-74, group under the same hash.
 
-What can go wrong?
-.......................
-
-There are multiple ways in which the hash can yield results different from what one would expect.
-
-1. Incorrect bonding network
-2. Did not reduce to primitive cell
-3. Unlucky hash clash (Weisfeiler Lehman has some `edge cases <https://informaconnect.com/beyond-weisfeiler-lehman-using-substructures-for-provably-expressive-graph-neural-networks/>`_)
-
+.. image:: _static/hash_comparison_mof_74.jpg
+  :width: 600
+  :alt: Ni-MOF-74 and Mg-MOF-74 have the same scaffold hash, but different structure graph hashes.
 
 How does it work?
 ....................
 
-Under the hood, mofchecker uses `pymatgen <http://pymatgen.org/>`_ to analyze the bonding network to create a structure graph.
-We then apply the Weisfeiler Lehman algorithm (as implemented in `networkx <https://networkx.org/>`_) to compute the hash.
+mofchecker
+
+ #. reduces the structure to the primitive cell using `pymatgen <http://pymatgen.org/>`_ and `spglib <https://spglib.github.io/spglib/>`_ (use ``primitive=False`` to disable this)
+ #. analyzes the bonding network and creates a corresponding structure graph using `pymatgen <http://pymatgen.org/>`_ (use :py:meth:`~mofchecker.MOFChecker._set_cnn` to switch to a different bond analysis method).
+ #. computes the Weisfeiler-Lehman hash of the structure graph using `networkx <https://networkx.org/>`_.
 
 The Weisfeiler Lehman algorithm is explained in the `English translation of the original paper <https://www.iti.zcu.cz/wl2018/pdf/wl_paper_translation.pdf>`_
-and a `popular blog post <https://davidbieber.com/post/2019-05-10-weisfeiler-lehman-isomorphism-test/#:~:text=The%20core%20idea%20of%20the,used%20to%20check%20for%20isomorphism>`_. Briefly, the algorithm uses iterative recoloring to compute a hash.
-In the first iteration on might label the structures by the number of neighbors (as for the scaffold hash) or the atom type. Then one builds new labels based on the past labels of the intermediate neighbors. The figure below (adopted from `Michael Bronstein's blog <https://towardsdatascience.com/expressive-power-of-graph-neural-networks-and-the-weisefeiler-lehman-test-b883db3c7c49>`_) illustrates this
+and a `popular blog post <https://davidbieber.com/post/2019-05-10-weisfeiler-lehman-isomorphism-test/#:~:text=The%20core%20idea%20of%20the,used%20to%20check%20for%20isomorphism>`_.
+The figure below (adopted from `Michael Bronstein's blog <https://towardsdatascience.com/expressive-power-of-graph-neural-networks-and-the-weisefeiler-lehman-test-b883db3c7c49>`_) illustrates the concept:
 
 .. image:: _static/wl_hash.png
   :width: 600
   :alt: Illustration of the WL hashing algorithm, based on https://towardsdatascience.com/expressive-power-of-graph-neural-networks-and-the-weisefeiler-lehman-test-b883db3c7c49.
 
-The initial labeling here is based on the connectivity and in the next step we extend the labels with the labels of the nearest neighbors and we continue this process until self-consistency (or a maximum number of iterations) are reached. A histogram of the node colors can then be converted into a hash string.
+Briefly:
+
+ #. Start by labelling each atom (node) with its atomic number (`graph_hash`) or the number of its connected neighbors (`scaffold_hash`).
+ #. Extend the labels with the labels of the nearest neighbors. Color nodes according to their labels.
+ #. Continue until coloring converges or the maximum number of iterations is reached (we find that 3rd-nearest neighbors is enough)
+ #. Create a histogram of colors of all nodes and return a (ideally unique) hash of it.
+
+
+What can go wrong?
+....................
+
+Hashes of two structures may *differ unexpectedly* if
+
+*  The two structures were not reduced to the same primitive cell.
+   This can happen when the symmetry in one of the structures is broken.
+*  The bonding network of the two structures is not the same.
+   Bonds between atoms are assigned based on heuristics; you may want to try a different method using :py:meth:`~mofchecker.MOFChecker._set_cnn`.
+
+It is also possible (but unlikely) that the hashes of two structures *coincide unexpectedly* if
+
+* there is an unlucky hash clash.
+  Weisfeiler Lehman has some `edge cases <https://informaconnect.com/beyond-weisfeiler-lehman-using-substructures-for-provably-expressive-graph-neural-networks/>`_)
