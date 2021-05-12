@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 from typing import Union
 
 import numpy as np
-from pymatgen import Structure
+from pymatgen.core import Structure
 
 from .utils import is_tool
 

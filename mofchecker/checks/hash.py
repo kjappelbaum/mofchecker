@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Helper functions for the graph hash calculation"""
 import networkx as nx
-from pymatgen import Structure
 from pymatgen.analysis.graphs import StructureGraph
+from pymatgen.core import Structure
 
 
 def construct_clean_graph(

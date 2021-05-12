@@ -5,8 +5,7 @@ import warnings
 import networkx as nx
 import numpy as np
 import pymatgen
-from pymatgen import Structure
-from pymatgen.core import Molecule
+from pymatgen.core import Molecule, Structure
 from pymatgen.io.cif import CifWriter
 from scipy import sparse
 

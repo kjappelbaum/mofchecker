@@ -11,7 +11,6 @@ from typing import List, Union
 import networkx as nx
 import numpy as np
 from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
-from pymatgen import Structure
 from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
 from pymatgen.analysis.local_env import (
     BrunnerNN_relative,
@@ -21,7 +20,9 @@ from pymatgen.analysis.local_env import (
     JmolNN,
     LocalStructOrderParams,
     MinimumDistanceNN,
+    VoronoiNN,
 )
+from pymatgen.core import Structure
 from pymatgen.io.cif import CifParser
 
 from ._version import get_versions
@@ -477,7 +478,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             omscls._set_filename(path)  # pylint:disable=protected-access
             return omscls
 
-    def _set_cnn(self, method="vesta", porous_adjustment: bool = False):
+    def _set_cnn(self, method="voronoinn", porous_adjustment: bool = False):
         if self._cnn_method == method.lower():
             return
         self._cnn_method = method.lower()
@@ -493,6 +494,8 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             self._cnn = MinimumDistanceNN()
         elif method.lower() == "vesta":
             self._cnn = VESTA_NN
+        elif method.lower() == "voronoinn":
+            self._cnn = VoronoiNN()
         else:
             self._cnn = JmolNN()
 
