@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.7.2](https://www.github.com/kjappelbaum/mofchecker/compare/v0.7.1...v0.7.2) (2021-05-12)
+
+
+### Documentation
+
+* remove indent ([cde3030](https://www.github.com/kjappelbaum/mofchecker/commit/cde3030f1cb894e60d7b19cbec90e172524c6b8c))
+
 ### [0.7.1](https://www.github.com/kjappelbaum/mofchecker/compare/v0.7.0...v0.7.1) (2021-03-26)
 
 
