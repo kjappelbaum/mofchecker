@@ -34,7 +34,7 @@ setup(
     setup_requires=pytest_runner,
     install_requires=requirements,
     extras_require={
-        "testing": ["pytest", "pytest-cov<2.12"],
+        "testing": ["pytest", "pytest-cov<2.13"],
         "docs": [
             "sphinx",
             "sphinx-book-theme",
