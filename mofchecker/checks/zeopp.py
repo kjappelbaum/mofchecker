@@ -9,6 +9,7 @@ from typing import Union
 import numpy as np
 from pymatgen.core import Structure
 
+from .check_base import AbstractCheck
 from .utils import is_tool
 
 ZEOPP_BASE_COMMAND = ["network", "-ha", "-res"]
@@ -99,3 +100,16 @@ def check_if_porous(structure: Structure, threshold: float = 2.4) -> Union[bool,
 
     warnings.warn(NO_ZEOPP_WARNING)
     return None
+
+
+class PorosityCheck(AbstractCheck):
+    def __init__(self, structure):
+        self.structure = structure
+        self.threshold = 2.4
+
+    @property
+    def description(self):
+        return f"Check if the pore limiting diameter is greater than {self.threshold}."
+
+    def _run_check(self):
+        return check_if_porous(self.structure)

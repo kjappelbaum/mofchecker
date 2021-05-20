@@ -32,7 +32,7 @@ from .checks.utils.get_indices import (
     get_metal_indices,
     get_n_indices,
 )
-from .checks.zeopp import check_if_porous
+from .checks.zeopp import PorosityCheck
 from .definitions import CHECK_DESCRIPTIONS, EXPECTED_CHECK_VALUES
 from .graph import _get_cn, construct_clean_graph, get_structure_graph
 from .utils import _check_if_ordered
@@ -111,6 +111,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             ),
             "no_floating_molecule": FloatingSolventCheck.from_mofchecker(self),
             "no_high_charges": ChargeCheck(self.structure),
+            "is_porous": PorosityCheck(self.structure),
         }
 
     def _set_filename(self, path):
@@ -246,16 +247,11 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         """
         return self._checks["no_undercoordinated_nitrogen"].flagged_indices
 
-    def _is_porous(self) -> Union[bool, None]:
-        if self._porous == "":
-            self._porous = check_if_porous(self.structure)
-        return self._porous
-
     @property
     def is_porous(self) -> Union[bool, None]:
         """Returns True if the MOF is porous according to the CoRE-MOF definition.
         Returns None if the check could not be run successfully."""
-        return self._is_porous()
+        return self._checks["is_porous"].is_ok
 
     @property
     def has_high_charges(self) -> Union[bool, None]:
