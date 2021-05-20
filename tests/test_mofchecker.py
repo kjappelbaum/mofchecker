@@ -4,7 +4,7 @@
 import os
 
 import pytest
-from pymatgen import Structure
+from pymatgen.core import Structure
 
 from mofchecker import MOFChecker
 

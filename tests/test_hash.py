@@ -2,7 +2,7 @@
 """Testing the hash functions."""
 import os
 
-from pymatgen import Structure
+from pymatgen.core import Structure
 from pymatgen.transformations.standard_transformations import RotationTransformation
 
 from mofchecker import MOFChecker
