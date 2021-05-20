@@ -12,20 +12,6 @@ from scipy import sparse
 from .checks.utils.get_indices import is_metal
 
 
-def _vdw_radius_neighbors(structure, site_index, tolerance: float = 1.5):
-    elem = str(structure[site_index].specie)
-    radius = _get_vdw_radius(elem)
-    return structure.get_neighbors(structure[site_index], tolerance * radius)
-
-
-def _is_any_neighbor_metal(neighbors):
-    for neighbor in neighbors:
-        if is_metal(neighbor.site):
-            return True
-
-    return False
-
-
 def _check_metal_coordination(site, coordination_number: int) -> bool:
     # Lanthanides like to have many neighbors
     # Low coordinatio number is usually only
@@ -47,11 +33,6 @@ def _check_metal_coordination(site, coordination_number: int) -> bool:
     #         return True
 
     return False
-
-
-def _maximum_angle(angle):
-    diff_to_180 = np.abs(180 - angle)
-    return max([angle, diff_to_180])
 
 
 def get_charges(structure: Structure):

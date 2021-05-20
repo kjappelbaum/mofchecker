@@ -11,22 +11,17 @@ import networkx as nx
 import numpy as np
 from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
 from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
-from pymatgen.analysis.local_env import (
-    BrunnerNN_relative,
-    CrystalNN,
-    CutOffDictNN,
-    EconNN,
-    JmolNN,
-    MinimumDistanceNN,
-    VoronoiNN,
-)
-from pymatgen.core import Structure
 from pymatgen.core.structure import IStructure, Structure
 from pymatgen.io.cif import CifParser
 
 from ._version import get_versions
 from .checks.global_structure import HasCarbon, HasHydrogen, HasMetal, HasNitrogen
-from .checks.local_structure import AtomicOverlapCheck
+from .checks.local_structure import (
+    AtomicOverlapCheck,
+    OverCoordinatedCarbonCheck,
+    OverCoordinatedHydrogenCheck,
+    UnderCoordinatedCarbonCheck,
+)
 from .checks.utils.get_indices import (
     get_c_indices,
     get_h_indices,
@@ -35,17 +30,13 @@ from .checks.utils.get_indices import (
 )
 from .checks.zeopp import check_if_porous
 from .definitions import CHECK_DESCRIPTIONS, EXPECTED_CHECK_VALUES
-from .graph import construct_clean_graph
+from .graph import _get_cn, construct_clean_graph, get_structure_graph
 from .utils import (
     _check_if_ordered,
     _guess_underbound_nitrogen_cn2,
     _guess_underbound_nitrogen_cn3,
-    _is_any_neighbor_metal,
-    _maximum_angle,
-    _vdw_radius_neighbors,
     get_charges,
     get_subgraphs_as_molecules_all,
-    is_metal,
 )
 
 __version__ = get_versions()["version"]
@@ -55,7 +46,7 @@ __all__ = ["__version__", "MOFChecker"]
 
 MOFCheckLogger = logging.getLogger(__name__)
 MOFCheckLogger.setLevel(logging.DEBUG)
-VESTA_NN = CutOffDictNN.from_preset("vesta_2019")
+
 try:
     from openbabel import pybel  # pylint:disable=import-outside-toplevel, unused-import
 
@@ -71,7 +62,7 @@ except ImportError:
 class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-public-methods
     """MOFChecker performs basic sanity checks for MOFs"""
 
-    def __init__(self, structure: Structure, primitive: bool = True):
+    def __init__(self, structure: Union[Structure, IStructure], primitive: bool = True):
         """Class that can perform basic sanity checks for MOF structures
 
         Args:
@@ -82,18 +73,19 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Raises:
             NotImplementedError in the case of partial occupancies
         """
-        self.structure = structure
+        if isinstance(structure, Structure):
+            self.structure = IStructure.from_sites(structure)
+        else:
+            self.structure = structure
         _check_if_ordered(structure)
         if primitive:
             self.structure = self.structure.get_primitive_structure()
         self.metal_indices = get_metal_indices(self.structure)
 
-        self.porous_adjustment = False
         self.charges = None
         self._porous = ""
         self.metal_features = None
-        self._cnn = None
-        self._cnn_method = None
+        self._cnn_method = "vesta"
         self._filename = None
         self._name = None
         self.c_indices = get_c_indices(self.structure)
@@ -111,13 +103,21 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._nx_graph = None
         self._connected_sites = {}
         self._cns = {}
-        self._set_cnn()
         self._checks = {
             "has_c": HasCarbon(self.structure),
             "has_h": HasHydrogen(self.structure),
             "has_metal": HasMetal(self.structure),
             "has_nitrogen": HasNitrogen(self.structure),
-            "has_atomic_overlaps": AtomicOverlapCheck(self.structure),
+            "no_atomic_overlaps": AtomicOverlapCheck(self.structure),
+            "no_undercoordinated_carbon": UnderCoordinatedCarbonCheck.from_mofchecker(
+                self
+            ),
+            "no_overcoordinated_carbon": OverCoordinatedCarbonCheck.from_mofchecker(
+                self
+            ),
+            "no_overcoordinated_hydrogen": OverCoordinatedHydrogenCheck.from_mofchecker(
+                self
+            ),
         }
 
     def _set_filename(self, path):
@@ -126,7 +126,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
     def get_overlapping_indices(self):
         """Return the indices of overlapping atoms"""
-        return self._checks["has_atomic_overlaps"].flagged_indices
+        return self._checks["no_atomic_overlaps"].flagged_indices
 
     @property
     def graph_hash(self):
@@ -148,7 +148,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     @property
     def has_atomic_overlaps(self):
         """Check if there are any overlaps in the structure"""
-        return self._checks["has_atomic_overlaps"].is_ok
+        return self._checks["no_atomic_overlaps"].is_ok
 
     @property
     def name(self):
@@ -189,11 +189,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             [bool]: True if carbon with CN > 4 in structure.
         """
-        if self._overvalent_c is not None:
-            return self._overvalent_c
-
-        self._has_overvalent_c()
-        return self._overvalent_c
+        return not self._checks["no_overcoordinated_carbon"].is_ok
 
     @property
     def has_overvalent_h(self) -> bool:
@@ -203,21 +199,13 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             [bool]: True if hydrogen with CN > 1 in structure.
         """
-        if self._overvalent_h is not None:
-            return self._overvalent_h
-
-        self._has_overvalent_h()
-        return self._overvalent_h
+        return not self._checks["no_overcoordinated_hydrogen"].is_ok
 
     @property
     def has_undercoordinated_c(self) -> bool:
         """Check if there is a carbon that likely misses
         hydrogen"""
-        if self._undercoordinated_carbon is not None:
-            return self._undercoordinated_carbon
-
-        self._has_undercoordinated_carbon()
-        return self._undercoordinated_carbon
+        return not self._checks["no_undercoordinated_carbon"].is_ok
 
     @property
     def has_undercoordinated_n(self) -> bool:
@@ -229,26 +217,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._has_undercoordinated_nitrogen()
         return self._undercoordinated_nitrogen
 
-    def _has_overvalent_c(self):
-        overvalent_c = False
-        for site_index in self.c_indices:
-            cn = self.get_cn(site_index)  # pylint:disable=invalid-name
-            if cn > 4:
-                if not _is_any_neighbor_metal(self.get_connected_sites(site_index)):
-                    overvalent_c = True
-                    break
-        self._overvalent_c = overvalent_c
-
-    def _has_overvalent_h(self):
-        overvalent_h = False
-        for site_index in self.h_indices:
-            cn = self.get_cn(site_index)  # pylint:disable=invalid-name
-            if cn > 1:
-                if not _is_any_neighbor_metal(self.get_connected_sites(site_index)):
-                    overvalent_h = True
-                    break
-        self._overvalent_h = overvalent_h
-
     def _has_overvalent_n(self):
         overvalent_n = False
         for site_index in self.n_indices:
@@ -258,33 +226,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                     overvalent_n = True
                     break
         self._overvalent_n = overvalent_n
-
-    def _has_undercoordinated_carbon(self, tolerance: int = 10):
-        """Idea is that carbon should at least have three neighbors if it is not sp1.
-        In sp1 case it is linear. So we can just check if there are carbons with
-        non-linear coordination with less than three neighbors. An example in CoRE
-        MOF would be AHOKIR. In principle this should also flag the quite common
-        case of benzene rings with missing hydrogens.
-        """
-        undercoordinated_carbon = False
-
-        for site_index in self.c_indices:
-            cn = self.get_cn(site_index)  # pylint:disable=invalid-name
-            if cn == 2:
-                neighbors = self.get_connected_sites(site_index)
-                angle = _maximum_angle(
-                    self.structure.get_angle(
-                        site_index, neighbors[0].index, neighbors[1].index
-                    )
-                )
-                if (np.abs(180 - angle) > tolerance) or (np.abs(180 - 0) > tolerance):
-                    if (not is_metal(neighbors[0].site)) or (
-                        not is_metal(neighbors[1].site)
-                    ):
-                        if len(_vdw_radius_neighbors(self.structure, site_index)) <= 2:
-                            undercoordinated_carbon = True
-                            break
-        self._undercoordinated_carbon = undercoordinated_carbon
 
     def _has_undercoordinated_nitrogen(self, tolerance: int = 15):
         """
@@ -366,9 +307,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     def graph(self) -> StructureGraph:
         """pymatgen structure graph."""
         if self._graph is None:
-            self._graph = StructureGraph.with_local_env_strategy(
-                self.structure, self._cnn
-            )
+            self._graph = get_structure_graph(self.structure, self._cnn_method)
             self._nx_graph = construct_clean_graph(self.structure, self._graph)
         return self._graph
 
@@ -397,7 +336,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         if site_index not in self._cns:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                self._cns[site_index] = self._cnn.get_cn(self.structure, site_index)
+                self._cns[site_index] = _get_cn(self.graph, site_index)
         return self._cns[site_index]
 
     @property
@@ -442,9 +381,9 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     @classmethod
     def _from_file(cls, path: str):
         structure = Structure.from_file(path)
-        omscls = cls(structure)
-        omscls._set_filename(path)  # pylint:disable=protected-access
-        return omscls
+        mofchecker = cls(structure)
+        mofchecker._set_filename(path)  # pylint:disable=protected-access
+        return mofchecker
 
     @classmethod
     def from_cif(cls, path: Union[str, Path], primitive: bool = True):
@@ -466,26 +405,10 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             omscls._set_filename(path)  # pylint:disable=protected-access
             return omscls
 
-    def _set_cnn(self, method="vesta", porous_adjustment: bool = False):
+    def _set_cnn(self, method="vesta"):
         if self._cnn_method == method.lower():
             return
         self._cnn_method = method.lower()
-
-        self.porous_adjustment = porous_adjustment
-        if method.lower() == "crystalnn":
-            self._cnn = CrystalNN(porous_adjustment=self.porous_adjustment)
-        elif method.lower() == "econnn":
-            self._cnn = EconNN()
-        elif method.lower() == "brunnernn":
-            self._cnn = BrunnerNN_relative()
-        elif method.lower() == "minimumdistance":
-            self._cnn = MinimumDistanceNN()
-        elif method.lower() == "vesta":
-            self._cnn = VESTA_NN
-        elif method.lower() == "voronoinn":
-            self._cnn = VoronoiNN()
-        else:
-            self._cnn = JmolNN()
 
     def _has_stray_molecules(self) -> bool:
         molecules = get_subgraphs_as_molecules_all(self.graph)
@@ -541,4 +464,4 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     @property
     def has_metal(self):
         """Checks if there is at least one metal in the structure"""
-        self._checks["has_metal"].is_ok
+        return self._checks["has_metal"].is_ok

@@ -6,6 +6,13 @@ import pymatgen
 from pymatgen.core.structure import IStructure, Structure
 
 from ...definitions import METALS
+from ..data import _get_vdw_radius
+
+
+def _vdw_radius_neighbors(structure, site_index, tolerance: float = 1.5):
+    elem = str(structure[site_index].specie)
+    radius = _get_vdw_radius(elem)
+    return structure.get_neighbors(structure[site_index], tolerance * radius)
 
 
 def is_metal(site: pymatgen.core.Site) -> bool:
@@ -63,3 +70,11 @@ def get_indices(structure: Union[Structure, IStructure]):
     if isinstance(structure, Structure):
         structure = IStructure.from_sites(structure)
     return _get_indices(structure)
+
+
+def _is_any_neighbor_metal(neighbors):
+    for neighbor in neighbors:
+        if is_metal(neighbor.site):
+            return True
+
+    return False
