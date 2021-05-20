@@ -9,40 +9,13 @@ from pymatgen.core import Molecule, Structure
 from pymatgen.io.cif import CifWriter
 from scipy import sparse
 
-from .definitions import COVALENT_RADII, METALS, VDW_RADII
-
-_COVALENT_RADII_MEDIAN = np.median(list(COVALENT_RADII.values()))
-_VDW_RADII_MEDIAN = np.median(list(VDW_RADII.values()))
-
-
-def _get_vdw_radius(element):
-    try:
-        radius = VDW_RADII[element]
-
-    except KeyError:
-        radius = _VDW_RADII_MEDIAN
-        warnings.warn(
-            f"Van-der-Waals radius for {element} unknown. Using median {radius:.2f}."
-        )
-    return radius
+from .checks.utils.get_indices import is_metal
 
 
 def _vdw_radius_neighbors(structure, site_index, tolerance: float = 1.5):
     elem = str(structure[site_index].specie)
     radius = _get_vdw_radius(elem)
     return structure.get_neighbors(structure[site_index], tolerance * radius)
-
-
-def _get_covalent_radius(element):
-    try:
-        radius = COVALENT_RADII[element]
-
-    except KeyError:
-        radius = _COVALENT_RADII_MEDIAN
-        warnings.warn(
-            f"Covalent radius for {element} unknown. Using median {radius:.2f}."
-        )
-    return radius
 
 
 def _is_any_neighbor_metal(neighbors):
@@ -211,59 +184,6 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
     return False
 
 
-class LowCoordinationNumber(KeyError):
-    """Error for low coordination number"""
-
-
-class HighCoordinationNumber(KeyError):
-    """Error for high coordination number"""
-
-
-class NoOpenDefined(KeyError):
-    """Error in case the open check is not defined
-    for this coordination numberF"""
-
-
-class NoMetal(KeyError):
-    """Error in case there is no metal in structure"""
-
-
-def compute_overlap_matrix(
-    distance_matrix: np.array, allatomtypes: list, tolerance: float = 1.0
-):
-    """
-    Find atomic overlap based on pairwise distance and Covalent radii.
-
-    Criterion: if dist < min (CovR_1,CovR_2) -> overlap
-        (this function is used in molsimplify)
-    """
-    with warnings.catch_warnings():
-        warnings.filterwarnings("once")  # only warn once for missing radius data
-
-        overlap_matrix = np.zeros(distance_matrix.shape)
-        for i, elem_1 in enumerate(allatomtypes[:-1]):
-            for j, elem_2 in enumerate(allatomtypes[i + 1 :]):
-                dist = distance_matrix[i, i + j + 1]
-                # check for atomic overlap:
-                if dist < tolerance * min(
-                    _get_covalent_radius(elem_1), _get_covalent_radius(elem_2)
-                ):
-                    overlap_matrix[i, i + j + 1] = 1
-                    overlap_matrix[i + j + 1, i] = 1
-    return sparse.csr_matrix(overlap_matrix)
-
-
-def get_overlaps(s: Structure) -> list:  # pylint: disable=invalid-name
-    """Find overlapping atoms in a structure."""
-    distance_matrix = s.distance_matrix
-    atomtypes = [str(species) for species in s.species]
-    overlap_matrix = compute_overlap_matrix(distance_matrix, atomtypes)
-    overlap_atoms = []
-    for atom in set(sparse.find(overlap_matrix)[0]):
-        overlap_atoms.append(atom.item())
-    return overlap_atoms
-
-
 def print_dict(dictionary):
     """Print a dictionary to stdout line by line."""
     for k, v in dictionary.items():  # pylint: disable=invalid-name
@@ -335,12 +255,3 @@ def _check_if_ordered(structure):
             "Support of unordered structures with partial occupancies \
                 is not implemented (yet)."
         )
-
-
-def is_metal(site: pymatgen.core.Site) -> bool:
-    """according to conquest help:
-    transition metal, lanthanide, actinide,
-    or Al, Ga, In, Tl, Ge, Sn, Pb, Sb, Bi, Po"""
-    if str(site.specie) in METALS:
-        return True
-    return False

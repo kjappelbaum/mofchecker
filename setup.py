@@ -44,11 +44,6 @@ setup(
         "dev": ["versioneer"],
         "pre-commit": ["pylint", "pre-commit"],
     },
-    entry_points={
-        "console_scripts": [
-            "mofchecker = mofchecker.cli:main",
-        ],
-    },
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
