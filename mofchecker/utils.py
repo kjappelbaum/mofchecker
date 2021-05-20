@@ -52,13 +52,10 @@ def get_charges(structure: Structure):
         return None
 
 
-
 def print_dict(dictionary):
     """Print a dictionary to stdout line by line."""
     for k, v in dictionary.items():  # pylint: disable=invalid-name
         print(k, v)
-
-
 
 
 def _check_if_ordered(structure):

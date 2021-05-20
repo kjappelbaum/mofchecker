@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ..utils.get_indices import  get_n_indices
+from ..utils.get_indices import get_n_indices
 from .base_coordination_check import BaseCoordinationCheck
 from .geometry import _guess_underbound_nitrogen_cn2, _guess_underbound_nitrogen_cn3
 

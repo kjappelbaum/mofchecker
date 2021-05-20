@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 from pymatgen.core import Structure
+
 from ..utils.get_indices import is_metal
+
 
 def _maximum_angle(angle):
     diff_to_180 = np.abs(180 - angle)
     return max([angle, diff_to_180])
-
-
 
 
 def _guess_underbound_nitrogen_cn3(

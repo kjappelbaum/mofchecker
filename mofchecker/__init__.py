@@ -16,12 +16,14 @@ from pymatgen.io.cif import CifParser
 
 from ._version import get_versions
 from .checks.global_structure import HasCarbon, HasHydrogen, HasMetal, HasNitrogen
-from .checks.local_structure import (AtomicOverlapCheck,
-                                     OverCoordinatedCarbonCheck,
-                                     OverCoordinatedHydrogenCheck,
-                                     UnderCoordinatedCarbonCheck,
-                                     OverCoordinatedNitrogenCheck,
-                                     UnderCoordinatedNitrogenCheck)
+from .checks.local_structure import (
+    AtomicOverlapCheck,
+    OverCoordinatedCarbonCheck,
+    OverCoordinatedHydrogenCheck,
+    OverCoordinatedNitrogenCheck,
+    UnderCoordinatedCarbonCheck,
+    UnderCoordinatedNitrogenCheck,
+)
 from .checks.utils.get_indices import (
     get_c_indices,
     get_h_indices,
@@ -29,12 +31,14 @@ from .checks.utils.get_indices import (
     get_n_indices,
 )
 from .checks.zeopp import check_if_porous
+from .checks.floating_solvent import FloatingSolventCheck
 from .definitions import CHECK_DESCRIPTIONS, EXPECTED_CHECK_VALUES
-from .graph import _get_cn, construct_clean_graph, get_structure_graph, get_subgraphs_as_molecules_all
-from .utils import (
-    _check_if_ordered,
-    get_charges,
+from .graph import (
+    _get_cn,
+    construct_clean_graph,
+    get_structure_graph,
 )
+from .utils import _check_if_ordered, get_charges
 
 __version__ = get_versions()["version"]
 del get_versions
@@ -49,16 +53,17 @@ try:
 
     HAS_OPENBABEL = True
 except ImportError:
-    warnings.warn("For the charge check openbabel needs to be installed. \
-    This can be done, for example using conda install openbabel")
+    warnings.warn(
+        "For the charge check openbabel needs to be installed. \
+    This can be done, for example using conda install openbabel"
+    )
     HAS_OPENBABEL = False
 
 
 class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-public-methods
     """MOFChecker performs basic sanity checks for MOFs"""
-    def __init__(self,
-                 structure: Union[Structure, IStructure],
-                 primitive: bool = True):
+
+    def __init__(self, structure: Union[Structure, IStructure], primitive: bool = True):
         """Class that can perform basic sanity checks for MOF structures
 
         Args:
@@ -100,26 +105,27 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._connected_sites = {}
         self._cns = {}
         self._checks = {
-            "has_c":
-            HasCarbon(self.structure),
-            "has_h":
-            HasHydrogen(self.structure),
-            "has_metal":
-            HasMetal(self.structure),
-            "has_nitrogen":
-            HasNitrogen(self.structure),
-            "no_atomic_overlaps":
-            AtomicOverlapCheck(self.structure),
-            "no_undercoordinated_carbon":
-            UnderCoordinatedCarbonCheck.from_mofchecker(self),
-            "no_overcoordinated_carbon":
-            OverCoordinatedCarbonCheck.from_mofchecker(self),
-            "no_overcoordinated_hydrogen":
-            OverCoordinatedHydrogenCheck.from_mofchecker(self),
-            "no_overcoordinated_nitrogen":
-            OverCoordinatedNitrogenCheck.from_mofchecker(self),
-            "no_undercoordinated_nitrogen":
-            UnderCoordinatedNitrogenCheck.from_mofchecker(self),
+            "has_c": HasCarbon(self.structure),
+            "has_h": HasHydrogen(self.structure),
+            "has_metal": HasMetal(self.structure),
+            "has_nitrogen": HasNitrogen(self.structure),
+            "no_atomic_overlaps": AtomicOverlapCheck(self.structure),
+            "no_undercoordinated_carbon": UnderCoordinatedCarbonCheck.from_mofchecker(
+                self
+            ),
+            "no_overcoordinated_carbon": OverCoordinatedCarbonCheck.from_mofchecker(
+                self
+            ),
+            "no_overcoordinated_hydrogen": OverCoordinatedHydrogenCheck.from_mofchecker(
+                self
+            ),
+            "no_overcoordinated_nitrogen": OverCoordinatedNitrogenCheck.from_mofchecker(
+                self
+            ),
+            "no_undercoordinated_nitrogen": UnderCoordinatedNitrogenCheck.from_mofchecker(
+                self
+            ),
+            "no_floating_molecule": FloatingSolventCheck.from_mofchecker(self)
         }
 
     def _set_filename(self, path):
@@ -266,7 +272,8 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         """
         if site_index not in self._connected_sites:
             self._connected_sites[site_index] = self.graph.get_connected_sites(
-                site_index)
+                site_index
+            )
         return self._connected_sites[site_index]
 
     def get_cn(self, site_index) -> int:
@@ -294,12 +301,12 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             [bool]: True if nitrogen with CN > 4 in structure.
         """
-        return not self._checks['no_overcoordinated_nitrogen'].is_ok
+        return not self._checks["no_overcoordinated_nitrogen"].is_ok
 
     @property
     def has_lone_molecule(self) -> bool:
         """Returns true if there is a isolated floating atom or molecule"""
-        return self._has_stray_molecules()
+        return not self._checks["no_floating_molecule"].is_ok
 
     @classmethod
     def _from_file(cls, path: str):
@@ -346,26 +353,28 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             OrderedDict: result of overall checks
         """
-        result_dict = OrderedDict((
-            ("name", self.name),
-            ("graph_hash", self.graph_hash),
-            ("formula", self.formula),
-            ("path", self._filename),
-            ("density", self.density),
-            ("has_carbon", self.has_carbon),
-            ("has_hydrogen", self.has_hydrogen),
-            ("has_atomic_overlaps", self.has_atomic_overlaps),
-            ("has_overcoordinated_c", self.has_overvalent_c),
-            ("has_overcoordinated_n", self.has_overvalent_n),
-            ("has_overcoordinated_h", self.has_overvalent_h),
-            ("has_undercoordinated_c", self.has_undercoordinated_c),
-            ("has_undercoordinated_n", self.has_undercoordinated_n),
-            ("has_metal", self.has_metal),
-            ("has_lone_molecule", self.has_lone_molecule),
-            ("has_high_charges", self.has_high_charges),
-            # ("has_undercoordinated_metal", self.has_undercoordinated_metal),
-            ("is_porous", self.is_porous),
-        ))
+        result_dict = OrderedDict(
+            (
+                ("name", self.name),
+                ("graph_hash", self.graph_hash),
+                ("formula", self.formula),
+                ("path", self._filename),
+                ("density", self.density),
+                ("has_carbon", self.has_carbon),
+                ("has_hydrogen", self.has_hydrogen),
+                ("has_atomic_overlaps", self.has_atomic_overlaps),
+                ("has_overcoordinated_c", self.has_overvalent_c),
+                ("has_overcoordinated_n", self.has_overvalent_n),
+                ("has_overcoordinated_h", self.has_overvalent_h),
+                ("has_undercoordinated_c", self.has_undercoordinated_c),
+                ("has_undercoordinated_n", self.has_undercoordinated_n),
+                ("has_metal", self.has_metal),
+                ("has_lone_molecule", self.has_lone_molecule),
+                ("has_high_charges", self.has_high_charges),
+                # ("has_undercoordinated_metal", self.has_undercoordinated_metal),
+                ("is_porous", self.is_porous),
+            )
+        )
         return result_dict
 
     # def _has_low_metal_coordination(self):
