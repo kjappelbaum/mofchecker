@@ -15,6 +15,7 @@ from pymatgen.core.structure import IStructure, Structure
 from pymatgen.io.cif import CifParser
 
 from ._version import get_versions
+from .checks.charge_check import ChargeCheck
 from .checks.floating_solvent import FloatingSolventCheck
 from .checks.global_structure import HasCarbon, HasHydrogen, HasMetal, HasNitrogen
 from .checks.local_structure import (
@@ -34,7 +35,7 @@ from .checks.utils.get_indices import (
 from .checks.zeopp import check_if_porous
 from .definitions import CHECK_DESCRIPTIONS, EXPECTED_CHECK_VALUES
 from .graph import _get_cn, construct_clean_graph, get_structure_graph
-from .utils import _check_if_ordered, get_charges
+from .utils import _check_if_ordered
 
 __version__ = get_versions()["version"]
 del get_versions
@@ -43,17 +44,6 @@ __all__ = ["__version__", "MOFChecker"]
 
 MOFCheckLogger = logging.getLogger(__name__)
 MOFCheckLogger.setLevel(logging.DEBUG)
-
-try:
-    from openbabel import pybel  # pylint:disable=import-outside-toplevel, unused-import
-
-    HAS_OPENBABEL = True
-except ImportError:
-    warnings.warn(
-        "For the charge check openbabel needs to be installed. \
-    This can be done, for example using conda install openbabel"
-    )
-    HAS_OPENBABEL = False
 
 
 class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-public-methods
@@ -120,6 +110,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 self
             ),
             "no_floating_molecule": FloatingSolventCheck.from_mofchecker(self),
+            "no_high_charges": ChargeCheck(self.structure),
         }
 
     def _set_filename(self, path):
@@ -255,18 +246,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         """
         return self._checks["no_undercoordinated_nitrogen"].flagged_indices
 
-    def _has_high_charges(self, threshold=3) -> Union[bool, None]:
-        if (self.charges is None) and HAS_OPENBABEL:
-            self.charges = get_charges(self.structure)
-
-        if isinstance(self.charges, list):
-            if np.sum(np.abs(self.charges) > threshold):
-                return True
-        else:
-            return None
-
-        return False
-
     def _is_porous(self) -> Union[bool, None]:
         if self._porous == "":
             self._porous = check_if_porous(self.structure)
@@ -282,7 +261,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     def has_high_charges(self) -> Union[bool, None]:
         """Check if the structure has unreasonably high EqEq charges.
         Returns None if the check could not be run successfully."""
-        return self._has_high_charges()
+        return not self._checks["no_high_charges"].is_ok
 
     @property
     def nx_graph(self) -> nx.Graph:

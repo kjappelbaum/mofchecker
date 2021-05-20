@@ -35,23 +35,6 @@ def _check_metal_coordination(site, coordination_number: int) -> bool:
     return False
 
 
-def get_charges(structure: Structure):
-    """Compute EqEq charges for a pymatgen structure"""
-    try:
-        from openbabel import pybel  # pylint:disable=import-outside-toplevel
-
-        cif_structure = str(CifWriter(structure))
-        mol = pybel.readstring("cif", cif_structure)
-        mol.calccharges("eqeq")
-        charges = [a.partialcharge for a in mol]
-        return charges
-    except ImportError:
-        return None
-    except Exception as execp:  # pylint:disable=broad-except
-        warnings.warn(f"Exception occured during the charge calculation {execp}")
-        return None
-
-
 def print_dict(dictionary):
     """Print a dictionary to stdout line by line."""
     for k, v in dictionary.items():  # pylint: disable=invalid-name

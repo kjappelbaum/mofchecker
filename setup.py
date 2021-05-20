@@ -13,9 +13,6 @@ pytest_runner = ["pytest-runner"] if needs_pytest else []
 with open("README.md", "r") as handle:
     LONG_DESCRIPTION = handle.read()
 
-with open("requirements.txt") as f:
-    requirements = f.read().splitlines()
-
 setup(
     # Self-descriptive entries which should always be present
     name="mofchecker",
@@ -32,7 +29,12 @@ setup(
     include_package_data=True,
     # Allows `setup.py test` to work correctly with pytest
     setup_requires=pytest_runner,
-    install_requires=requirements,
+    install_requires=[
+        "pymatgen>=2021.1,<2022",
+        "click==8.*",
+        "networkx==2.*",
+        "pyeqeq @ git+https://github.com/kjappelbaum/EQeq.git@refactor",
+    ],
     extras_require={
         "testing": ["pytest", "pytest-cov<2.12"],
         "docs": [
