@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from mofchecker import MOFChecker
+
 def test_has_oms(get_cn4_structure, get_cn5_paddlewheel_structure):
 
     omsdetector = MOFChecker(get_cn4_structure)

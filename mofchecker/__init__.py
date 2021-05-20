@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """MOFChecker: Basic sanity checks for MOFs"""
-import logging
 import os
 import warnings
 from collections import OrderedDict
@@ -8,7 +7,6 @@ from pathlib import Path
 from typing import List, Union
 
 import networkx as nx
-import numpy as np
 from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
 from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
 from pymatgen.core.structure import IStructure, Structure
@@ -26,6 +24,7 @@ from .checks.local_structure import (
     UnderCoordinatedCarbonCheck,
     UnderCoordinatedNitrogenCheck,
 )
+from .checks.oms import MOFOMS
 from .checks.utils.get_indices import (
     get_c_indices,
     get_h_indices,
@@ -42,14 +41,12 @@ del get_versions
 
 __all__ = ["__version__", "MOFChecker"]
 
-MOFCheckLogger = logging.getLogger(__name__)
-MOFCheckLogger.setLevel(logging.DEBUG)
-
 
 class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-public-methods
     """MOFChecker performs basic sanity checks for MOFs"""
-
-    def __init__(self, structure: Union[Structure, IStructure], primitive: bool = True):
+    def __init__(self,
+                 structure: Union[Structure, IStructure],
+                 primitive: bool = True):
         """Class that can perform basic sanity checks for MOF structures
 
         Args:
@@ -89,29 +86,34 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._connected_sites = {}
         self._cns = {}
         self._checks = {
-            "has_c": HasCarbon(self.structure),
-            "has_h": HasHydrogen(self.structure),
-            "has_metal": HasMetal(self.structure),
-            "has_nitrogen": HasNitrogen(self.structure),
-            "no_atomic_overlaps": AtomicOverlapCheck(self.structure),
-            "no_undercoordinated_carbon": UnderCoordinatedCarbonCheck.from_mofchecker(
-                self
-            ),
-            "no_overcoordinated_carbon": OverCoordinatedCarbonCheck.from_mofchecker(
-                self
-            ),
-            "no_overcoordinated_hydrogen": OverCoordinatedHydrogenCheck.from_mofchecker(
-                self
-            ),
-            "no_overcoordinated_nitrogen": OverCoordinatedNitrogenCheck.from_mofchecker(
-                self
-            ),
-            "no_undercoordinated_nitrogen": UnderCoordinatedNitrogenCheck.from_mofchecker(
-                self
-            ),
-            "no_floating_molecule": FloatingSolventCheck.from_mofchecker(self),
-            "no_high_charges": ChargeCheck(self.structure),
-            "is_porous": PorosityCheck(self.structure),
+            "has_c":
+            HasCarbon(self.structure),
+            "has_h":
+            HasHydrogen(self.structure),
+            "has_metal":
+            HasMetal(self.structure),
+            "has_nitrogen":
+            HasNitrogen(self.structure),
+            "no_atomic_overlaps":
+            AtomicOverlapCheck(self.structure),
+            "no_undercoordinated_carbon":
+            UnderCoordinatedCarbonCheck.from_mofchecker(self),
+            "no_overcoordinated_carbon":
+            OverCoordinatedCarbonCheck.from_mofchecker(self),
+            "no_overcoordinated_hydrogen":
+            OverCoordinatedHydrogenCheck.from_mofchecker(self),
+            "no_overcoordinated_nitrogen":
+            OverCoordinatedNitrogenCheck.from_mofchecker(self),
+            "no_undercoordinated_nitrogen":
+            UnderCoordinatedNitrogenCheck.from_mofchecker(self),
+            "no_floating_molecule":
+            FloatingSolventCheck.from_mofchecker(self),
+            "no_high_charges":
+            ChargeCheck(self.structure),
+            "is_porous":
+            PorosityCheck(self.structure),
+            "no_oms":
+            MOFOMS.from_mofchecker(self),
         }
 
     def _set_filename(self, path):
@@ -281,8 +283,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         """
         if site_index not in self._connected_sites:
             self._connected_sites[site_index] = self.graph.get_connected_sites(
-                site_index
-            )
+                site_index)
         return self._connected_sites[site_index]
 
     def get_cn(self, site_index) -> int:
@@ -349,6 +350,10 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             omscls._set_filename(path)  # pylint:disable=protected-access
             return omscls
 
+    @property
+    def has_oms(self):
+        return not self._checks["no_oms"].is_ok
+
     def _set_cnn(self, method="vesta"):
         if self._cnn_method == method.lower():
             return
@@ -361,28 +366,26 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             OrderedDict: result of overall checks
         """
-        result_dict = OrderedDict(
-            (
-                ("name", self.name),
-                ("graph_hash", self.graph_hash),
-                ("formula", self.formula),
-                ("path", self._filename),
-                ("density", self.density),
-                ("has_carbon", self.has_carbon),
-                ("has_hydrogen", self.has_hydrogen),
-                ("has_atomic_overlaps", self.has_atomic_overlaps),
-                ("has_overcoordinated_c", self.has_overvalent_c),
-                ("has_overcoordinated_n", self.has_overvalent_n),
-                ("has_overcoordinated_h", self.has_overvalent_h),
-                ("has_undercoordinated_c", self.has_undercoordinated_c),
-                ("has_undercoordinated_n", self.has_undercoordinated_n),
-                ("has_metal", self.has_metal),
-                ("has_lone_molecule", self.has_lone_molecule),
-                ("has_high_charges", self.has_high_charges),
-                # ("has_undercoordinated_metal", self.has_undercoordinated_metal),
-                ("is_porous", self.is_porous),
-            )
-        )
+        result_dict = OrderedDict((
+            ("name", self.name),
+            ("graph_hash", self.graph_hash),
+            ("formula", self.formula),
+            ("path", self._filename),
+            ("density", self.density),
+            ("has_carbon", self.has_carbon),
+            ("has_hydrogen", self.has_hydrogen),
+            ("has_atomic_overlaps", self.has_atomic_overlaps),
+            ("has_overcoordinated_c", self.has_overvalent_c),
+            ("has_overcoordinated_n", self.has_overvalent_n),
+            ("has_overcoordinated_h", self.has_overvalent_h),
+            ("has_undercoordinated_c", self.has_undercoordinated_c),
+            ("has_undercoordinated_n", self.has_undercoordinated_n),
+            ("has_metal", self.has_metal),
+            ("has_lone_molecule", self.has_lone_molecule),
+            ("has_high_charges", self.has_high_charges),
+            # ("has_undercoordinated_metal", self.has_undercoordinated_metal),
+            ("is_porous", self.is_porous),
+        ))
         return result_dict
 
     # def _has_low_metal_coordination(self):
