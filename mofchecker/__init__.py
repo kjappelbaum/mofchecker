@@ -345,7 +345,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     @property
     def lone_molecule_indices(self):
         """Returns indices of non-periodic connected component in the structure"""
-        return self._checks["no_floating_molecule_indices"].flagged_indices
+        return self._checks["no_floating_molecule"].flagged_indices
 
     @classmethod
     def _from_file(cls, path: str):

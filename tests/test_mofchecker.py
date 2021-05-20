@@ -66,6 +66,8 @@ def test_lone_molecule():
     )
     assert mofchecker.has_lone_molecule == True
 
+    assert mofchecker.lone_molecule_indices == [[432]]
+
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "UiO_66_water.cif"))
     )
