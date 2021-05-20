@@ -55,23 +55,6 @@ def test_overvalent_c(get_overvalent_c_structures):
     assert mofchecker.has_overvalent_c == False
 
 
-def test_lone_atom():
-    mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAVIJ_clean.cif"))
-    )
-    assert mofchecker.has_lone_atom == False
-
-    mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "HKUST_floating.cif"))
-    )
-    assert mofchecker.has_lone_atom == True
-
-    mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "FEZTIP_clean.cif"))
-    )
-    assert mofchecker.has_lone_atom == False
-
-
 def test_lone_molecule():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAVIJ_clean.cif"))

@@ -15,10 +15,10 @@ class UnderCoordinatedNitrogenCheck(BaseCoordinationCheck):
         return "Checks, using geometric heuristics, if there are any carbons that are likely undercoordinated."
 
     def _run_check(self):
-        undercoordinated_carbons = self._get_undercoordinated_carbons()
-        return len(undercoordinated_carbons) == 0, undercoordinated_carbons
+        undercoordinated_nitrogens = self._get_undercoordinated_nitrogens()
+        return len(undercoordinated_nitrogens) == 0, undercoordinated_nitrogens
 
-    def _get_undercoordinated_carbons(self, tolerance: int = 10):
+    def _get_undercoordinated_nitrogens(self, tolerance: int = 15):
         """Attempts to captures missing hydrogens on nitrogen groups
         using heuristics
         """
