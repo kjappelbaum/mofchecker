@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-import numpy as np
-
-from ...graph import _get_cn
 from ..utils.get_indices import _is_any_neighbor_metal, get_h_indices
 from .base_coordination_check import BaseCoordinationCheck
 
