@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 """Helper functions for the graph hash calculation"""
+from collections import defaultdict
+from typing import List, Tuple
+
 import networkx as nx
-from pymatgen.analysis.graphs import StructureGraph, MoleculeGraph
+import numpy as np
+from pymatgen.analysis.graphs import MoleculeGraph, StructureGraph
 from pymatgen.analysis.local_env import (
     BrunnerNN_relative,
     CrystalNN,
@@ -12,9 +16,6 @@ from pymatgen.analysis.local_env import (
     VoronoiNN,
 )
 from pymatgen.core import Molecule, Structure
-from typing import List, Tuple
-import numpy as np
-from collections import defaultdict
 
 VESTA_NN = CutOffDictNN.from_preset("vesta_2019")
 
@@ -56,6 +57,7 @@ def get_local_env_method(method):
     else:
         return JmolNN()
 
+
 def _is_in_cell(frac_coords):
     return all(frac_coords <= 1)
 
@@ -66,10 +68,12 @@ def _is_any_atom_in_cell(frac_coords):
             return True
     return False
 
+
 def get_structure_graph(structure, method):
     return StructureGraph.with_local_env_strategy(
         structure, get_local_env_method(method)
     )
+
 
 def _select_parts_in_cell(
     molecules: List[Molecule],

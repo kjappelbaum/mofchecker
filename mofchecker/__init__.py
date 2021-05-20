@@ -15,6 +15,7 @@ from pymatgen.core.structure import IStructure, Structure
 from pymatgen.io.cif import CifParser
 
 from ._version import get_versions
+from .checks.floating_solvent import FloatingSolventCheck
 from .checks.global_structure import HasCarbon, HasHydrogen, HasMetal, HasNitrogen
 from .checks.local_structure import (
     AtomicOverlapCheck,
@@ -31,13 +32,8 @@ from .checks.utils.get_indices import (
     get_n_indices,
 )
 from .checks.zeopp import check_if_porous
-from .checks.floating_solvent import FloatingSolventCheck
 from .definitions import CHECK_DESCRIPTIONS, EXPECTED_CHECK_VALUES
-from .graph import (
-    _get_cn,
-    construct_clean_graph,
-    get_structure_graph,
-)
+from .graph import _get_cn, construct_clean_graph, get_structure_graph
 from .utils import _check_if_ordered, get_charges
 
 __version__ = get_versions()["version"]
@@ -95,8 +91,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._overvalent_c = None
         self._overvalent_n = None
         self._overvalent_h = None
-        self._undercoordinated_carbon = None
-        self._undercoordinated_nitrogen = None
         self.check_expected_values = EXPECTED_CHECK_VALUES
         self.check_descriptions = CHECK_DESCRIPTIONS
 
@@ -125,7 +119,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             "no_undercoordinated_nitrogen": UnderCoordinatedNitrogenCheck.from_mofchecker(
                 self
             ),
-            "no_floating_molecule": FloatingSolventCheck.from_mofchecker(self)
+            "no_floating_molecule": FloatingSolventCheck.from_mofchecker(self),
         }
 
     def _set_filename(self, path):
@@ -200,6 +194,16 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return not self._checks["no_overcoordinated_carbon"].is_ok
 
     @property
+    def overvalent_c_indices(self) -> bool:
+        """Returns indices of carbon in the structure
+        that has more than 4 neighbors.
+
+        Returns:
+            [list]:
+        """
+        return self._checks["no_overcoordinated_carbon"].flagged_indices
+
+    @property
     def has_overvalent_h(self) -> bool:
         """Returns true if there is some hydrogen in the structure
         that has more than 1 neighbor.
@@ -210,16 +214,46 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return not self._checks["no_overcoordinated_hydrogen"].is_ok
 
     @property
+    def overvalent_h_indices(self) -> bool:
+        """Returns indices of hydrogen in the structure
+        that has more than 1 neighbors.
+
+        Returns:
+            [list]:
+        """
+        return self._checks["no_overcoordinated_hydrogen"].flagged_indices
+
+    @property
     def has_undercoordinated_c(self) -> bool:
         """Check if there is a carbon that likely misses
         hydrogen"""
         return not self._checks["no_undercoordinated_carbon"].is_ok
 
     @property
+    def undercoordinated_c_indices(self) -> bool:
+        """Returns indices of carbon in the structure
+        that likely miss some neighbors.
+
+        Returns:
+            [list]:
+        """
+        return self._checks["no_undercoordinated_carbon"].flagged_indices
+
+    @property
     def has_undercoordinated_n(self) -> bool:
         """Check if there is a nitrogen that likely misses
         hydrogen"""
         return not self._checks["no_undercoordinated_nitrogen"].is_ok
+
+    @property
+    def undercoordinated_n_indices(self) -> bool:
+        """Returns indices of nitrogen in the structure
+        that likely miss some neighbors.
+
+        Returns:
+            [list]:
+        """
+        return self._checks["no_undercoordinated_nitrogen"].flagged_indices
 
     def _has_high_charges(self, threshold=3) -> Union[bool, None]:
         if (self.charges is None) and HAS_OPENBABEL:
@@ -308,6 +342,11 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         """Returns true if there is a isolated floating atom or molecule"""
         return not self._checks["no_floating_molecule"].is_ok
 
+    @property
+    def lone_molecule_indices(self):
+        """Returns indices of non-periodic connected component in the structure"""
+        return self._checks["no_floating_molecule_indices"].flagged_indices
+
     @classmethod
     def _from_file(cls, path: str):
         structure = Structure.from_file(path)
@@ -339,12 +378,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         if self._cnn_method == method.lower():
             return
         self._cnn_method = method.lower()
-
-    def _has_stray_molecules(self) -> bool:
-        molecules = get_subgraphs_as_molecules_all(self.graph)
-        if len(molecules) > 0:
-            return True
-        return False
 
     def get_mof_descriptors(self) -> OrderedDict:
         """Run most of the sanity checks

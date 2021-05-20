@@ -4,7 +4,7 @@ Getting started with mofchecker
 Installation
 --------------
 
-We recommend installing mofchecker in a clean virtual environment environment (e.g., a `conda environment <https://docs.conda.io/projects/conda/en/latest/index.html>`_)
+We recommend installing mofchecker in a clean virtual environment (e.g., a `conda environment <https://docs.conda.io/projects/conda/en/latest/index.html>`_)
 
 
 You can install the latest stable release from PyPi using
@@ -53,4 +53,4 @@ To run all checks you only need the following code snippet
 
 :code:`check_result` will be a :code:`OrderedDict` in which the keys are the names of the checks and the values are the check results.
 
-The "ideal"/"expected" values for the checks are defined in :py:attr:`~mofchecker.check_expected_values`.
+The “ideal”/”expected” values for the checks are defined in :py:attr:`~mofchecker.check_expected_values`.
