@@ -97,6 +97,9 @@ def test_lone_molecule():
     assert set(species) == set(["H", "H", "H", "H", "C"])
     assert mofchecker.has_lone_molecule == True
 
+    atoms = read(os.path.join(THIS_DIR, "test_files", "overvalent_h.cif"))
+    mofchecker = MOFChecker.from_ase(atoms)
+    assert len(mofchecker.lone_molecule_indices) == 3
 
 def test_undercoordinated_c():
     mofchecker = MOFChecker(

@@ -11,7 +11,8 @@ class FloatingSolventCheck(AbstractIndexCheck):
         nx.set_node_attributes(
             self.structure_graph.graph,
             name="idx",
-            values=dict(zip(range(len(structure_graph)), range(len(structure_graph)))),
+            values=dict(
+                zip(range(len(structure_graph)), range(len(structure_graph)))),
         )
 
     @classmethod
@@ -20,7 +21,8 @@ class FloatingSolventCheck(AbstractIndexCheck):
         return checker
 
     def _run_check(self):
-        _, _, idx, _, _ = get_subgraphs_as_molecules(self.structure_graph)
+        _, _, idx, _, _ = get_subgraphs_as_molecules(self.structure_graph,
+                                                     return_unique=False)
         return len(idx) == 0, idx
 
     @property
