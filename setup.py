@@ -35,6 +35,7 @@ setup(
         "networkx==2.*",
         "pyeqeq @ git+https://github.com/kjappelbaum/EQeq.git@refactor",
         "backports.cached-property",
+        "ase"
     ],
     extras_require={
         "testing": ["pytest", "pytest-cov<2.12"],
