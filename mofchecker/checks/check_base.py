@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import abc
-from functools import cached_property
+
+from backports.cached_property import cached_property
 
 
 class AbstractCheck(abc.ABC):
