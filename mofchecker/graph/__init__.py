@@ -69,7 +69,7 @@ def _is_any_atom_in_cell(frac_coords):
     return False
 
 
-def get_structure_graph(structure, method):
+def get_structure_graph(structure, method: str = "vesta"):
     return StructureGraph.with_local_env_strategy(
         structure, get_local_env_method(method)
     )

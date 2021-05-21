@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
+from typing import List
+
 import numpy as np
 from pymatgen.analysis.local_env import LocalStructOrderParams
 
+from ...graph import _get_cn
+from ..check_base import AbstractIndexCheck
 from ..utils.get_indices import get_metal_indices
 from .definitions import OP_DEF
 from .errors import HighCoordinationNumber, LowCoordinationNumber, NoMetal
-from ...graph import _get_cn
-from ..check_base import AbstractIndexCheck
-from typing import List
 
 
 class MOFOMS(AbstractIndexCheck):
@@ -42,7 +43,8 @@ class MOFOMS(AbstractIndexCheck):
         descriptordict = {}
         for site_index in self._metal_indices:
             descriptordict[site_index] = self._get_metal_descriptors_for_site(
-                site_index)
+                site_index
+            )
 
         self.metal_features = descriptordict
 
@@ -98,8 +100,10 @@ class MOFOMS(AbstractIndexCheck):
             lsop = np.array(lsop) * np.array(weights)
             open_contributions = lsop[is_open].sum()
             close_contributions = lsop.sum() - open_contributions
-            return (open_contributions /
-                    (open_contributions + close_contributions) > threshold)
+            return (
+                open_contributions / (open_contributions + close_contributions)
+                > threshold
+            )
         return None
 
     def _get_metal_descriptors_for_site(self, site_index: int):
@@ -123,19 +127,9 @@ class MOFOMS(AbstractIndexCheck):
             }
             print(descriptors)
         except LowCoordinationNumber:
-            descriptors = {
-                "metal": metal,
-                "lsop": None,
-                "open": True,
-                "cn": None
-            }
+            descriptors = {"metal": metal, "lsop": None, "open": True, "cn": None}
         except HighCoordinationNumber:
-            descriptors = {
-                "metal": metal,
-                "lsop": None,
-                "open": None,
-                "cn": None
-            }
+            descriptors = {"metal": metal, "lsop": None, "open": None, "cn": None}
         return descriptors
 
     def _get_ops_for_site(self, site_index):
@@ -155,11 +149,19 @@ class MOFOMS(AbstractIndexCheck):
         except KeyError as exc:
             # For a bit more fine grained error messages
             if cn <= 3:  # pylint:disable=no-else-raise
-                raise LowCoordinationNumber("Coordination number {} is low \
-                        and order parameters undefined".format(cn)) from exc
+                raise LowCoordinationNumber(
+                    "Coordination number {} is low \
+                        and order parameters undefined".format(
+                        cn
+                    )
+                ) from exc
             elif cn > 8:
-                raise HighCoordinationNumber("Coordination number {} is high \
-                        and order parameters undefined".format(cn)) from exc
+                raise HighCoordinationNumber(
+                    "Coordination number {} is high \
+                        and order parameters undefined".format(
+                        cn
+                    )
+                ) from exc
 
             return cn, None, None, None, None
 
@@ -175,8 +177,7 @@ class MOFOMS(AbstractIndexCheck):
         """
         if site_index not in self._open_indices:
             try:
-                _, _, lsop, is_open, weights = self._get_ops_for_site(
-                    site_index)
+                _, _, lsop, is_open, weights = self._get_ops_for_site(site_index)
                 site_open = MOFOMS._check_if_open(lsop, is_open, weights)
                 if site_open:
                     self._open_indices.add(site_index)
