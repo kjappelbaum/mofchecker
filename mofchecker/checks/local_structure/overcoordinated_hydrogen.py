@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from ..data import _get_vdw_radius
 from ..utils.get_indices import _is_any_neighbor_metal, get_h_indices
 from .base_coordination_check import BaseCoordinationCheck
 
@@ -22,8 +23,9 @@ class OverCoordinatedHydrogenCheck(BaseCoordinationCheck):
         overcoordinated_hydrogens = []
 
         for site_index in self.h_indices:
-            cn = self.get_cn(site_index)  # pylint:disable=invalid-name
-            if cn > 1:
-                if not _is_any_neighbor_metal(self.get_connected_sites(site_index)):
-                    overcoordinated_hydrogens.append(site_index)
+            neighbors = self.structure.get_neighbors(
+                self.structure[site_index], _get_vdw_radius("H")
+            )  # pylint:disable=invalid-name
+            if len(neighbors) > 1:
+                overcoordinated_hydrogens.append(site_index)
         return overcoordinated_hydrogens

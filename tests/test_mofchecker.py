@@ -33,6 +33,19 @@ def test_unknown_elements():
     assert len(record) >= 1
 
 
+def test_overvalent_h():
+    mofchecker = MOFChecker.from_cif(
+        os.path.join(THIS_DIR, "test_files", "overvalent_h.cif")
+    )
+    assert mofchecker.has_overvalent_h
+    assert len(mofchecker.overvalent_h_indices) == 3
+
+    mofchecker = MOFChecker.from_cif(
+        os.path.join(THIS_DIR, "test_files", "XIGFOJ_manual.cif")
+    )
+    assert not mofchecker.has_overvalent_h
+
+
 def test_overvalent_c(get_overvalent_c_structures):
     for structure in get_overvalent_c_structures:
         mofchecker = MOFChecker(structure)
