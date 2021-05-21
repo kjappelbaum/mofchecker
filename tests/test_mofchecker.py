@@ -4,6 +4,7 @@
 import os
 
 import pytest
+from ase.io import read
 from pymatgen.core import Structure
 
 from mofchecker import MOFChecker
@@ -71,6 +72,16 @@ def test_lone_molecule():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "UiO_66_water.cif"))
     )
+    assert mofchecker.has_lone_molecule == True
+
+    atoms = read(os.path.join(THIS_DIR, "test_files", "floating_check.cif"))
+    mofchecker = MOFChecker.from_ase(atoms)
+    assert len(mofchecker.lone_molecule_indices) == 1
+    assert len(mofchecker.lone_molecule_indices[0]) == 5
+    species = []
+    for ind in mofchecker.lone_molecule_indices[0]:
+        species.append(str(mofchecker.structure[ind].specie))
+    assert set(species) == set(["H", "H", "H", "H", "C"])
     assert mofchecker.has_lone_molecule == True
 
 

@@ -7,9 +7,11 @@ from pathlib import Path
 from typing import List, Union
 
 import networkx as nx
+from ase import Atoms
 from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
 from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
 from pymatgen.core.structure import IStructure, Structure
+from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.cif import CifParser
 
 from ._version import get_versions
@@ -356,6 +358,23 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             omscls._set_filename(path)  # pylint:disable=protected-access
             return omscls
 
+    @classmethod
+    def from_ase(cls, atoms: Atoms, primitive: bool = True):
+        """Create a MOFChecker instance from an ASE atoms object
+
+        Args:
+            atoms (Atoms): ase atoms object
+            primitive (bool): If True, it will perform the analysis
+                on the primitive structure
+
+        Returns:
+            MOFChecker: Instance of MOFChecker
+        """
+        adaptor = AseAtomsAdaptor()
+        structure = adaptor.get_structure(atoms)
+        omscls = cls(structure, primitive=primitive)
+        return omscls
+
     @property
     def has_oms(self):
         return not self._checks["no_oms"].is_ok
@@ -392,7 +411,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 ("has_high_charges", self.has_high_charges),
                 # ("has_undercoordinated_metal", self.has_undercoordinated_metal),
                 ("is_porous", self.is_porous),
-                ("has_suspicicious_terminal_oxo", self.has_suspicicious_terminal_oxo)
+                ("has_suspicicious_terminal_oxo", self.has_suspicicious_terminal_oxo),
             )
         )
         return result_dict
