@@ -39,11 +39,13 @@ class UnderCoordinatedCarbonCheck(BaseCoordinationCheck):
                         site_index, neighbors[0].index, neighbors[1].index
                     )
                 )
-                if (np.abs(180 - angle) > tolerance) or (np.abs(180 - 0) > tolerance):
-                    if (not is_metal(neighbors[0].site)) or (
-                        not is_metal(neighbors[1].site)
-                    ):
-                        if len(_vdw_radius_neighbors(self.structure, site_index)) <= 2:
-                            undercoordinated_carbons.append(site_index)
-
+                print(site_index, neighbors, angle)
+                if np.abs(180 - angle) > tolerance:
+                    print(site_index)
+                    # if (not is_metal(neighbors[0].site)) or (
+                    #     not is_metal(neighbors[1].site)
+                    # ):
+                        #if len(_vdw_radius_neighbors(self.structure, site_index)) <= 2:
+                    undercoordinated_carbons.append(site_index)
+        print(undercoordinated_carbons, self.c_indices)
         return undercoordinated_carbons
