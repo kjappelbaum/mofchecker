@@ -66,12 +66,13 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         _check_if_ordered(structure)
         if primitive:
             self.structure = self.structure.get_primitive_structure()
+
         self.metal_indices = get_metal_indices(self.structure)
 
         self.charges = None
         self._porous = ""
         self.metal_features = None
-        self._cnn_method = "vesta"
+        self._cnn_method = "crystalnn"
         self._filename = None
         self._name = None
         self.c_indices = get_c_indices(self.structure)
@@ -130,7 +131,9 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         (taking the atomic kinds into account)
         and there are guarantees that non-isomorphic graphs will get different hashes.
         """
-        return weisfeiler_lehman_graph_hash(self.nx_graph, node_attr="specie")
+        return weisfeiler_lehman_graph_hash(
+            self.nx_graph, node_attr="specie", iterations=6
+        )
 
     @property
     def scaffold_hash(self):
@@ -138,7 +141,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Hashes are identical for isomorphic graphs and there are
         guarantees that non-isomorphic graphs will get different hashes.
         """
-        return weisfeiler_lehman_graph_hash(self.nx_graph)
+        return weisfeiler_lehman_graph_hash(self.nx_graph, iterations=6)
 
     @property
     def has_atomic_overlaps(self):

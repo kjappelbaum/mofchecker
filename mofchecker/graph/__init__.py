@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """Helper functions for the graph hash calculation"""
+import os
 from collections import defaultdict
 from typing import List, Tuple
 
 import networkx as nx
 import numpy as np
+import yaml
 from pymatgen.analysis.graphs import MoleculeGraph, StructureGraph
 from pymatgen.analysis.local_env import (
     BrunnerNN_relative,
@@ -17,7 +19,18 @@ from pymatgen.analysis.local_env import (
 )
 from pymatgen.core import Molecule, Structure
 
+THIS_DIR = os.path.dirname(os.path.realpath(__file__))
+
+with open(os.path.join(THIS_DIR, "atom_typing_radii.yml"), "r") as handle:
+    ATOM_TYPING_CUTOFFS = yaml.load(handle)
+
+
+with open(os.path.join(THIS_DIR, "li_radii.yml"), "r") as handle:
+    LI_TYPING_CUTOFFS = yaml.load(handle)
+
 VESTA_NN = CutOffDictNN.from_preset("vesta_2019")
+ATR_NN = CutOffDictNN(cut_off_dict=ATOM_TYPING_CUTOFFS)
+LI_NN = CutOffDictNN(cut_off_dict=LI_TYPING_CUTOFFS)
 
 
 def construct_clean_graph(
@@ -27,11 +40,28 @@ def construct_clean_graph(
     edges = {(u, v) for u, v, d in structure_graph.graph.edges(keys=False, data=True)}
     graph = nx.Graph()
     graph.add_edges_from(edges)
-
+    graph_descriptors = get_cycle_descriptors(graph)
+    sg_centrality = nx.subgraph_centrality(graph)
     for node in graph.nodes:
 
         graph.nodes[node]["specie"] = str(structure[node].specie)
-
+        graph.nodes[node]["specie-cn"] = (
+            str(structure[node].specie)
+            + "-"
+            + str(structure_graph.get_coordination_of_site(node))
+        )
+        graph.nodes[node]["species-cycle"] = get_node_string(
+            node, structure_graph, graph_descriptors["memberships"]
+        )
+        graph.nodes[node]["memership-hash"] = get_node_string(
+            node,
+            structure_graph,
+            graph_descriptors["memberships"],
+            membership_only=True,
+        )
+        graph.nodes[node]["species-sg-central"] = str(structure[node].specie) + str(
+            sg_centrality[node]
+        )
     return graph
 
 
@@ -43,7 +73,7 @@ def get_local_env_method(method):
     method = method.lower()
 
     if method.lower() == "crystalnn":
-        return CrystalNN()
+        return CrystalNN(porous_adjustment=True, x_diff_weight=2)
     elif method.lower() == "econnn":
         return EconNN()
     elif method.lower() == "brunnernn":
@@ -54,6 +84,10 @@ def get_local_env_method(method):
         return VESTA_NN
     elif method.lower() == "voronoinn":
         return VoronoiNN()
+    elif method.lower() == "atr":
+        return ATR_NN
+    elif method.lower() == "li":
+        return LI_NN
     else:
         return JmolNN()
 
@@ -260,3 +294,58 @@ def get_subgraphs_as_molecules(
         )
 
     return mol, return_subgraphs, idx, centers, coordinates
+
+
+def get_cycle_lengths(graph):
+    cycles = nx.minimum_cycle_basis(graph)
+    lengths = count_sublist_lengths(cycles)
+    return lengths
+
+
+def count_sublist_lengths(list_of_lists):
+    lengths = []
+
+    for l in list_of_lists:
+        lengths.append(len(l))
+
+    return lengths
+
+
+def get_cycle_memberships(graph, cycles, lengths):
+
+    unique_lengths = np.unique(lengths)
+
+    cycle_memberships = {}
+
+    for node in graph.nodes():
+
+        length_hash = dict(zip(unique_lengths, [0] * len(unique_lengths)))
+        for cycle, length in zip(cycles, lengths):
+            if node in cycle:
+                length_hash[length] += 1
+
+        cycle_memberships[node] = length_hash
+
+    return cycle_memberships
+
+
+def get_cycle_descriptors(graph):
+    cycles = nx.minimum_cycle_basis(graph)
+
+    lengths = count_sublist_lengths(cycles)
+
+    memberships = get_cycle_memberships(graph, cycles, lengths)
+
+    return {
+        "cycles": cycles,
+        "lengths": lengths,
+        "memberships": memberships,
+    }
+
+
+def get_node_string(index, structure_graph, memberships, membership_only: bool = False):
+    membership_hash = "".join([str(e) for e in memberships[index].values()])
+    atom_label = str(structure_graph.structure[index].specie)
+    if membership_only:
+        return membership_hash
+    return atom_label + membership_hash

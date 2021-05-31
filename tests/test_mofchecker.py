@@ -25,12 +25,18 @@ def test_name():
 
 def test_unknown_elements():
     """Parsing structure with unknown element raises warning for covalent radius."""
-    with pytest.warns(UserWarning) as record:
+    # with pytest.warns(UserWarning) as record:
+    #     mofchecker = MOFChecker.from_cif(
+    #         os.path.join(THIS_DIR, "test_files", "GUPQOA.cif")
+    #     )
+    #     mofchecker.get_mof_descriptors()
+    # assert len(record) >= 1
+
+    with pytest.raises(NotImplementedError):
         mofchecker = MOFChecker.from_cif(
             os.path.join(THIS_DIR, "test_files", "GUPQOA.cif")
         )
         mofchecker.get_mof_descriptors()
-    assert len(record) >= 1
 
 
 def test_overvalent_h():
@@ -80,7 +86,7 @@ def test_lone_molecule():
     )
     assert mofchecker.has_lone_molecule == True
 
-    assert mofchecker.lone_molecule_indices == [[432]]
+    assert mofchecker.lone_molecule_indices == [[144]]
 
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "UiO_66_water.cif"))
@@ -98,8 +104,9 @@ def test_lone_molecule():
     assert mofchecker.has_lone_molecule == True
 
     atoms = read(os.path.join(THIS_DIR, "test_files", "overvalent_h.cif"))
-    mofchecker = MOFChecker.from_ase(atoms, primitive = False)
-    assert len(mofchecker.lone_molecule_indices) == 3
+    mofchecker = MOFChecker.from_ase(atoms, primitive=False)
+    assert len(mofchecker.lone_molecule_indices) == 1
+
 
 def test_undercoordinated_c():
     mofchecker = MOFChecker(
@@ -117,7 +124,6 @@ def test_undercoordinated_c():
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "RUDQUD_clean.cif"))
     )
     assert mofchecker.has_undercoordinated_c == False
-
 
     # alkene ligand
     mofchecker = MOFChecker(

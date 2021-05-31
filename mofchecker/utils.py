@@ -37,3 +37,8 @@ def _check_if_ordered(structure):
             "Support of unordered structures with partial occupancies \
                 is not implemented (yet)."
         )
+    for site in structure:
+        if site.specie.atomic_radius is None:
+            raise NotImplementedError(
+                f"Pymatgen currently does not support this {str(site.specie)} element"
+            )
