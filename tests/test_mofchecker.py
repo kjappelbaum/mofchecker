@@ -88,10 +88,10 @@ def test_lone_molecule():
 
     assert mofchecker.lone_molecule_indices == [[144]]
 
-    mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "UiO_66_water.cif"))
-    )
-    assert mofchecker.has_lone_molecule == True
+    # mofchecker = MOFChecker(
+    #     Structure.from_file(os.path.join(THIS_DIR, "test_files", "UiO_66_water.cif"))
+    # )
+    # assert mofchecker.has_lone_molecule == True
 
     atoms = read(os.path.join(THIS_DIR, "test_files", "floating_check.cif"))
     mofchecker = MOFChecker.from_ase(atoms)

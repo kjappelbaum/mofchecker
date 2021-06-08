@@ -73,7 +73,10 @@ def get_local_env_method(method):
     method = method.lower()
 
     if method.lower() == "crystalnn":
-        return CrystalNN(porous_adjustment=True, x_diff_weight=2)
+        # see eq. 15 and 16 in https://pubs.acs.org/doi/full/10.1021/acs.inorgchem.0c02996 
+        # for the x_diff_weight parameter. in the paper it is called δen and it is set to 3
+        # we found better results by lowering this weight 
+        return CrystalNN(porous_adjustment=True, x_diff_weight=1)
     elif method.lower() == "econnn":
         return EconNN()
     elif method.lower() == "brunnernn":
