@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from ..utils.get_indices import get_n_indices
-from .base_coordination_check import BaseCoordinationCheck
+from .base_missing_check import BaseMissingCheck
 from .geometry import _guess_underbound_nitrogen_cn2, _guess_underbound_nitrogen_cn3
 
 
-class UnderCoordinatedNitrogenCheck(BaseCoordinationCheck):
+class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
     def __init__(self, structure, structure_graph):
         self.structure = structure
         self.n_indices = get_n_indices(self.structure)
@@ -12,18 +12,18 @@ class UnderCoordinatedNitrogenCheck(BaseCoordinationCheck):
 
     @property
     def description(self):
-        return "Checks, using geometric heuristics, if there are any carbons that are likely undercoordinated."
+        return "Checks, using geometric heuristics, if there are any nitrogens that are likely undercoordinated."
 
     def _run_check(self):
-        undercoordinated_nitrogens = self._get_undercoordinated_nitrogens()
-        return len(undercoordinated_nitrogens) == 0, undercoordinated_nitrogens
+        undercoordinated_nitrogens, positions = self._get_undercoordinated_nitrogens()
+        return len(undercoordinated_nitrogens) == 0, undercoordinated_nitrogens, positions
 
     def _get_undercoordinated_nitrogens(self, tolerance: int = 15):
         """Attempts to captures missing hydrogens on nitrogen groups
         using heuristics
         """
         undercoordinated_nitrogens = []
-
+        h_positions = []
         for site_index in self.n_indices:
             cn = self.get_cn(site_index)  # pylint:disable=invalid-name
             neighbors = self.get_connected_sites(site_index)
@@ -55,4 +55,4 @@ class UnderCoordinatedNitrogenCheck(BaseCoordinationCheck):
                 if undercoordinated_nitrogen:
                     undercoordinated_nitrogens.append(site_index)
 
-        return undercoordinated_nitrogens
+        return undercoordinated_nitrogens, h_positions
