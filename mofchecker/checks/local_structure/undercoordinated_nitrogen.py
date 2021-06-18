@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 from ..utils.get_indices import get_n_indices
 from .base_missing_check import BaseMissingCheck
-from .geometry import _guess_underbound_nitrogen_cn2, _guess_underbound_nitrogen_cn3
+from .geometry import (
+    _guess_underbound_nitrogen_cn2,
+    _guess_underbound_nitrogen_cn3,
+    sp2_hydrogen_coords,
+    sp_hydrogen_coords,
+)
 
 
 class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
@@ -16,7 +21,11 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
 
     def _run_check(self):
         undercoordinated_nitrogens, positions = self._get_undercoordinated_nitrogens()
-        return len(undercoordinated_nitrogens) == 0, undercoordinated_nitrogens, positions
+        return (
+            len(undercoordinated_nitrogens) == 0,
+            undercoordinated_nitrogens,
+            positions,
+        )
 
     def _get_undercoordinated_nitrogens(self, tolerance: int = 15):
         """Attempts to captures missing hydrogens on nitrogen groups
@@ -37,6 +46,9 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
                     0
                 ].site.specie.is_metal:
                     undercoordinated_nitrogens.append(site_index)
+                    h_positions.append(
+                        sp_hydrogen_coords(self.structure[site_index], neighbors)
+                    )
             elif cn == 2:
                 undercoordinated_nitrogen = _guess_underbound_nitrogen_cn2(
                     self.structure,
@@ -48,6 +60,9 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
                 )
                 if undercoordinated_nitrogen:
                     undercoordinated_nitrogens.append(site_index)
+                    h_positions.append(
+                        sp2_hydrogen_coords(self.structure[site_index], neighbors)
+                    )
             elif cn == 3:
                 undercoordinated_nitrogen = _guess_underbound_nitrogen_cn3(
                     self.structure, site_index, neighbors, tolerance

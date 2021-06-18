@@ -45,7 +45,6 @@ class AbstractIndexCheck(abc.ABC):
         pass
 
 
-
 class AbstractMissingCheck(abc.ABC):
     @property
     @abc.abstractmethod
@@ -71,7 +70,6 @@ class AbstractMissingCheck(abc.ABC):
     def candidate_positions(self):
         _, _, positions = self.is_ok_indices_positions
         return positions
-
 
     @abc.abstractmethod
     def _run_check(self):

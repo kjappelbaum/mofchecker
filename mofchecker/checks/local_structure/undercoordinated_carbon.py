@@ -19,12 +19,18 @@ class UnderCoordinatedCarbonCheck(BaseMissingCheck):
         return "Checks, using geometric heuristics, if there are any carbons that are likely undercoordinated."
 
     def _run_check(self):
-        undercoordinated_carbons, candidate_positions = self._get_undercoordinated_carbons(
-        )
+        (
+            undercoordinated_carbons,
+            candidate_positions,
+        ) = self._get_undercoordinated_carbons()
         assert len(undercoordinated_carbons) == len(
-            candidate_positions), "Unexpected check error"
-        return len(undercoordinated_carbons
-                   ) == 0, undercoordinated_carbons, candidate_positions
+            candidate_positions
+        ), "Unexpected check error"
+        return (
+            len(undercoordinated_carbons) == 0,
+            undercoordinated_carbons,
+            candidate_positions,
+        )
 
     def _get_undercoordinated_carbons(self, tolerance: int = 10):
         """Idea is that carbon should at least have three neighbors if it is not sp1.
@@ -39,16 +45,21 @@ class UnderCoordinatedCarbonCheck(BaseMissingCheck):
         cart_coords = self.structure.cart_coords
         for site_index in self.c_indices:
             cn = self.get_cn(site_index)  # pylint:disable=invalid-name
+            if cn == 1:
+                undercoordinated_carbons.append(site_index)
+                # make it sp3
             if cn == 2:
                 neighbors = self.get_connected_sites(site_index)
                 angle = _maximum_angle(
-                    self.structure.get_angle(site_index, neighbors[0].index,
-                                             neighbors[1].index))
+                    self.structure.get_angle(
+                        site_index, neighbors[0].index, neighbors[1].index
+                    )
+                )
                 if np.abs(180 - angle) > tolerance:
                     # if (not is_metal(neighbors[0].site)) or (
                     #     not is_metal(neighbors[1].site)
                     # ):
-                    #if len(_vdw_radius_neighbors(self.structure, site_index)) <= 2:
+                    # if len(_vdw_radius_neighbors(self.structure, site_index)) <= 2:
                     undercoordinated_carbons.append(site_index)
 
                     vec_a = cart_coords[site_index] - neighbors[0].site.coords
@@ -59,5 +70,7 @@ class UnderCoordinatedCarbonCheck(BaseMissingCheck):
                     new_vec = new_vec / np.linalg.norm(new_vec) * 1.087
 
                     h_positions.append(cart_coords[site_index] + new_vec)
+
+            # i wond't catch CN3 as this would need careful evaluation of the bond order
 
         return undercoordinated_carbons, h_positions

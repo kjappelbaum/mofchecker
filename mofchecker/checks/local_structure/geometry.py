@@ -121,3 +121,36 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
     if "H" in neighbor_species:
         return True
     return False
+
+
+def make_vec(start, end, length=None):
+    v = end - start
+    if length is not None:
+        v = v / np.linalg.norm(v) * length
+    return v
+
+
+def sp_hydrogen_coords(site, neighbors, length: float = 1):
+    v = make_vec(site.cart_coords, neighbors[0].site.cart_coords, length)
+    h_coords = site.cart_coords + v
+    return h_coords
+
+
+def sp2_hydrogen_coords(site, neighbors, length: float = 1):
+    assert len(neighbors) == 2
+
+    v0 = make_vec(site.cart_coords, neighbors[0].site.cart_coords)
+    v1 = make_vec(site.cart_coords, neighbors[1].site.cart_coords)
+    s = v0 + v1
+    s = np.linalg.norm(s) * length
+    h_coords = site.cart_coords + s
+    return h_coords
+
+
+def sp3_hydrogen_coords(site, neighbors, lengths: float = 1):
+
+    v = make_vec(c3, c2, b_length)
+    coordsH = [c[0] + v[0], c[1] + v[1], c[2] + v[2]]
+
+    atomic_number, type = self.type_added_hydrogen(atom)
+    return [(coordsH, atom, atomic_number, type)]
