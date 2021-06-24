@@ -157,39 +157,34 @@ def sp_hydrogen_coords(site, neighbors, length: float = 1):
     return h_coords
 
 
-def sp2_hydrogen_coords(site, neighbors, length: float = 1):
+def add_sp2_hydrogen(site, neighbors, length: float = 1):
     assert len(neighbors) == 2
 
-    v0 = make_vec(site.coords, neighbors[0].site.coords)
-    v1 = make_vec(site.coords, neighbors[1].site.coords)
+    v0 = make_vec(neighbors[0].coords, site.coords)
+    v1 = make_vec(neighbors[1].coords, site.coords)
     s = v0 + v1
-    s = np.linalg.norm(s) * length
+    s = s / np.linalg.norm(s) * length
     h_coords = site.coords + s
     return h_coords
 
-
-def sp3_hydrogen_coords(site, neighbors, length: float = 1):
-
-    v = make_vec(neighbors[0].site.coords, neighbors[1].site.coords, length)
-    h_coords = site.coords + v
-
-    return h_coords
-
-
 def add_methylene_hydrogens(site, neighbors, length: float = 1):
+    """convert x-C-z to z-CH2-z"""
+    assert len(neighbors) == 2
     v = make_vec(neighbors[0].coords, site.coords)
     v1 = make_vec(neighbors[1].coords, site.coords)
-    summed = (v + v1) * 1 / np.sqrt(3)
+    summed = (v + v1) 
 
-    normal = np.cross(v, v1) * np.sqrt(2 / 3)
+    normal = np.cross(v, v1) 
 
     hydrogen_1 = summed + normal
-    hydrogen_1 = hydrogen_1 / np.linalg.norm(hydrogen_1) * length
+    hydrogen_1 /=  np.linalg.norm(hydrogen_1) * length
 
     hydrogen_2 = summed - normal
-    hydrogen_2 = hydrogen_2 / np.linalg.norm(hydrogen_1) * length
+    hydrogen_2 /= np.linalg.norm(hydrogen_2) * length
 
-    return hydrogen_1, hydrogen_2
+    hydrogen_1 = site.coords + hydrogen_1
+    hydrogen_2 = site.coords + hydrogen_2
+    return [hydrogen_1, hydrogen_2]
 
 
 def get_some_orthorgonal_vector(vector):
