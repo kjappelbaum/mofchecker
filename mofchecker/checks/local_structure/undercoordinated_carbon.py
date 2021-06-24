@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
+from copy import deepcopy
+
 import numpy as np
+from pymatgen.core.composition import Composition
+from pymatgen.core.structure import PeriodicNeighbor
 
 from ...graph import _get_cn
 from ..utils.get_indices import _vdw_radius_neighbors, get_c_indices, is_metal
 from .base_missing_check import BaseMissingCheck
-from .geometry import _maximum_angle
+from .geometry import _maximum_angle, add_sp3_hydrogens_on_cn1
 
 
 class UnderCoordinatedCarbonCheck(BaseMissingCheck):
@@ -40,16 +44,20 @@ class UnderCoordinatedCarbonCheck(BaseMissingCheck):
         case of benzene rings with missing hydrogens.
         """
         undercoordinated_carbons = []
-        h_positions = []
+        h_positions = []  # output must be list of lists to allow for filterwarnings
 
         cart_coords = self.structure.cart_coords
         for site_index in self.c_indices:
             cn = self.get_cn(site_index)  # pylint:disable=invalid-name
+            neighbors = self.get_connected_sites(site_index)
             if cn == 1:
+                # this will fail for alkine
                 undercoordinated_carbons.append(site_index)
                 # make it sp3
+                h_positions.append(
+                    add_sp3_hydrogens_on_cn1(self.structure[site_index], neighbors)
+                )
             if cn == 2:
-                neighbors = self.get_connected_sites(site_index)
                 angle = _maximum_angle(
                     self.structure.get_angle(
                         site_index, neighbors[0].index, neighbors[1].index

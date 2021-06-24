@@ -1,8 +1,29 @@
 # -*- coding: utf-8 -*-
+import math
+
 import numpy as np
 from pymatgen.core import Structure
 
 from ..utils.get_indices import is_metal
+
+
+def rotation_matrix(axis, theta):
+    """
+    Return the rotation matrix associated with counterclockwise rotation about
+    the given axis by theta radians.
+    """
+    axis = axis / math.sqrt(np.dot(axis, axis))
+    a = math.cos(theta / 2.0)
+    b, c, d = -axis * math.sin(theta / 2.0)
+    aa, bb, cc, dd = a * a, b * b, c * c, d * d
+    bc, ad, ac, ab, bd, cd = b * c, a * d, a * c, a * b, b * d, c * d
+    return np.array(
+        [
+            [aa + bb - cc - dd, 2 * (bc + ad), 2 * (bd - ac)],
+            [2 * (bc - ad), aa + cc - bb - dd, 2 * (cd + ab)],
+            [2 * (bd + ac), 2 * (cd - ab), aa + dd - bb - cc],
+        ]
+    )
 
 
 def _maximum_angle(angle):
@@ -131,26 +152,70 @@ def make_vec(start, end, length=None):
 
 
 def sp_hydrogen_coords(site, neighbors, length: float = 1):
-    v = make_vec(site.cart_coords, neighbors[0].site.cart_coords, length)
-    h_coords = site.cart_coords + v
+    v = make_vec(site.coords, neighbors[0].site.coords, length)
+    h_coords = site.coords + v
     return h_coords
 
 
 def sp2_hydrogen_coords(site, neighbors, length: float = 1):
     assert len(neighbors) == 2
 
-    v0 = make_vec(site.cart_coords, neighbors[0].site.cart_coords)
-    v1 = make_vec(site.cart_coords, neighbors[1].site.cart_coords)
+    v0 = make_vec(site.coords, neighbors[0].site.coords)
+    v1 = make_vec(site.coords, neighbors[1].site.coords)
     s = v0 + v1
     s = np.linalg.norm(s) * length
-    h_coords = site.cart_coords + s
+    h_coords = site.coords + s
     return h_coords
 
 
-def sp3_hydrogen_coords(site, neighbors, lengths: float = 1):
+def sp3_hydrogen_coords(site, neighbors, length: float = 1):
 
-    v = make_vec(c3, c2, b_length)
-    coordsH = [c[0] + v[0], c[1] + v[1], c[2] + v[2]]
+    v = make_vec(neighbors[0].site.coords, neighbors[1].site.coords, length)
+    h_coords = site.coords + v
 
-    atomic_number, type = self.type_added_hydrogen(atom)
-    return [(coordsH, atom, atomic_number, type)]
+    return h_coords
+
+
+def add_methylene_hydrogens(site, neighbors, length: float = 1):
+    v = make_vec(neighbors[0].coords, site.coords)
+    v1 = make_vec(neighbors[1].coords, site.coords)
+    summed = (v + v1) * 1 / np.sqrt(3)
+
+    normal = np.cross(v, v1) * np.sqrt(2 / 3)
+
+    hydrogen_1 = summed + normal
+    hydrogen_1 = hydrogen_1 / np.linalg.norm(hydrogen_1) * length
+
+    hydrogen_2 = summed - normal
+    hydrogen_2 = hydrogen_2 / np.linalg.norm(hydrogen_1) * length
+
+    return hydrogen_1, hydrogen_2
+
+
+def get_some_orthorgonal_vector(vector):
+    rand_vec = np.array([np.random.random(), np.random.random(), np.random.random()])
+    new_vec = np.cross(rand_vec, vector)
+    new_vec /= np.linalg.norm(new_vec)
+    return new_vec
+
+
+def add_sp3_hydrogens_on_cn1(site, neighbors, length: float = 1):
+    """
+    We make a simple geometric construction based on a triangle which normal vector is
+    - the vector from the current neighbor and the central atom.
+    The cross product then gives us the next vector which we then only need to rotate
+    twice around 120 degrees.
+    """
+    v = make_vec(neighbors[0].coords, site.coords)
+
+    center = site.coords + v / np.linalg.norm(v) * length * np.cos(np.deg2rad(71))
+    orthogonal_vector = get_some_orthorgonal_vector(v) * length * np.sin(np.deg2rad(71))
+
+    second_vec = np.dot(rotation_matrix(v, np.deg2rad(120)), orthogonal_vector)
+    third_vec = np.dot(rotation_matrix(v, np.deg2rad(240)), orthogonal_vector)
+
+    first_h = center + orthogonal_vector
+    second_h = center + second_vec
+    third_h = center + third_vec
+
+    return [first_h, second_h, third_h]

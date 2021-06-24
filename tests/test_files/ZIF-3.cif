@@ -1,73 +1,66 @@
-data_ZIF-3
+#======================================================================
 
-_audit_creation_method RASPA-1.0
-_audit_creation_date 2011-3-5
-_audit_author_name 'David Dubbeldam'
+# CRYSTAL DATA
 
-_citation_author_name        'K.S. Park, Z. Ni, A.P. Cote, J.Y. Choi, R.D. Huang, F.J. Uribe-Romo, H.K. Chae, M. O’Keeffe, and O.M. Yaghi'
-_citation_title              'Exceptional chemical and thermal stability of zeolitic imidazolate frameworks'
-_citation_journal_abbrev     'P. Natl. Acad. Sci. USA'
-_citation_journal_volume     103
-_citation_journal_number     27
-_citation_page_first         10186
-_citation_page_last          10191
-_citation_year               2006
+#----------------------------------------------------------------------
 
-_cell_length_a    18.9701
-_cell_length_b    18.9701
-_cell_length_c    16.74
-_cell_angle_alpha 90
-_cell_angle_beta  90
-_cell_angle_gamma 90
-_cell_volume      6024.13
+data_VESTA_phase_1
 
-_symmetry_cell_setting          tetragonal
-_symmetry_space_group_name_Hall '-P 4n 2n'
-_symmetry_space_group_name_H-M  'P 42/m n m'
-_symmetry_Int_Tables_number     136
+
+_chemical_name_common                  'ZIF-3'
+_cell_length_a                         18.97010
+_cell_length_b                         18.97010
+_cell_length_c                         16.74000
+_cell_angle_alpha                      90
+_cell_angle_beta                       90
+_cell_angle_gamma                      90
+_space_group_name_H-M_alt              'P 42/m n m'
+_space_group_IT_number                 136
 
 loop_
-_symmetry_equiv_pos_as_xyz
- 'x,y,z'
- '-x,-y,z'
- '-y+1/2,x+1/2,z+1/2'
- 'y+1/2,-x+1/2,z+1/2'
- '-x+1/2,y+1/2,-z+1/2'
- 'x+1/2,-y+1/2,-z+1/2'
- 'y,x,-z'
- '-y,-x,-z'
- '-x,-y,-z'
- 'x,y,-z'
- 'y+1/2,-x+1/2,-z+1/2'
- '-y+1/2,x+1/2,-z+1/2'
- 'x+1/2,-y+1/2,z+1/2'
- '-x+1/2,y+1/2,z+1/2'
- '-y,-x,z'
- 'y,x,z'
+_space_group_symop_operation_xyz
+   'x, y, z'
+   '-x, -y, -z'
+   '-x, -y, z'
+   'x, y, -z'
+   '-y+1/2, x+1/2, z+1/2'
+   'y+1/2, -x+1/2, -z+1/2'
+   'y+1/2, -x+1/2, z+1/2'
+   '-y+1/2, x+1/2, -z+1/2'
+   '-x+1/2, y+1/2, -z+1/2'
+   'x+1/2, -y+1/2, z+1/2'
+   'x+1/2, -y+1/2, -z+1/2'
+   '-x+1/2, y+1/2, z+1/2'
+   'y, x, -z'
+   '-y, -x, z'
+   '-y, -x, -z'
+   'y, x, z'
 
 loop_
-_atom_site_label
-_atom_site_type_symbol
-_atom_site_fract_x
-_atom_site_fract_y
-_atom_site_fract_z
-_atom_site_charge
-Zn1      Zn     0.60549    0.17336    0.17924    0
-C1       C      0.7107     0.2893     0.1727     0
-H1       H      0.7332     0.2668     0.1305     0
-C2       C      0.6398     0.3092     0.2656     0
-H2       H      0.6027     0.3058     0.3018     0
-C3       C      0.6382     0.0326     0.2505     0
-H3       H      0.6047     0.0106     0.2184     0
-C4       C      0.6992     0.1093     0.3066     0
-H4       H      0.718      0.1525     0.3221     0
-C5       C      0.6812     0.1088     0.0422     0
-H5       H      0.7125     0.0845     0.0748     0
-C6       C      0.5971     0.1711     0          0
-H6       H      0.5567     0.1989     0          0
-C7       C      0.4527     0.2173     0.1623     0
-H7       H      0.4604     0.2508     0.1227     0
-N1       N      0.6522     0.2646     0.2044     0
-N2       N      0.6492     0.1006     0.2488     0
-N3       N      0.628      0.1499     0.0671     0
-N4       N      0.5021     0.1779     0.1992     0
+   _atom_site_label
+   _atom_site_occupancy
+   _atom_site_fract_x
+   _atom_site_fract_y
+   _atom_site_fract_z
+   _atom_site_adp_type
+   _atom_site_B_iso_or_equiv
+   _atom_site_type_symbol
+   Zn1        1.0     0.105490      0.326640      0.179240     Biso  1.000000 Zn
+   C1         1.0     0.210700      0.210700      0.172700     Biso  1.000000 C
+   H1         1.0     0.233200      0.233200      0.130500     Biso  1.000000 H
+   C2         1.0     0.139800      0.190800      0.265600     Biso  1.000000 C
+   H2         1.0     0.102700      0.194200      0.301800     Biso  1.000000 H
+   C3         1.0     0.138200      0.467400      0.250500     Biso  1.000000 C
+   H3         1.0     0.104700      0.489400      0.218400     Biso  1.000000 H
+   C4         1.0     0.199200      0.390700      0.306600     Biso  1.000000 C
+   H4         1.0     0.218000      0.347500      0.322100     Biso  1.000000 H
+   C5         1.0     0.181200      0.391200      0.042200     Biso  1.000000 C
+   H5         1.0     0.212500      0.415500      0.074800     Biso  1.000000 H
+   C6         1.0     0.097100      0.328900      0.000000     Biso  1.000000 C
+   H6         1.0     0.056700      0.301100      0.000000     Biso  1.000000 H
+   C7         1.0     0.217300      0.452700      0.337700     Biso  1.000000 C
+   H7         1.0     0.250800      0.460400      0.377300     Biso  1.000000 H
+   N1         1.0     0.152200      0.235400      0.204400     Biso  1.000000 N
+   N2         1.0     0.149200      0.399400      0.248800     Biso  1.000000 N
+   N3         1.0     0.128000      0.350100      0.067100     Biso  1.000000 N
+   N4         1.0     0.002100      0.322100      0.199200     Biso  1.000000 N

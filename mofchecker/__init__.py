@@ -60,7 +60,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             NotImplementedError in the case of partial occupancies
         """
         if isinstance(structure, Structure):
-            self.structure = IStructure.from_sites(structure)
+            self.structure = IStructure.from_sites(structure * (2, 2, 2))
         else:
             self.structure = structure
         _check_if_ordered(structure)
@@ -72,7 +72,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self.charges = None
         self._porous = ""
         self.metal_features = None
-        self._cnn_method = "crystalnn"
+        self._cnn_method = "vesta"
         self._filename = None
         self._name = None
         self.c_indices = get_c_indices(self.structure)
