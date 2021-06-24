@@ -11,6 +11,7 @@ def rotation_matrix(axis, theta):
     """
     Return the rotation matrix associated with counterclockwise rotation about
     the given axis by theta radians.
+    Stolen from https://stackoverflow.com/questions/6802577/rotation-of-3d-vector
     """
     axis = axis / math.sqrt(np.dot(axis, axis))
     a = math.cos(theta / 2.0)
@@ -151,33 +152,37 @@ def make_vec(start, end, length=None):
     return v
 
 
-def sp_hydrogen_coords(site, neighbors, length: float = 1):
+def add_sp_hydrogen(site, neighbors, length: float = 1):
+    """x#C -> x#C-H"""
+    assert len(neighbors) == 1
     v = make_vec(site.coords, neighbors[0].site.coords, length)
     h_coords = site.coords + v
     return h_coords
 
 
 def add_sp2_hydrogen(site, neighbors, length: float = 1):
+    """convert x-C=z to x-CH-z"""
     assert len(neighbors) == 2
 
-    v0 = make_vec(neighbors[0].coords, site.coords)
-    v1 = make_vec(neighbors[1].coords, site.coords)
+    v0 = make_vec(neighbors[0].site.coords, site.coords)
+    v1 = make_vec(neighbors[1].site.coords, site.coords)
     s = v0 + v1
     s = s / np.linalg.norm(s) * length
     h_coords = site.coords + s
     return h_coords
 
+
 def add_methylene_hydrogens(site, neighbors, length: float = 1):
     """convert x-C-z to z-CH2-z"""
     assert len(neighbors) == 2
-    v = make_vec(neighbors[0].coords, site.coords)
-    v1 = make_vec(neighbors[1].coords, site.coords)
-    summed = (v + v1) 
+    v = make_vec(neighbors[0].site.coords, site.coords)
+    v1 = make_vec(neighbors[1].site.coords, site.coords)
+    summed = v + v1
 
-    normal = np.cross(v, v1) 
+    normal = np.cross(v, v1)
 
     hydrogen_1 = summed + normal
-    hydrogen_1 /=  np.linalg.norm(hydrogen_1) * length
+    hydrogen_1 /= np.linalg.norm(hydrogen_1) * length
 
     hydrogen_2 = summed - normal
     hydrogen_2 /= np.linalg.norm(hydrogen_2) * length
@@ -201,7 +206,7 @@ def add_sp3_hydrogens_on_cn1(site, neighbors, length: float = 1):
     The cross product then gives us the next vector which we then only need to rotate
     twice around 120 degrees.
     """
-    v = make_vec(neighbors[0].coords, site.coords)
+    v = make_vec(neighbors[0].site.coords, site.coords)
 
     center = site.coords + v / np.linalg.norm(v) * length * np.cos(np.deg2rad(71))
     orthogonal_vector = get_some_orthorgonal_vector(v) * length * np.sin(np.deg2rad(71))

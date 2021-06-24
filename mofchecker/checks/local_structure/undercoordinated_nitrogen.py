@@ -5,7 +5,7 @@ from .geometry import (
     _guess_underbound_nitrogen_cn2,
     _guess_underbound_nitrogen_cn3,
     add_sp2_hydrogen,
-    sp_hydrogen_coords,
+    add_sp_hydrogen,
 )
 
 
@@ -36,6 +36,7 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
         for site_index in self.n_indices:
             cn = self.get_cn(site_index)  # pylint:disable=invalid-name
             neighbors = self.get_connected_sites(site_index)
+            print(neighbors)
             if cn == 1:
                 # this is suspicous, but it also might a CN which is perfectly fine.
                 # to check this, we first see if the neighbor is carbon
@@ -47,7 +48,7 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
                 ].site.specie.is_metal:
                     undercoordinated_nitrogens.append(site_index)
                     h_positions.append(
-                        sp_hydrogen_coords(self.structure[site_index], neighbors)
+                        add_sp_hydrogen(self.structure[site_index], neighbors)
                     )
             elif cn == 2:
                 undercoordinated_nitrogen = _guess_underbound_nitrogen_cn2(
