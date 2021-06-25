@@ -119,7 +119,8 @@ def test_undercoordinated_c():
     )
     assert mofchecker.has_undercoordinated_c == True
 
-    # alkine ligand but lets exclude this as the coordination environment is quite unusual
+    # alkine ligand but lets exclude this as the coordination environment
+    # is quite unusual
     # mofchecker = MOFChecker(
     #     Structure.from_file(os.path.join(THIS_DIR, "test_files", "RUDQUD_clean.cif"))
     # )
@@ -131,6 +132,7 @@ def test_undercoordinated_c():
     )
     assert mofchecker.has_undercoordinated_c == True
     assert len(mofchecker.undercoordinated_c_indices) == 2
+    assert len(mofchecker.undercoordinated_c_candidate_positions) == 2
 
 
 def test_undercoordinated_n():

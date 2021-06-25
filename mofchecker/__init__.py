@@ -136,6 +136,18 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         )
 
     @property
+    def undercoordinated_c_candidate_positions(self):
+        """Candidate positions for addition H on C
+        we identified as undercoordinated"""
+        return self._checks["no_undercoordinated_carbon"].candidate_positions
+
+    @property
+    def undercoordinated_n_candidate_positions(self):
+        """Candidate positions for addition H on N
+        we identified as undercoordinated"""
+        return self._checks["no_undercoordinated_nitrogen"].candidate_positions
+
+    @property
     def scaffold_hash(self):
         """Return the Weisfeiler-Lehman graph hash.
         Hashes are identical for isomorphic graphs and there are
@@ -265,10 +277,12 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
     @property
     def has_suspicicious_terminal_oxo(self):
+        """Flags metals with a potentially wrong terminal oxo group"""
         return not self._checks["no_false_terminal_oxo"].is_ok
 
     @property
     def suspicicious_terminal_oxo_indices(self):
+        """Indices of metals with a potentially wrong terminal oxo group"""
         return self._checks["no_false_terminal_oxo"].flagged_indices
 
     @property
@@ -380,6 +394,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
     @property
     def has_oms(self):
+        """Returns true if open metal sites are detected"""
         return not self._checks["no_oms"].is_ok
 
     def _set_cnn(self, method="vesta"):

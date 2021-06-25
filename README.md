@@ -20,7 +20,6 @@ Sanity checks:
 - Atoms with excessive [EQeq partial charge](https://pubs.acs.org/doi/10.1021/jz3008485)
 
 Basic analysis:
-- Presence of open metal sites
 - Presence of floating atoms or molecules
 - Hash of the atomic structure graph (useful to identify duplicates)
 

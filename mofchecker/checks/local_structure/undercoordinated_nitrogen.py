@@ -6,6 +6,7 @@ from .geometry import (
     _guess_underbound_nitrogen_cn2,
     _guess_underbound_nitrogen_cn3,
     add_sp2_hydrogen,
+    add_sp3_hydrogen,
     add_sp_hydrogen,
 )
 
@@ -74,8 +75,7 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
                 )
                 if undercoordinated_nitrogen:
                     undercoordinated_nitrogens.append(site_index)
-                    # ToDo: implement me
-                    # h_positions.append(
-                    #    add_sp3_hydrogens(self.structure[site_index], neighbors)
-                    # )
+                    h_positions.append(
+                        add_sp3_hydrogen(self.structure[site_index], neighbors)
+                    )
         return undercoordinated_nitrogens, h_positions

@@ -47,3 +47,26 @@ To run all checks you only need the following code snippet
 :code:`check_result` will be a :code:`OrderedDict` in which the keys are the names of the checks and the values are the check results.
 
 The “ideal”/”expected” values for the checks are defined in :py:attr:`~mofchecker.check_expected_values`.
+
+Adding missing hydrogens
+--------------------------
+
+We currently do not provide a fully-automated routine as the algorithm for identification of candidate sites for hydrogen is still quite primitive and not tested in production.
+
+.. code-block:: python
+
+    from mofchecker import MOFChecker
+    checker = MOFChecker.from_file(<path_to_file>)
+
+    # mofchecker uses an immutable object internally to avoid side effects
+    # and to allow hashing
+    mutable_structure = Structure.from_sites(checker.structure.sites)
+
+    # here we flatten a list that can potentially be a list of lists
+    # of Cartesian coordinates
+    h_positions = sum([], undercoordinated_c_candidate_positions)
+
+    # now, we can append the new sites to the structure
+    for h in h_positions:
+        h = mutable_structure.lattice.get_fractional_coords(h)
+        mutable_structure.append('H',  h)

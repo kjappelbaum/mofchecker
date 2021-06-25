@@ -211,6 +211,20 @@ def get_some_orthorgonal_vector(vector):
     return new_vec
 
 
+def add_sp3_hydrogen(site, neighbors, length: float = 1):
+    """H2N-M --> H3N-M"""
+    vector = make_vec(neighbors[0].site.coords, site.coords)
+    vector1 = make_vec(neighbors[1].site.coords, site.coords)
+
+    vector /= np.linalg.norm(vector)
+    vector1 /= np.linalg.norm(vector1)
+    summed = vector + vector1
+    summed = summed / np.linalg.norm(summed) * length
+    new_position = site.coords + summed
+
+    return new_position
+
+
 def add_sp3_hydrogens_on_cn1(site, neighbors, length: float = 1):
     """
     We make a simple geometric construction based on a triangle which normal vector is
