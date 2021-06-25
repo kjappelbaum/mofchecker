@@ -119,10 +119,10 @@ def test_graph_hash_robustness():  # pylint: disable=too-many-locals
     # assert zif3.graph_hash != zif4.graph_hash
 
     # issue 130
-    cof18141N2 = MOFChecker.from_cif(
+    cof_18141N2 = MOFChecker.from_cif(  # pylint: disable=invalid-name
         os.path.join(THIS_DIR, "test_files", "18141N2.cif")
     )
-    cof20211N2 = MOFChecker.from_cif(
+    cof_20211N2 = MOFChecker.from_cif(  # pylint: disable=invalid-name
         os.path.join(THIS_DIR, "test_files", "20211N2.cif")
     )
-    assert cof18141N2.graph_hash != cof20211N2.graph_hash
+    assert cof_18141N2.graph_hash != cof_20211N2.graph_hash

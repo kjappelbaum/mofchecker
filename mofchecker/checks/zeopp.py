@@ -103,6 +103,8 @@ def check_if_porous(structure: Structure, threshold: float = 2.4) -> Union[bool,
 
 
 class PorosityCheck(AbstractCheck):
+    """Use zeo++ to check if the structure is porous"""
+
     def __init__(self, structure):
         self.structure = structure
         self.threshold = 2.4

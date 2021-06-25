@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Utility function for getting the indices for certain atoms in the structure"""
 import functools
 from typing import Union
 
@@ -51,22 +52,27 @@ def _get_metal_indices(structure):
 
 
 def get_h_indices(structure):
+    """Get the indices of all H"""
     return get_indices(structure)["h"]
 
 
 def get_c_indices(structure):
+    """Get the indices of all C"""
     return get_indices(structure)["c"]
 
 
 def get_n_indices(structure):
+    """Get the indices of all N"""
     return get_indices(structure)["n"]
 
 
 def get_metal_indices(structure):
+    """Get the indices of all metals"""
     return get_indices(structure)["metal"]
 
 
-def get_indices(structure: Union[Structure, IStructure]):
+def get_indices(structure: Union[Structure, IStructure]) -> dict:
+    """Get all the relevant indices"""
     if isinstance(structure, Structure):
         structure = IStructure.from_sites(structure)
     return _get_indices(structure)

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Utilities for geometry operations"""
 import math
 
 import numpy as np
@@ -7,17 +8,24 @@ from pymatgen.core import Structure
 from ..utils.get_indices import is_metal
 
 
-def rotation_matrix(axis, theta):
+def rotation_matrix(axis, theta):  # pylint: disable=too-many-locals
     """
     Return the rotation matrix associated with counterclockwise rotation about
     the given axis by theta radians.
     Stolen from https://stackoverflow.com/questions/6802577/rotation-of-3d-vector
     """
     axis = axis / math.sqrt(np.dot(axis, axis))
-    a = math.cos(theta / 2.0)
-    b, c, d = -axis * math.sin(theta / 2.0)
-    aa, bb, cc, dd = a * a, b * b, c * c, d * d
-    bc, ad, ac, ab, bd, cd = b * c, a * d, a * c, a * b, b * d, c * d
+    a = math.cos(theta / 2.0)  # pylint:disable=invalid-name
+    b, c, d = -axis * math.sin(theta / 2.0)  # pylint:disable=invalid-name
+    aa, bb, cc, dd = a * a, b * b, c * c, d * d  # pylint:disable=invalid-name
+    bc, ad, ac, ab, bd, cd = (  # pylint:disable=invalid-name
+        b * c,
+        a * d,
+        a * c,
+        a * b,
+        b * d,
+        c * d,
+    )
     return np.array(
         [
             [aa + bb - cc - dd, 2 * (bc + ad), 2 * (bd - ac)],
@@ -146,17 +154,18 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
 
 
 def make_vec(start, end, length=None):
-    v = end - start
+    """Create a vector based on a start and end position"""
+    vector = end - start
     if length is not None:
-        v = v / np.linalg.norm(v) * length
-    return v
+        vector = vector / np.linalg.norm(vector) * length
+    return vector
 
 
 def add_sp_hydrogen(site, neighbors, length: float = 1):
     """x#C -> x#C-H"""
     assert len(neighbors) == 1
-    v = make_vec(site.coords, neighbors[0].site.coords, length)
-    h_coords = site.coords + v
+    vector = make_vec(site.coords, neighbors[0].site.coords, length)
+    h_coords = site.coords + vector
     return h_coords
 
 
@@ -164,22 +173,22 @@ def add_sp2_hydrogen(site, neighbors, length: float = 1):
     """convert x-C=z to x-CH-z"""
     assert len(neighbors) == 2
 
-    v0 = make_vec(neighbors[0].site.coords, site.coords)
-    v1 = make_vec(neighbors[1].site.coords, site.coords)
-    s = v0 + v1
-    s = s / np.linalg.norm(s) * length
-    h_coords = site.coords + s
+    vector0 = make_vec(neighbors[0].site.coords, site.coords)
+    vector1 = make_vec(neighbors[1].site.coords, site.coords)
+    summed = vector0 + vector1
+    summed = summed / np.linalg.norm(summed) * length
+    h_coords = site.coords + summed
     return h_coords
 
 
 def add_methylene_hydrogens(site, neighbors, length: float = 1):
     """convert x-C-z to z-CH2-z"""
     assert len(neighbors) == 2
-    v = make_vec(neighbors[0].site.coords, site.coords)
-    v1 = make_vec(neighbors[1].site.coords, site.coords)
-    summed = v + v1
+    vector = make_vec(neighbors[0].site.coords, site.coords)
+    vector1 = make_vec(neighbors[1].site.coords, site.coords)
+    summed = vector + vector1
 
-    normal = np.cross(v, v1)
+    normal = np.cross(vector, vector1)
 
     hydrogen_1 = summed + normal
     hydrogen_1 /= np.linalg.norm(hydrogen_1) * length
@@ -193,7 +202,10 @@ def add_methylene_hydrogens(site, neighbors, length: float = 1):
 
 
 def get_some_orthorgonal_vector(vector):
-    rand_vec = np.array([np.random.random(), np.random.random(), np.random.random()])
+    """Based on a vector generate some orthogonal vector by
+    cross product with a random vector. Will fail if the randly chosen
+    vector is parallel to the input vector."""
+    rand_vec = np.array([np.random.rand(), np.random.rand(), np.random.rand()])
     new_vec = np.cross(rand_vec, vector)
     new_vec /= np.linalg.norm(new_vec)
     return new_vec
@@ -206,13 +218,17 @@ def add_sp3_hydrogens_on_cn1(site, neighbors, length: float = 1):
     The cross product then gives us the next vector which we then only need to rotate
     twice around 120 degrees.
     """
-    v = make_vec(neighbors[0].site.coords, site.coords)
+    vector = make_vec(neighbors[0].site.coords, site.coords)
 
-    center = site.coords + v / np.linalg.norm(v) * length * np.cos(np.deg2rad(71))
-    orthogonal_vector = get_some_orthorgonal_vector(v) * length * np.sin(np.deg2rad(71))
+    center = site.coords + vector / np.linalg.norm(vector) * length * np.cos(
+        np.deg2rad(71)
+    )
+    orthogonal_vector = (
+        get_some_orthorgonal_vector(vector) * length * np.sin(np.deg2rad(71))
+    )
 
-    second_vec = np.dot(rotation_matrix(v, np.deg2rad(120)), orthogonal_vector)
-    third_vec = np.dot(rotation_matrix(v, np.deg2rad(240)), orthogonal_vector)
+    second_vec = np.dot(rotation_matrix(vector, np.deg2rad(120)), orthogonal_vector)
+    third_vec = np.dot(rotation_matrix(vector, np.deg2rad(240)), orthogonal_vector)
 
     first_h = center + orthogonal_vector
     second_h = center + second_vec

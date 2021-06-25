@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Checks on the composition"""
 from ..check_base import AbstractCheck
 from ..utils.get_indices import (
     get_c_indices,
@@ -9,6 +10,8 @@ from ..utils.get_indices import (
 
 
 class HasCarbon(AbstractCheck):
+    "Checks if the structure has any carbon atom."
+
     def __init__(self, structure):
         self.structure = structure
 
@@ -22,6 +25,8 @@ class HasCarbon(AbstractCheck):
 
 
 class HasNitrogen(AbstractCheck):
+    "Checks if the structure has any nitrogen atom."
+
     def __init__(self, structure):
         self.structure = structure
 
@@ -35,6 +40,8 @@ class HasNitrogen(AbstractCheck):
 
 
 class HasHydrogen(AbstractCheck):
+    "Checks if the structure has any hydrogen atom."
+
     def __init__(self, structure):
         self.structure = structure
 
@@ -48,6 +55,8 @@ class HasHydrogen(AbstractCheck):
 
 
 class HasMetal(AbstractCheck):
+    "Checks if the structure has any metal atom."
+
     def __init__(self, structure):
         self.structure = structure
 

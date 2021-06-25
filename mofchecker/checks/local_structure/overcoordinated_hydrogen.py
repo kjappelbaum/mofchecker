@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+"""Flagging overcoordinated hydrogens"""
 from ..data import _get_vdw_radius
-from ..utils.get_indices import _is_any_neighbor_metal, get_h_indices
+from ..utils.get_indices import get_h_indices
 from .base_coordination_check import BaseCoordinationCheck
 
 
 class OverCoordinatedHydrogenCheck(BaseCoordinationCheck):
+    """Flagging overcoordinated hydrogens"""
+
     def __init__(self, structure, structure_graph):
         self.structure = structure
         self.h_indices = get_h_indices(self.structure)
@@ -12,7 +15,8 @@ class OverCoordinatedHydrogenCheck(BaseCoordinationCheck):
 
     @property
     def description(self):
-        return "Checks, using geometric heuristics, if there are any hydrogen that are likely overcoordinated (i.e., CN>1)."
+        return "Checks, using geometric heuristics,\
+             if there are any hydrogen that are likely overcoordinated (i.e., CN>1)."
 
     def _run_check(self):
         overcoordinated_hydrogens = self._get_overcoordinated_hydrogens()

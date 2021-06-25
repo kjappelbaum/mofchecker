@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
-from copy import deepcopy
-
+"""Check for undercoordinated carbons"""
 import numpy as np
-from pymatgen.core.composition import Composition
-from pymatgen.core.structure import PeriodicNeighbor
 
-from ...graph import _get_cn
-from ..utils.get_indices import _vdw_radius_neighbors, get_c_indices, is_metal
+from ..utils.get_indices import get_c_indices
 from .base_missing_check import BaseMissingCheck
-from .geometry import _maximum_angle, add_sp3_hydrogens_on_cn1
+from .geometry import _maximum_angle, add_sp2_hydrogen, add_sp3_hydrogens_on_cn1
 
 
 class UnderCoordinatedCarbonCheck(BaseMissingCheck):
+    """Check for undercoordinated carbons"""
+
     def __init__(self, structure, structure_graph):
         self.structure = structure
         self.c_indices = get_c_indices(self.structure)
@@ -20,7 +18,8 @@ class UnderCoordinatedCarbonCheck(BaseMissingCheck):
 
     @property
     def description(self):
-        return "Checks, using geometric heuristics, if there are any carbons that are likely undercoordinated."
+        return "Checks, using geometric heuristics,\
+             if there are any carbons that are likely undercoordinated."
 
     def _run_check(self):
         (
@@ -44,9 +43,8 @@ class UnderCoordinatedCarbonCheck(BaseMissingCheck):
         case of benzene rings with missing hydrogens.
         """
         undercoordinated_carbons = []
-        h_positions = []  # output must be list of lists to allow for filterwarnings
+        h_positions = []  # output must be list of lists to allow for filtering
 
-        cart_coords = self.structure.cart_coords
         for site_index in self.c_indices:
             cn = self.get_cn(site_index)  # pylint:disable=invalid-name
             neighbors = self.get_connected_sites(site_index)
@@ -70,14 +68,9 @@ class UnderCoordinatedCarbonCheck(BaseMissingCheck):
                     # if len(_vdw_radius_neighbors(self.structure, site_index)) <= 2:
                     undercoordinated_carbons.append(site_index)
 
-                    vec_a = cart_coords[site_index] - neighbors[0].site.coords
-
-                    vec_b = cart_coords[site_index] - neighbors[1].site.coords
-
-                    new_vec = vec_a + vec_b
-                    new_vec = new_vec / np.linalg.norm(new_vec) * 1.087
-
-                    h_positions.append(cart_coords[site_index] + new_vec)
+                    h_positions.append(
+                        add_sp2_hydrogen(self.structure[site_index], neighbors)
+                    )
 
             # i wond't catch CN3 as this would need careful evaluation of the bond order
 

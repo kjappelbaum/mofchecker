@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Check for undercoordinated nitrogens"""
 from ..utils.get_indices import get_n_indices
 from .base_missing_check import BaseMissingCheck
 from .geometry import (
@@ -10,6 +11,8 @@ from .geometry import (
 
 
 class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
+    """Check for undercoordinated nitrogens"""
+
     def __init__(self, structure, structure_graph):
         self.structure = structure
         self.n_indices = get_n_indices(self.structure)
@@ -17,7 +20,8 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
 
     @property
     def description(self):
-        return "Checks, using geometric heuristics, if there are any nitrogens that are likely undercoordinated."
+        return "Checks, using geometric heuristics,\
+             if there are any nitrogens that are likely undercoordinated."
 
     def _run_check(self):
         undercoordinated_nitrogens, positions = self._get_undercoordinated_nitrogens()
@@ -70,5 +74,8 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
                 )
                 if undercoordinated_nitrogen:
                     undercoordinated_nitrogens.append(site_index)
-
+                    # ToDo: implement me
+                    # h_positions.append(
+                    #    add_sp3_hydrogens(self.structure[site_index], neighbors)
+                    # )
         return undercoordinated_nitrogens, h_positions

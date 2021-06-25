@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+"""Thresholds on the order parameters for OMS detection.
+Manually tuned and hence probably not super general"""
 # see Zimmermann, N. E. R.; Jain, A.
 # Local Structure Order Parameters and Site Fingerprints
 # for Quantification of Coordination Environment and Crystal Structure Similarity.

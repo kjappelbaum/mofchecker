@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Tooling for finding open metal sites"""
 from typing import List
 
 import numpy as np
@@ -12,6 +13,8 @@ from .errors import HighCoordinationNumber, LowCoordinationNumber, NoMetal
 
 
 class MOFOMS(AbstractIndexCheck):
+    """A 'checker' for finding open metal sites"""
+
     def __init__(self, structure, structure_graph):
         self.structure = structure
         self.structure_graph = structure_graph
@@ -25,10 +28,12 @@ class MOFOMS(AbstractIndexCheck):
         return "Check if there are any open metal sites in the structure."
 
     def get_cn(self, index):
+        """Return the coordination number"""
         return _get_cn(self.structure_graph, index)
 
     @classmethod
     def from_mofchecker(cls, mofchecker):
+        """Initialize a OMS check from a mofchecker instance"""
         checker = cls(mofchecker.structure, mofchecker.graph)
         checker.get_cn = mofchecker.get_cn
         return checker
@@ -85,11 +90,9 @@ class MOFOMS(AbstractIndexCheck):
         oms_sites = []
         if len(self._metal_indices) == 0:
             raise NoMetal("This structure does not contain a metal")
-        else:
-            for site_index in self._metal_indices:
-                if self.is_site_open(site_index):
-
-                    oms_sites.append(site_index)
+        for site_index in self._metal_indices:
+            if self.is_site_open(site_index):
+                oms_sites.append(site_index)
         return oms_sites
 
     @staticmethod
