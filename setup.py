@@ -33,7 +33,7 @@ setup(
         "pymatgen>=2021.1,<2022",
         "click==8.*",
         "networkx>=2.5",
-        "pyeqeq @ git+https://github.com/kjappelbaum/EQeq.git@refactor",
+        "pyeqeq",
         "backports.cached-property",
         "ase",
     ],
