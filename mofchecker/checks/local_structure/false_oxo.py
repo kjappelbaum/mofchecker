@@ -47,7 +47,7 @@ class FalseOxoCheck(BaseCoordinationCheck):
 
     @property
     def description(self):
-        return f"Checks if there is a metal with oxo group, for which such a group is unexpected."
+        return "Checks if there is a metal with oxo group, for which such a group is unexpected."
 
     def _run_check(self):
         wrong_oxo = self._get_wrong_oxo()
