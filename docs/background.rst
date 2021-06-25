@@ -9,6 +9,22 @@ For assembling the widely used CoRE-MOF database (see `first <https://pubs.acs.o
 
 In mofchecker, we follow this definition and use `zeopp <http://www.zeoplusplus.org/>`_ with the high-accuracy flag and the default atom radii to compute the largest free sphere. If it is above or equal to 2.4 Å the :py:attr`~mofchecker.MOFChecker.is_porous` will return :code:`True`.
 
+
+Charge check
+--------------
+The charge check is quite a simple heuristic that will raise an error if a simple charge equilibration method (see J. Chem. Theory Comput. 2019, 15, 1, 382–401 for background) yields high (>4) charges. Often, this correlates with "wrong", or at least, unusual chemistry. Has been used as a check in  Nat Commun 11, 4068 (2020).
+
+
+Clashing atoms
+-----------------
+The check for clashing atoms is based on a simple distance-based criterion. That is, for and atomic distance smaller than the minimum covalent radius of one of the bonding partners, we will raise an error.
+
+
+Over/undercoordinated C/N
+----------------------------
+The checks for over/undercoordination are based on simple, hard-coded heuristics on bond angles and coordination numbers and are far from being general and comprehensive.
+
+
 Graph hash and scaffold hash
 ----------------------------
 
@@ -71,3 +87,8 @@ It is also possible (but unlikely) that the hashes of two structures *coincide u
 
 * there is an unlucky hash clash.
   Weisfeiler Lehman has some `edge cases <https://informaconnect.com/beyond-weisfeiler-lehman-using-substructures-for-provably-expressive-graph-neural-networks/>`_)
+
+* the structure graph heuristics did not work, i.e., we assigned wrong bonds to the structure.
+
+
+To double-check the hash results it can be practical to also consider simple factors such as density and composition.

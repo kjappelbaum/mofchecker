@@ -4,7 +4,7 @@
 import os
 
 import pytest
-from pymatgen import Structure
+from pymatgen.core import Structure
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 

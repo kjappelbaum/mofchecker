@@ -2,7 +2,7 @@
 """Testing the hash functions."""
 import os
 
-from pymatgen import Structure
+from pymatgen.core import Structure
 from pymatgen.transformations.standard_transformations import RotationTransformation
 
 from mofchecker import MOFChecker
@@ -57,7 +57,7 @@ def test_graph_hash_robustness():  # pylint: disable=too-many-locals
     assert mof_74_zr.graph_hash != todyuj_checker.graph_hash
     assert mof_74_zr.graph_hash != vogtiv_checker.graph_hash
 
-    # MOF-74-Zn.cif
+    # # MOF-74-Zn.cif
     mof_74_zn = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "MOF-74-Zn.cif"))
     )
@@ -72,7 +72,7 @@ def test_graph_hash_robustness():  # pylint: disable=too-many-locals
     assert uio_66.graph_hash != vogtiv_checker.graph_hash
     assert uio_66.graph_hash != mof_74_zr.graph_hash
 
-    # MOF-5 is not ZIF-8
+    # # MOF-5 is not ZIF-8
     mof_5 = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "mof-5_cellopt.cif"))
     )
@@ -81,7 +81,7 @@ def test_graph_hash_robustness():  # pylint: disable=too-many-locals
     )
     assert mof_5.graph_hash != zif_8.graph_hash
 
-    # Mn-MOF-74 and UiO-67
+    # # Mn-MOF-74 and UiO-67
     coknun = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "coknun01.cif"))
     )
@@ -90,7 +90,7 @@ def test_graph_hash_robustness():  # pylint: disable=too-many-locals
     )
     assert coknun.graph_hash != wizmac.graph_hash
 
-    # Daniele's report
+    # # Daniele's report
     mmpf7 = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "943643.cif"))
     )
@@ -112,3 +112,17 @@ def test_graph_hash_robustness():  # pylint: disable=too-many-locals
 
     assert oriwet.graph_hash == coknun.graph_hash
     assert oriwet.scaffold_hash == coknun.scaffold_hash
+
+    # ZIF3/4
+    # zif3 = MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "ZIF-3.cif"))
+    # zif4 = MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "ZIF-4.cif"))
+    # assert zif3.graph_hash != zif4.graph_hash
+
+    # issue 130
+    cof_18141N2 = MOFChecker.from_cif(  # pylint: disable=invalid-name
+        os.path.join(THIS_DIR, "test_files", "18141N2.cif")
+    )
+    cof_20211N2 = MOFChecker.from_cif(  # pylint: disable=invalid-name
+        os.path.join(THIS_DIR, "test_files", "20211N2.cif")
+    )
+    assert cof_18141N2.graph_hash != cof_20211N2.graph_hash

@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """MOFChecker: Basic sanity checks for MOFs"""
-import json
-import logging
 import os
 import warnings
 from collections import OrderedDict
@@ -9,67 +7,48 @@ from pathlib import Path
 from typing import List, Union
 
 import networkx as nx
-import numpy as np
+from ase import Atoms
 from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
 from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
-from pymatgen.analysis.local_env import (
-    BrunnerNN_relative,
-    CrystalNN,
-    CutOffDictNN,
-    EconNN,
-    JmolNN,
-    LocalStructOrderParams,
-    MinimumDistanceNN,
-    VoronoiNN,
-)
-from pymatgen.core import Structure
+from pymatgen.core.structure import IStructure, Structure
+from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.cif import CifParser
 
 from ._version import get_versions
-from .checks.hash import construct_clean_graph
-from .checks.zeopp import check_if_porous
-from .definitions import CHECK_DESCRIPTIONS, EXPECTED_CHECK_VALUES, OP_DEF
-from .utils import (
-    HighCoordinationNumber,
-    LowCoordinationNumber,
-    NoMetal,
-    _check_if_ordered,
-    _check_metal_coordination,
-    _guess_underbound_nitrogen_cn2,
-    _guess_underbound_nitrogen_cn3,
-    _is_any_neighbor_metal,
-    _maximum_angle,
-    _vdw_radius_neighbors,
-    get_charges,
-    get_overlaps,
-    get_subgraphs_as_molecules_all,
-    is_metal,
+from .checks.charge_check import ChargeCheck
+from .checks.floating_solvent import FloatingSolventCheck
+from .checks.global_structure import HasCarbon, HasHydrogen, HasMetal, HasNitrogen
+from .checks.local_structure import (
+    AtomicOverlapCheck,
+    FalseOxoCheck,
+    OverCoordinatedCarbonCheck,
+    OverCoordinatedHydrogenCheck,
+    OverCoordinatedNitrogenCheck,
+    UnderCoordinatedCarbonCheck,
+    UnderCoordinatedNitrogenCheck,
 )
+from .checks.oms import MOFOMS
+from .checks.utils.get_indices import (
+    get_c_indices,
+    get_h_indices,
+    get_metal_indices,
+    get_n_indices,
+)
+from .checks.zeopp import PorosityCheck
+from .definitions import CHECK_DESCRIPTIONS, EXPECTED_CHECK_VALUES
+from .graph import _get_cn, construct_clean_graph, get_structure_graph
+from .utils import _check_if_ordered
 
 __version__ = get_versions()["version"]
 del get_versions
 
 __all__ = ["__version__", "MOFChecker"]
 
-MOFCheckLogger = logging.getLogger(__name__)
-MOFCheckLogger.setLevel(logging.DEBUG)
-VESTA_NN = CutOffDictNN.from_preset("vesta_2019")
-try:
-    from openbabel import pybel  # pylint:disable=import-outside-toplevel, unused-import
-
-    HAS_OPENBABEL = True
-except ImportError:
-    warnings.warn(
-        "For the charge check openbabel needs to be installed. \
-    This can be done, for example using conda install openbabel"
-    )
-    HAS_OPENBABEL = False
-
 
 class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-public-methods
     """MOFChecker performs basic sanity checks for MOFs"""
 
-    def __init__(self, structure: Structure, primitive: bool = True):
+    def __init__(self, structure: Union[Structure, IStructure], primitive: bool = True):
         """Class that can perform basic sanity checks for MOF structures
 
         Args:
@@ -80,41 +59,28 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Raises:
             NotImplementedError in the case of partial occupancies
         """
-        self.structure = structure
+        if isinstance(structure, Structure):
+            self.structure = IStructure.from_sites(structure)
+        else:
+            self.structure = structure
         _check_if_ordered(structure)
         if primitive:
             self.structure = self.structure.get_primitive_structure()
-        self.metal_indices = [
-            i for i, site in enumerate(self.structure) if is_metal(site)
-        ]
 
-        self.porous_adjustment = False
+        self.metal_indices = get_metal_indices(self.structure)
+
         self.charges = None
         self._porous = ""
         self.metal_features = None
-        self._open_indices: set = set()
-        self._has_oms = None
-        self._cnn = None
-        self._cnn_method = None
+        self._cnn_method = "vesta"
         self._filename = None
-        self._atomic_overlaps = None
         self._name = None
-        self.c_indices = [
-            i for i, species in enumerate(self.structure.species) if str(species) == "C"
-        ]
-        self.h_indices = [
-            i
-            for i, species in enumerate(self.structure.species)
-            if str(species) in ["H", "D", "T"]
-        ]
-        self.n_indices = [
-            i for i, species in enumerate(self.structure.species) if str(species) == "N"
-        ]
+        self.c_indices = get_c_indices(self.structure)
+        self.h_indices = get_h_indices(self.structure)
+        self.n_indices = get_n_indices(self.structure)
         self._overvalent_c = None
         self._overvalent_n = None
         self._overvalent_h = None
-        self._undercoordinated_carbon = None
-        self._undercoordinated_nitrogen = None
         self.check_expected_values = EXPECTED_CHECK_VALUES
         self.check_descriptions = CHECK_DESCRIPTIONS
 
@@ -122,22 +88,41 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._nx_graph = None
         self._connected_sites = {}
         self._cns = {}
-        self._set_cnn()
+        self._checks = {
+            "has_c": HasCarbon(self.structure),
+            "has_h": HasHydrogen(self.structure),
+            "has_metal": HasMetal(self.structure),
+            "has_nitrogen": HasNitrogen(self.structure),
+            "no_atomic_overlaps": AtomicOverlapCheck(self.structure),
+            "no_undercoordinated_carbon": UnderCoordinatedCarbonCheck.from_mofchecker(
+                self
+            ),
+            "no_overcoordinated_carbon": OverCoordinatedCarbonCheck.from_mofchecker(
+                self
+            ),
+            "no_overcoordinated_hydrogen": OverCoordinatedHydrogenCheck.from_mofchecker(
+                self
+            ),
+            "no_overcoordinated_nitrogen": OverCoordinatedNitrogenCheck.from_mofchecker(
+                self
+            ),
+            "no_undercoordinated_nitrogen": UnderCoordinatedNitrogenCheck.from_mofchecker(
+                self
+            ),
+            "no_floating_molecule": FloatingSolventCheck.from_mofchecker(self),
+            "no_high_charges": ChargeCheck(self.structure),
+            "is_porous": PorosityCheck(self.structure),
+            "no_oms": MOFOMS.from_mofchecker(self),
+            "no_false_terminal_oxo": FalseOxoCheck.from_mofchecker(self),
+        }
 
     def _set_filename(self, path):
         self._filename = os.path.abspath(path)
         self._name = Path(path).stem
 
-    def _get_atomic_overlaps(self):
-        if self._atomic_overlaps is not None:
-            return self._atomic_overlaps
-
-        self._atomic_overlaps = get_overlaps(self.structure)
-        return self._atomic_overlaps
-
     def get_overlapping_indices(self):
         """Return the indices of overlapping atoms"""
-        return self._get_atomic_overlaps()
+        return self._checks["no_atomic_overlaps"].flagged_indices
 
     @property
     def graph_hash(self):
@@ -146,7 +131,21 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         (taking the atomic kinds into account)
         and there are guarantees that non-isomorphic graphs will get different hashes.
         """
-        return weisfeiler_lehman_graph_hash(self.nx_graph, node_attr="specie")
+        return weisfeiler_lehman_graph_hash(
+            self.nx_graph, node_attr="specie", iterations=6
+        )
+
+    @property
+    def undercoordinated_c_candidate_positions(self):
+        """Candidate positions for addition H on C
+        we identified as undercoordinated"""
+        return self._checks["no_undercoordinated_carbon"].candidate_positions
+
+    @property
+    def undercoordinated_n_candidate_positions(self):
+        """Candidate positions for addition H on N
+        we identified as undercoordinated"""
+        return self._checks["no_undercoordinated_nitrogen"].candidate_positions
 
     @property
     def scaffold_hash(self):
@@ -154,13 +153,12 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Hashes are identical for isomorphic graphs and there are
         guarantees that non-isomorphic graphs will get different hashes.
         """
-        return weisfeiler_lehman_graph_hash(self.nx_graph)
+        return weisfeiler_lehman_graph_hash(self.nx_graph, iterations=6)
 
     @property
     def has_atomic_overlaps(self):
         """Check if there are any overlaps in the structure"""
-        atomic_overlaps = self._get_atomic_overlaps()
-        return len(atomic_overlaps) > 0
+        return self._checks["no_atomic_overlaps"].is_ok
 
     @property
     def name(self):
@@ -171,12 +169,12 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     @property
     def has_carbon(self):
         """Check if there is any carbon atom in the structure"""
-        return len(self.c_indices) > 0
+        return self._checks["has_c"].is_ok
 
     @property
     def has_hydrogen(self):
         """Check if there is any hydrogen atom in the structure"""
-        return len(self.h_indices) > 0
+        return self._checks["has_h"].is_ok
 
     @property
     def density(self):
@@ -201,11 +199,17 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             [bool]: True if carbon with CN > 4 in structure.
         """
-        if self._overvalent_c is not None:
-            return self._overvalent_c
+        return not self._checks["no_overcoordinated_carbon"].is_ok
 
-        self._has_overvalent_c()
-        return self._overvalent_c
+    @property
+    def overvalent_c_indices(self) -> bool:
+        """Returns indices of carbon in the structure
+        that has more than 4 neighbors.
+
+        Returns:
+            [list]:
+        """
+        return self._checks["no_overcoordinated_carbon"].flagged_indices
 
     @property
     def has_overvalent_h(self) -> bool:
@@ -215,157 +219,71 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             [bool]: True if hydrogen with CN > 1 in structure.
         """
-        if self._overvalent_h is not None:
-            return self._overvalent_h
+        return not self._checks["no_overcoordinated_hydrogen"].is_ok
 
-        self._has_overvalent_h()
-        return self._overvalent_h
+    @property
+    def overvalent_h_indices(self) -> bool:
+        """Returns indices of hydrogen in the structure
+        that has more than 1 neighbors.
+
+        Returns:
+            [list]:
+        """
+        return self._checks["no_overcoordinated_hydrogen"].flagged_indices
 
     @property
     def has_undercoordinated_c(self) -> bool:
         """Check if there is a carbon that likely misses
         hydrogen"""
-        if self._undercoordinated_carbon is not None:
-            return self._undercoordinated_carbon
+        return not self._checks["no_undercoordinated_carbon"].is_ok
 
-        self._has_undercoordinated_carbon()
-        return self._undercoordinated_carbon
+    @property
+    def undercoordinated_c_indices(self) -> bool:
+        """Returns indices of carbon in the structure
+        that likely miss some neighbors.
+
+        Returns:
+            [list]:
+        """
+        return self._checks["no_undercoordinated_carbon"].flagged_indices
 
     @property
     def has_undercoordinated_n(self) -> bool:
         """Check if there is a nitrogen that likely misses
         hydrogen"""
-        if self._undercoordinated_nitrogen is not None:
-            return self._undercoordinated_nitrogen
+        return not self._checks["no_undercoordinated_nitrogen"].is_ok
 
-        self._has_undercoordinated_nitrogen()
-        return self._undercoordinated_nitrogen
+    @property
+    def undercoordinated_n_indices(self) -> bool:
+        """Returns indices of nitrogen in the structure
+        that likely miss some neighbors.
 
-    def _has_overvalent_c(self):
-        overvalent_c = False
-        for site_index in self.c_indices:
-            cn = self.get_cn(site_index)  # pylint:disable=invalid-name
-            if cn > 4:
-                if not _is_any_neighbor_metal(self.get_connected_sites(site_index)):
-                    overvalent_c = True
-                    break
-        self._overvalent_c = overvalent_c
-
-    def _has_overvalent_h(self):
-        overvalent_h = False
-        for site_index in self.h_indices:
-            cn = self.get_cn(site_index)  # pylint:disable=invalid-name
-            if cn > 1:
-                if not _is_any_neighbor_metal(self.get_connected_sites(site_index)):
-                    overvalent_h = True
-                    break
-        self._overvalent_h = overvalent_h
-
-    def _has_overvalent_n(self):
-        overvalent_n = False
-        for site_index in self.n_indices:
-            cn = self.get_cn(site_index)  # pylint:disable=invalid-name
-            if cn > 4:
-                if not _is_any_neighbor_metal(self.get_connected_sites(site_index)):
-                    overvalent_n = True
-                    break
-        self._overvalent_n = overvalent_n
-
-    def _has_undercoordinated_carbon(self, tolerance: int = 10):
-        """Idea is that carbon should at least have three neighbors if it is not sp1.
-        In sp1 case it is linear. So we can just check if there are carbons with
-        non-linear coordination with less than three neighbors. An example in CoRE
-        MOF would be AHOKIR. In principle this should also flag the quite common
-        case of benzene rings with missing hydrogens.
+        Returns:
+            [list]:
         """
-        undercoordinated_carbon = False
-
-        for site_index in self.c_indices:
-            cn = self.get_cn(site_index)  # pylint:disable=invalid-name
-            if cn == 2:
-                neighbors = self.get_connected_sites(site_index)
-                angle = _maximum_angle(
-                    self.structure.get_angle(
-                        site_index, neighbors[0].index, neighbors[1].index
-                    )
-                )
-                if (np.abs(180 - angle) > tolerance) or (np.abs(180 - 0) > tolerance):
-                    if (not is_metal(neighbors[0].site)) or (
-                        not is_metal(neighbors[1].site)
-                    ):
-                        if len(_vdw_radius_neighbors(self.structure, site_index)) <= 2:
-                            undercoordinated_carbon = True
-                            break
-        self._undercoordinated_carbon = undercoordinated_carbon
-
-    def _has_undercoordinated_nitrogen(self, tolerance: int = 15):
-        """
-        Attempts to captures missing hydrogens on nitrogen groups
-        using heuristics
-        """
-        undercoordinated_nitrogen = False
-        for site_index in self.n_indices:
-            cn = self.get_cn(site_index)  # pylint:disable=invalid-name
-            neighbors = self.get_connected_sites(site_index)
-            if cn == 1:
-                # this is suspicous, but it also might a CN which is perfectly fine.
-                # to check this, we first see if the neighbor is carbon
-                # and then what its coordination number is. If it is greater than 2
-                # then we likely do not have a CN for which the carbon should be a
-                # linear sp one
-                if (self.get_cn(neighbors[0].index) > 2) and not neighbors[
-                    0
-                ].site.specie.is_metal:
-                    undercoordinated_nitrogen = True
-                    break
-            elif cn == 2:
-                undercoordinated_nitrogen = _guess_underbound_nitrogen_cn2(
-                    self.structure,
-                    site_index,
-                    neighbors,
-                    self.get_connected_sites(neighbors[0].index),
-                    self.get_connected_sites(neighbors[1].index),
-                    tolerance,
-                )
-                if undercoordinated_nitrogen:
-                    break
-            elif cn == 3:
-                undercoordinated_nitrogen = _guess_underbound_nitrogen_cn3(
-                    self.structure, site_index, neighbors, tolerance
-                )
-                if undercoordinated_nitrogen:
-                    break
-
-        self._undercoordinated_nitrogen = undercoordinated_nitrogen
-
-    def _has_high_charges(self, threshold=3) -> Union[bool, None]:
-        if (self.charges is None) and HAS_OPENBABEL:
-            self.charges = get_charges(self.structure)
-
-        if isinstance(self.charges, list):
-            if np.sum(np.abs(self.charges) > threshold):
-                return True
-        else:
-            return None
-
-        return False
-
-    def _is_porous(self) -> Union[bool, None]:
-        if self._porous == "":
-            self._porous = check_if_porous(self.structure)
-        return self._porous
+        return self._checks["no_undercoordinated_nitrogen"].flagged_indices
 
     @property
     def is_porous(self) -> Union[bool, None]:
         """Returns True if the MOF is porous according to the CoRE-MOF definition.
         Returns None if the check could not be run successfully."""
-        return self._is_porous()
+        return self._checks["is_porous"].is_ok
 
     @property
     def has_high_charges(self) -> Union[bool, None]:
         """Check if the structure has unreasonably high EqEq charges.
         Returns None if the check could not be run successfully."""
-        return self._has_high_charges()
+        return not self._checks["no_high_charges"].is_ok
+
+    @property
+    def has_suspicicious_terminal_oxo(self):
+        """Flags metals with a potentially wrong terminal oxo group"""
+        return not self._checks["no_false_terminal_oxo"].is_ok
+
+    @property
+    def suspicicious_terminal_oxo_indices(self):
+        """Indices of metals with a potentially wrong terminal oxo group"""
+        return self._checks["no_false_terminal_oxo"].flagged_indices
 
     @property
     def nx_graph(self) -> nx.Graph:
@@ -378,9 +296,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     def graph(self) -> StructureGraph:
         """pymatgen structure graph."""
         if self._graph is None:
-            self._graph = StructureGraph.with_local_env_strategy(
-                self.structure, self._cnn
-            )
+            self._graph = get_structure_graph(self.structure, self._cnn_method)
             self._nx_graph = construct_clean_graph(self.structure, self._graph)
         return self._graph
 
@@ -409,7 +325,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         if site_index not in self._cns:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                self._cns[site_index] = self._cnn.get_cn(self.structure, site_index)
+                self._cns[site_index] = _get_cn(self.graph, site_index)
         return self._cns[site_index]
 
     @property
@@ -420,43 +336,24 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             [bool]: True if nitrogen with CN > 4 in structure.
         """
-        if self._overvalent_n is not None:
-            return self._overvalent_n
-
-        self._has_overvalent_n()
-        return self._overvalent_n
-
-    @property
-    def has_lone_atom(self) -> bool:
-        """Returns True if there is a isolated floating atom"""
-        return self._has_lone_atom()
+        return not self._checks["no_overcoordinated_nitrogen"].is_ok
 
     @property
     def has_lone_molecule(self) -> bool:
         """Returns true if there is a isolated floating atom or molecule"""
-        return self._has_stray_molecules()
+        return not self._checks["no_floating_molecule"].is_ok
 
-    def _has_lone_atom(self, safe: bool = True) -> bool:
-        for site_index in range(len(self.structure)):
-            nbr = self.get_connected_sites(site_index)
-            if not nbr:
-                lone = True
-                # safe option checks if there is really nothing around 1.5 * VdW radius
-                # this is useful as sometimes the NN method is off, one example for this
-                # is FEZTIP
-                if safe:
-                    if _vdw_radius_neighbors(self.structure, site_index):
-                        lone = False
-                if lone:
-                    return True
-        return False
+    @property
+    def lone_molecule_indices(self):
+        """Returns indices of non-periodic connected component in the structure"""
+        return self._checks["no_floating_molecule"].flagged_indices
 
     @classmethod
     def _from_file(cls, path: str):
         structure = Structure.from_file(path)
-        omscls = cls(structure)
-        omscls._set_filename(path)  # pylint:disable=protected-access
-        return omscls
+        mofchecker = cls(structure)
+        mofchecker._set_filename(path)  # pylint:disable=protected-access
+        return mofchecker
 
     @classmethod
     def from_cif(cls, path: Union[str, Path], primitive: bool = True):
@@ -478,129 +375,32 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             omscls._set_filename(path)  # pylint:disable=protected-access
             return omscls
 
-    def _set_cnn(self, method="voronoinn", porous_adjustment: bool = False):
+    @classmethod
+    def from_ase(cls, atoms: Atoms, primitive: bool = True):
+        """Create a MOFChecker instance from an ASE atoms object
+
+        Args:
+            atoms (Atoms): ase atoms object
+            primitive (bool): If True, it will perform the analysis
+                on the primitive structure
+
+        Returns:
+            MOFChecker: Instance of MOFChecker
+        """
+        adaptor = AseAtomsAdaptor()
+        structure = adaptor.get_structure(atoms)
+        omscls = cls(structure, primitive=primitive)
+        return omscls
+
+    @property
+    def has_oms(self):
+        """Returns true if open metal sites are detected"""
+        return not self._checks["no_oms"].is_ok
+
+    def _set_cnn(self, method="vesta"):
         if self._cnn_method == method.lower():
             return
         self._cnn_method = method.lower()
-
-        self.porous_adjustment = porous_adjustment
-        if method.lower() == "crystalnn":
-            self._cnn = CrystalNN(porous_adjustment=self.porous_adjustment)
-        elif method.lower() == "econnn":
-            self._cnn = EconNN()
-        elif method.lower() == "brunnernn":
-            self._cnn = BrunnerNN_relative()
-        elif method.lower() == "minimumdistance":
-            self._cnn = MinimumDistanceNN()
-        elif method.lower() == "vesta":
-            self._cnn = VESTA_NN
-        elif method.lower() == "voronoinn":
-            self._cnn = VoronoiNN()
-        else:
-            self._cnn = JmolNN()
-
-    def _get_ops_for_site(self, site_index):
-        cn = self.get_cn(site_index)  # pylint:disable=invalid-name
-        try:
-            names = OP_DEF[cn]["names"]
-            is_open = OP_DEF[cn]["open"]
-            weights = OP_DEF[cn]["weights"]
-            lsop = LocalStructOrderParams(names)
-            return (
-                cn,
-                names,
-                lsop.get_order_parameters(self.structure, site_index),
-                is_open,
-                weights,
-            )
-        except KeyError as exc:
-            # For a bit more fine grained error messages
-            if cn <= 3:  # pylint:disable=no-else-raise
-                raise LowCoordinationNumber(
-                    "Coordination number {} is low \
-                        and order parameters undefined".format(
-                        cn
-                    )
-                ) from exc
-            elif cn > 8:
-                raise HighCoordinationNumber(
-                    "Coordination number {} is high \
-                        and order parameters undefined".format(
-                        cn
-                    )
-                ) from exc
-
-            return cn, None, None, None, None
-
-    def is_site_open(self, site_index: int) -> bool:
-        """Check for a site if is open (based on the values of
-        some coordination geometry fingerprints)
-
-        Args:
-            site_index (int): Index of the site in the structure
-
-        Returns:
-            bool: True if site is open
-        """
-        if site_index not in self._open_indices:
-            try:
-                _, _names, lsop, is_open, weights = self._get_ops_for_site(site_index)
-                print(_names, lsop)
-                site_open = MOFChecker._check_if_open(lsop, is_open, weights)
-                if site_open:
-                    self._open_indices.add(site_index)
-                return site_open
-            except LowCoordinationNumber:
-                return True
-            except HighCoordinationNumber:
-                return None
-        return True
-
-    @staticmethod
-    def _check_if_open(lsop, is_open, weights, threshold: float = 0.5):
-        if lsop is not None:
-            if is_open is None:
-                return False
-            lsop = np.array(lsop) * np.array(weights)
-            open_contributions = lsop[is_open].sum()
-            close_contributions = lsop.sum() - open_contributions
-            return (
-                open_contributions / (open_contributions + close_contributions)
-                > threshold
-            )
-        return None
-
-    def _get_metal_descriptors_for_site(self, site_index: int):
-        metal = str(self.structure[site_index].species)
-        try:
-            (
-                cn,  # pylint:disable=invalid-name
-                names,
-                lsop,
-                is_open,
-                weights,
-            ) = self._get_ops_for_site(site_index)
-            site_open = MOFChecker._check_if_open(lsop, is_open, weights)
-            if site_open:
-                self._open_indices.add(site_index)
-            descriptors = {
-                "metal": metal,
-                "lsop": dict(zip(names, lsop)),
-                "open": site_open,
-                "cn": cn,
-            }
-            print(descriptors)
-        except LowCoordinationNumber:
-            descriptors = {"metal": metal, "lsop": None, "open": True, "cn": None}
-        except HighCoordinationNumber:
-            descriptors = {"metal": metal, "lsop": None, "open": None, "cn": None}
-        return descriptors
-
-    def _has_stray_molecules(self) -> bool:
-        molecules = get_subgraphs_as_molecules_all(self.graph)
-        if len(molecules) > 0:
-            return True
-        return False
 
     def get_mof_descriptors(self) -> OrderedDict:
         """Run most of the sanity checks
@@ -616,7 +416,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 ("formula", self.formula),
                 ("path", self._filename),
                 ("density", self.density),
-                ("has_oms", self.has_oms),
                 ("has_carbon", self.has_carbon),
                 ("has_hydrogen", self.has_hydrogen),
                 ("has_atomic_overlaps", self.has_atomic_overlaps),
@@ -626,90 +425,29 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 ("has_undercoordinated_c", self.has_undercoordinated_c),
                 ("has_undercoordinated_n", self.has_undercoordinated_n),
                 ("has_metal", self.has_metal),
-                ("has_lone_atom", self.has_lone_atom),
                 ("has_lone_molecule", self.has_lone_molecule),
                 ("has_high_charges", self.has_high_charges),
-                ("has_undercoordinated_metal", self.has_undercoordinated_metal),
+                # ("has_undercoordinated_metal", self.has_undercoordinated_metal),
                 ("is_porous", self.is_porous),
+                ("has_suspicicious_terminal_oxo", self.has_suspicicious_terminal_oxo),
             )
         )
         return result_dict
 
-    def get_metal_descriptors_for_site(self, site_index: int) -> dict:
-        """Computes the checks for one metal site"""
-        if not self.has_metal:
-            raise NoMetal
-        return self._get_metal_descriptors_for_site(site_index)
+    # def _has_low_metal_coordination(self):
+    #     for site_index in self.metal_indices:
+    #         if _check_metal_coordination(self.structure[site_index],
+    #                                      self.get_cn(site_index)):
+    #             if self.is_site_open(site_index):
+    #                 return True
+    #     return False
 
-    def _get_metal_descriptors(self):
-        descriptordict = {}
-        for site_index in self.metal_indices:
-            descriptordict[site_index] = self._get_metal_descriptors_for_site(
-                site_index
-            )
-
-        self.metal_features = descriptordict
-
-        return descriptordict
-
-    def _has_low_metal_coordination(self):
-        for site_index in self.metal_indices:
-            if _check_metal_coordination(
-                self.structure[site_index], self.get_cn(site_index)
-            ):
-                if self.is_site_open(site_index):
-                    return True
-        return False
-
-    @property
-    def has_undercoordinated_metal(self):
-        """Check if a metal has unusually low coordination"""
-        return self._has_low_metal_coordination()
-
-    def get_metal_descriptors(self) -> dict:
-        """Return local structure order parameters for coordination number (CN),
-        element string and wheter site is open or not. Key is the site index.
-
-        Raises:
-            NoMetal: If no metal can be found in the structure
-
-        Returns:
-            dict: Key is the site index.
-        """
-        if not self.has_metal:
-            raise NoMetal
-        return self._get_metal_descriptors()
+    # @property
+    # def has_undercoordinated_metal(self):
+    #     """Check if a metal has unusually low coordination"""
+    #     return self._has_low_metal_coordination()
 
     @property
     def has_metal(self):
         """Checks if there is at least one metal in the structure"""
-        if self.metal_indices:
-            return True
-        return False
-
-    @property
-    def has_oms(self) -> bool:
-        """True if the structure contains open metal sites (OMS).
-        Also returns True in case of low coordination numbers (CN <=3)
-        which typically indicate open coordination for MOFs.
-        For high coordination numbers, no good order parameter for open
-        structures is available, and so we return `None` even though
-        this might change in a future release.
-
-        Raises:
-            NoMetal: Raised if the structure contains no metal
-
-        Returns:
-            [bool]: True if the structure contains OMS
-        """
-        if not self.has_metal:
-            raise NoMetal("This structure does not contain a metal")
-        if self._has_oms is not None:  # pylint:disable=no-else-return
-            return self._has_oms
-        else:
-            for site_index in self.metal_indices:
-                if self.is_site_open(site_index):
-                    self._has_oms = True
-                    return True
-            self._has_oms = False
-            return False
+        return self._checks["has_metal"].is_ok

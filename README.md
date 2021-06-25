@@ -17,10 +17,9 @@ Sanity checks:
 - Overlapping atoms (distance between atoms above covalent *radius* of the smaller atom)
 - Overvalent carbons (coordination number above 4), nitrogens (heuristics), or hydrogens (CN > 1)
 - Missing hydrogen on common coordination geometries of C and N (heuristics)
-- Atoms with excessive [EQeq partial charge](https://pubs.acs.org/doi/10.1021/jz3008485) (using [openbabel](http://openbabel.org/wiki/Main_Page), if installed)
+- Atoms with excessive [EQeq partial charge](https://pubs.acs.org/doi/10.1021/jz3008485)
 
 Basic analysis:
-- Presence of open metal sites
 - Presence of floating atoms or molecules
 - Hash of the atomic structure graph (useful to identify duplicates)
 
@@ -41,10 +40,10 @@ Latest stable release
 pip install mofchecker
 ```
 
-Note that you need to install [openbabel](https://anaconda.org/conda-forge/openbabel) and [zeopp](https://anaconda.org/conda-forge/zeopp-lsmo) if you want to use the charge and porosity features, respectively.
+Note that you need to install [zeopp](https://anaconda.org/conda-forge/zeopp-lsmo) if you want to use the porosity features.
 
 ```bash
-conda install -c conda-forge zeopp-lsmo openbabel
+conda install -c conda-forge zeopp-lsmo
 ```
 
 
@@ -72,18 +71,4 @@ results = []
 for structure in sample_structures:
     mofchecker = MOFChecker.from_cif(structure)
     results.append(mofchecker.get_mof_descriptors())
-```
-
-### CLI
-
-For example, you can use
-
-```bash
-mofchecker <cif> --has-oms
-```
-
-You can get an overview over all options with
-
-```bash
-mofchecker --help
 ```

@@ -1,0 +1,86 @@
+# -*- coding: utf-8 -*-
+"""Utility function for getting the indices for certain atoms in the structure"""
+import functools
+from typing import Union
+
+import pymatgen
+from pymatgen.core.structure import IStructure, Structure
+
+from ...definitions import METALS
+from ..data import _get_vdw_radius
+
+
+def _vdw_radius_neighbors(structure, site_index, tolerance: float = 1.5):
+    elem = str(structure[site_index].specie)
+    radius = _get_vdw_radius(elem)
+    return structure.get_neighbors(structure[site_index], tolerance * radius)
+
+
+def is_metal(site: pymatgen.core.Site) -> bool:
+    """according to conquest help:
+    transition metal, lanthanide, actinide,
+    or Al, Ga, In, Tl, Ge, Sn, Pb, Sb, Bi, Po"""
+    if str(site.specie) in METALS:
+        return True
+    return False
+
+
+@functools.lru_cache(maxsize=2, typed=False)
+def _get_indices(immutable_structure: IStructure) -> dict:
+    return {
+        "c": _get_c_indices(immutable_structure),
+        "h": _get_h_indices(immutable_structure),
+        "n": _get_n_indices(immutable_structure),
+        "metal": _get_metal_indices(immutable_structure),
+    }
+
+
+def _get_c_indices(structure):
+    return [i for i, species in enumerate(structure.species) if str(species) == "C"]
+
+
+def _get_h_indices(structure):
+    return [i for i, species in enumerate(structure.species) if str(species) == "H"]
+
+
+def _get_n_indices(structure):
+    return [i for i, species in enumerate(structure.species) if str(species) == "N"]
+
+
+def _get_metal_indices(structure):
+    return [i for i, site in enumerate(structure) if is_metal(site)]
+
+
+def get_h_indices(structure):
+    """Get the indices of all H"""
+    return get_indices(structure)["h"]
+
+
+def get_c_indices(structure):
+    """Get the indices of all C"""
+    return get_indices(structure)["c"]
+
+
+def get_n_indices(structure):
+    """Get the indices of all N"""
+    return get_indices(structure)["n"]
+
+
+def get_metal_indices(structure):
+    """Get the indices of all metals"""
+    return get_indices(structure)["metal"]
+
+
+def get_indices(structure: Union[Structure, IStructure]) -> dict:
+    """Get all the relevant indices"""
+    if isinstance(structure, Structure):
+        structure = IStructure.from_sites(structure)
+    return _get_indices(structure)
+
+
+def _is_any_neighbor_metal(neighbors):
+    for neighbor in neighbors:
+        if is_metal(neighbor.site):
+            return True
+
+    return False

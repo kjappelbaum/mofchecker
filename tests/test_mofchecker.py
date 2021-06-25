@@ -4,7 +4,8 @@
 import os
 
 import pytest
-from pymatgen import Structure
+from ase.io import read
+from pymatgen.core import Structure
 
 from mofchecker import MOFChecker
 
@@ -16,53 +17,39 @@ def test_partial_occupancy():
         MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "ABUBIK.cif"))
 
 
-def test_has_oms(get_cn4_structure, get_cn5_paddlewheel_structure):
-
-    omsdetector = MOFChecker(get_cn4_structure)
-    assert omsdetector.has_oms == True
-
-    omsdetector = MOFChecker(get_cn5_paddlewheel_structure)
-    assert omsdetector.has_oms == False
-
-
-def test_has_oms_multiple(get_testdict):
-    for k, v in get_testdict.items():
-        omsdetector = MOFChecker.from_cif(k)
-        assert omsdetector.has_oms == v
-
-
-def test_clashing(get_clashing_structures):
-    for structure in get_clashing_structures:
-        mofchecker = MOFChecker(structure)
-        assert mofchecker.has_atomic_overlaps == True
-
-
 def test_name():
     s = os.path.join(THIS_DIR, "test_files", "ABAVIJ_clean.cif")
     mofchecker = MOFChecker.from_cif(s)
     assert mofchecker.name == "ABAVIJ_clean"
 
 
-def test_no_h(get_no_h):
-    for structure in get_no_h:
-        mofchecker = MOFChecker(structure)
-        assert mofchecker.has_hydrogen == False
-
-
-def test_no_c(get_no_c):
-    for structure in get_no_c:
-        mofchecker = MOFChecker(structure)
-        assert mofchecker.has_carbon == False
-
-
 def test_unknown_elements():
     """Parsing structure with unknown element raises warning for covalent radius."""
-    with pytest.warns(UserWarning) as record:
+    # with pytest.warns(UserWarning) as record:
+    #     mofchecker = MOFChecker.from_cif(
+    #         os.path.join(THIS_DIR, "test_files", "GUPQOA.cif")
+    #     )
+    #     mofchecker.get_mof_descriptors()
+    # assert len(record) >= 1
+
+    with pytest.raises(NotImplementedError):
         mofchecker = MOFChecker.from_cif(
             os.path.join(THIS_DIR, "test_files", "GUPQOA.cif")
         )
         mofchecker.get_mof_descriptors()
-    assert len(record) >= 1
+
+
+def test_overvalent_h():
+    mofchecker = MOFChecker.from_cif(
+        os.path.join(THIS_DIR, "test_files", "overvalent_h.cif")
+    )
+    assert mofchecker.has_overvalent_h
+    assert len(mofchecker.overvalent_h_indices) == 3
+
+    mofchecker = MOFChecker.from_cif(
+        os.path.join(THIS_DIR, "test_files", "XIGFOJ_manual.cif")
+    )
+    assert not mofchecker.has_overvalent_h
 
 
 def test_overvalent_c(get_overvalent_c_structures):
@@ -88,23 +75,6 @@ def test_overvalent_c(get_overvalent_c_structures):
     assert mofchecker.has_overvalent_c == False
 
 
-def test_lone_atom():
-    mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAVIJ_clean.cif"))
-    )
-    assert mofchecker.has_lone_atom == False
-
-    mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "HKUST_floating.cif"))
-    )
-    assert mofchecker.has_lone_atom == True
-
-    mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "FEZTIP_clean.cif"))
-    )
-    assert mofchecker.has_lone_atom == False
-
-
 def test_lone_molecule():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAVIJ_clean.cif"))
@@ -116,10 +86,26 @@ def test_lone_molecule():
     )
     assert mofchecker.has_lone_molecule == True
 
-    mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "UiO_66_water.cif"))
-    )
+    assert mofchecker.lone_molecule_indices == [[144]]
+
+    # mofchecker = MOFChecker(
+    #     Structure.from_file(os.path.join(THIS_DIR, "test_files", "UiO_66_water.cif"))
+    # )
+    # assert mofchecker.has_lone_molecule == True
+
+    atoms = read(os.path.join(THIS_DIR, "test_files", "floating_check.cif"))
+    mofchecker = MOFChecker.from_ase(atoms)
+    assert len(mofchecker.lone_molecule_indices) == 1
+    assert len(mofchecker.lone_molecule_indices[0]) == 5
+    species = []
+    for ind in mofchecker.lone_molecule_indices[0]:
+        species.append(str(mofchecker.structure[ind].specie))
+    assert set(species) == set(["H", "H", "H", "H", "C"])
     assert mofchecker.has_lone_molecule == True
+
+    atoms = read(os.path.join(THIS_DIR, "test_files", "overvalent_h.cif"))
+    mofchecker = MOFChecker.from_ase(atoms, primitive=False)
+    assert len(mofchecker.lone_molecule_indices) == 3
 
 
 def test_undercoordinated_c():
@@ -133,11 +119,20 @@ def test_undercoordinated_c():
     )
     assert mofchecker.has_undercoordinated_c == True
 
-    # alkine ligand
+    # alkine ligand but lets exclude this as the coordination environment
+    # is quite unusual
+    # mofchecker = MOFChecker(
+    #     Structure.from_file(os.path.join(THIS_DIR, "test_files", "RUDQUD_clean.cif"))
+    # )
+    # assert mofchecker.has_undercoordinated_c == False
+
+    # alkene ligand
     mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "RUDQUD_clean.cif"))
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "missing_h_on_c.cif"))
     )
-    assert mofchecker.has_undercoordinated_c == False
+    assert mofchecker.has_undercoordinated_c == True
+    assert len(mofchecker.undercoordinated_c_indices) == 2
+    assert len(mofchecker.undercoordinated_c_candidate_positions) == 2
 
 
 def test_undercoordinated_n():
