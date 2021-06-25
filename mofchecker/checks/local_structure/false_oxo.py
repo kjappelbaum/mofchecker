@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Original idea and implementation idea contributed by Andrew Rosen, https://github.com/kjappelbaum/mofchecker/issues/122"""
+"""Original idea and implementation idea contributed by Andrew Rosen,
+https://github.com/kjappelbaum/mofchecker/issues/122"""
 
 from ..utils.get_indices import get_metal_indices
 from .base_coordination_check import BaseCoordinationCheck
@@ -40,6 +41,9 @@ NO_TERMINAL_OXO = [
 
 
 class FalseOxoCheck(BaseCoordinationCheck):
+    """Checks if there is a metal with oxo group,
+    for which such a group is unexpected."""
+
     def __init__(self, structure, structure_graph):
         self.structure = structure
         self.metal_indices = get_metal_indices(self.structure)
@@ -47,7 +51,8 @@ class FalseOxoCheck(BaseCoordinationCheck):
 
     @property
     def description(self):
-        return "Checks if there is a metal with oxo group, for which such a group is unexpected."
+        return "Checks if there is a metal with oxo group,\
+             for which such a group is unexpected."
 
     def _run_check(self):
         wrong_oxo = self._get_wrong_oxo()

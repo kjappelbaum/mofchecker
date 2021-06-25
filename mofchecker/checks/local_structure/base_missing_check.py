@@ -8,6 +8,7 @@ from ..check_base import AbstractMissingCheck
 
 class BaseMissingCheck(AbstractMissingCheck):
     """Base class for checks for missing atoms, i.e., "undervalent" checks"""
+
     @abc.abstractmethod
     def __init__(self, structure, structure_graph):
         self.structure = structure
