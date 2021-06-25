@@ -36,6 +36,7 @@ setup(
         "pyeqeq",
         "backports.cached-property",
         "ase",
+        "ruamel.yaml",
     ],
     extras_require={
         "testing": ["pytest", "pytest-cov<2.12"],
