@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# pylint: disable=duplicate-code
 """Test for the utils module"""
 from mofchecker.checks.data import _get_covalent_radius, _get_vdw_radius
 

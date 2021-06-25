@@ -17,7 +17,7 @@ Sanity checks:
 - Overlapping atoms (distance between atoms above covalent *radius* of the smaller atom)
 - Overvalent carbons (coordination number above 4), nitrogens (heuristics), or hydrogens (CN > 1)
 - Missing hydrogen on common coordination geometries of C and N (heuristics)
-- Atoms with excessive [EQeq partial charge](https://pubs.acs.org/doi/10.1021/jz3008485) (using [openbabel](http://openbabel.org/wiki/Main_Page), if installed)
+- Atoms with excessive [EQeq partial charge](https://pubs.acs.org/doi/10.1021/jz3008485)
 
 Basic analysis:
 - Presence of open metal sites
