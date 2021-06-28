@@ -32,6 +32,7 @@ def _get_indices(immutable_structure: IStructure) -> dict:
         "h": _get_h_indices(immutable_structure),
         "n": _get_n_indices(immutable_structure),
         "metal": _get_metal_indices(immutable_structure),
+        "rare_earth": _get_rare_eath_indices(immutable_structure),
     }
 
 
@@ -49,6 +50,10 @@ def _get_n_indices(structure):
 
 def _get_metal_indices(structure):
     return [i for i, site in enumerate(structure) if is_metal(site)]
+
+
+def _get_rare_eath_indices(structure):
+    return [i for i, site in enumerate(structure) if site.specie.is_rare_earth_metal]
 
 
 def get_h_indices(structure):
@@ -69,6 +74,11 @@ def get_n_indices(structure):
 def get_metal_indices(structure):
     """Get the indices of all metals"""
     return get_indices(structure)["metal"]
+
+
+def get_rare_earth_indices(structure):
+    """Get the indices of all metals"""
+    return get_indices(structure)["rare_earth"]
 
 
 def get_indices(structure: Union[Structure, IStructure]) -> dict:

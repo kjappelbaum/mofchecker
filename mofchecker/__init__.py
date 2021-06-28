@@ -26,6 +26,7 @@ from .checks.local_structure import (
     OverCoordinatedNitrogenCheck,
     UnderCoordinatedCarbonCheck,
     UnderCoordinatedNitrogenCheck,
+    UnderCoordinatedRareEarthCheck,
 )
 from .checks.oms import MOFOMS
 from .checks.utils.get_indices import (
@@ -107,6 +108,9 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 self
             ),
             "no_undercoordinated_nitrogen": UnderCoordinatedNitrogenCheck.from_mofchecker(
+                self
+            ),
+            "no_undercoordinated_rare_earth": UnderCoordinatedRareEarthCheck.from_mofchecker(
                 self
             ),
             "no_floating_molecule": FloatingSolventCheck.from_mofchecker(self),
@@ -264,6 +268,21 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return self._checks["no_undercoordinated_nitrogen"].flagged_indices
 
     @property
+    def has_undercoordinated_rare_earth(self) -> bool:
+        """Check if there is a rare earth metal that likely misses some neighbors"""
+        return not self._checks["no_undercoordinated_rare_earth"].is_ok
+
+    @property
+    def undercoordinated_rare_earth_indices(self) -> bool:
+        """Returns indices of rare earh metals in the structure
+        that likely miss some neighbors.
+
+        Returns:
+            [list]:
+        """
+        return self._checks["no_undercoordinated_rare_earth"].flagged_indices
+
+    @property
     def is_porous(self) -> Union[bool, None]:
         """Returns True if the MOF is porous according to the CoRE-MOF definition.
         Returns None if the check could not be run successfully."""
@@ -277,12 +296,14 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
     @property
     def has_suspicicious_terminal_oxo(self):
-        """Flags metals with a potentially wrong terminal oxo group"""
+        """Flags metals with a potentially
+        wrong terminal oxo group"""
         return not self._checks["no_false_terminal_oxo"].is_ok
 
     @property
     def suspicicious_terminal_oxo_indices(self):
-        """Indices of metals with a potentially wrong terminal oxo group"""
+        """Indices of metals with a potentially
+        wrong terminal oxo group"""
         return self._checks["no_false_terminal_oxo"].flagged_indices
 
     @property
@@ -430,6 +451,10 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 # ("has_undercoordinated_metal", self.has_undercoordinated_metal),
                 ("is_porous", self.is_porous),
                 ("has_suspicicious_terminal_oxo", self.has_suspicicious_terminal_oxo),
+                (
+                    "has_undercoordinated_rare_earth",
+                    self.has_undercoordinated_rare_earth,
+                ),
             )
         )
         return result_dict
