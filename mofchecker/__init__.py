@@ -14,6 +14,10 @@ from pymatgen.core.structure import IStructure, Structure
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.cif import CifParser
 
+from mofchecker.checks.local_structure.undercoordinated_rare_earth import (
+    UnderCoordinatedRareEarthCheck,
+)
+
 from ._version import get_versions
 from .checks.charge_check import ChargeCheck
 from .checks.floating_solvent import FloatingSolventCheck
@@ -107,6 +111,9 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 self
             ),
             "no_undercoordinated_nitrogen": UnderCoordinatedNitrogenCheck.from_mofchecker(
+                self
+            ),
+            "no_undercoordinated_rare_earth": UnderCoordinatedRareEarthCheck.from_mofchecker(
                 self
             ),
             "no_floating_molecule": FloatingSolventCheck.from_mofchecker(self),
@@ -262,6 +269,22 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             [list]:
         """
         return self._checks["no_undercoordinated_nitrogen"].flagged_indices
+
+    @property
+    def has_undercoordinated_rare_earth(self) -> bool:
+        """Check if there is a rare earth metal that likely misses
+        hydrogen"""
+        return not self._checks["no_undercoordinated_rare_earth"].is_ok
+
+    @property
+    def undercoordinated_rare_earth_indices(self) -> bool:
+        """Returns indices of rare earth metals in the structure
+        that likely miss some neighbors.
+
+        Returns:
+            [list]:
+        """
+        return self._checks["no_undercoordinated_rare_earth"].flagged_indices
 
     @property
     def is_porous(self) -> Union[bool, None]:
@@ -424,28 +447,18 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 ("has_overcoordinated_h", self.has_overvalent_h),
                 ("has_undercoordinated_c", self.has_undercoordinated_c),
                 ("has_undercoordinated_n", self.has_undercoordinated_n),
+                (
+                    "has_undercoordinated_rare_earth",
+                    self.has_undercoordinated_rare_earth,
+                ),
                 ("has_metal", self.has_metal),
                 ("has_lone_molecule", self.has_lone_molecule),
                 ("has_high_charges", self.has_high_charges),
-                # ("has_undercoordinated_metal", self.has_undercoordinated_metal),
                 ("is_porous", self.is_porous),
                 ("has_suspicicious_terminal_oxo", self.has_suspicicious_terminal_oxo),
             )
         )
         return result_dict
-
-    # def _has_low_metal_coordination(self):
-    #     for site_index in self.metal_indices:
-    #         if _check_metal_coordination(self.structure[site_index],
-    #                                      self.get_cn(site_index)):
-    #             if self.is_site_open(site_index):
-    #                 return True
-    #     return False
-
-    # @property
-    # def has_undercoordinated_metal(self):
-    #     """Check if a metal has unusually low coordination"""
-    #     return self._has_low_metal_coordination()
 
     @property
     def has_metal(self):
