@@ -109,7 +109,6 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
     neighbor_species = set(
         [str(neighbors[0].site.specie), str(neighbors[1].site.specie)]
     )
-
     if (np.abs(180 - angle) < tolerance) or (np.abs(0 - angle) < tolerance):
         # sp hybridization if the nitrogen is linear
         # this could be a nitride or a nitrosyl
@@ -124,19 +123,34 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
         # if neighbor_species == set(["C", "C"]):
 
         dihedral_a = structure.get_dihedral(
-            site_index,
             neighbors[0].index,
+            site_index,
             neighbors[1].index,
             connected_sites_a[0].index,
         )
         dihedral_b = structure.get_dihedral(
-            site_index,
             neighbors[0].index,
+            site_index,
             neighbors[1].index,
             connected_sites_b[0].index,
         )
 
-        mean_dihedral = np.mean([dihedral_a, dihedral_b])
+        dihedral_c = structure.get_dihedral(
+            connected_sites_b[0].index,
+            neighbors[0].index,
+            site_index,
+            neighbors[1].index,
+        )
+
+        dihedral_d = structure.get_dihedral(
+            connected_sites_a[0].index,
+            neighbors[0].index,
+            site_index,
+            neighbors[1].index,
+        )
+
+        mean_dihedral = np.min(np.abs([dihedral_a, dihedral_b, dihedral_c, dihedral_d]))
+
         if (np.abs(mean_dihedral - 180) < tolerance) or (
             np.abs(mean_dihedral - 0) < tolerance
         ):

@@ -128,7 +128,6 @@ class MOFOMS(AbstractIndexCheck):
                 "open": site_open,
                 "cn": cn,
             }
-            print(descriptors)
         except LowCoordinationNumber:
             descriptors = {"metal": metal, "lsop": None, "open": True, "cn": None}
         except HighCoordinationNumber:

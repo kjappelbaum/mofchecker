@@ -68,6 +68,9 @@ def test_overvalent_c(get_overvalent_c_structures):
     )
     assert mofchecker.has_overvalent_c == False
 
+
+@pytest.mark.past_issue
+def test_overvalent_c_past_issue():
     # based on issue https://github.com/kjappelbaum/mofchecker/issues/63
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "AGARUW_clean.cif"))
@@ -88,11 +91,13 @@ def test_lone_molecule():
 
     assert mofchecker.lone_molecule_indices == [[144]]
 
-    # mofchecker = MOFChecker(
-    #     Structure.from_file(os.path.join(THIS_DIR, "test_files", "UiO_66_water.cif"))
-    # )
-    # assert mofchecker.has_lone_molecule == True
+    atoms = read(os.path.join(THIS_DIR, "test_files", "overvalent_h.cif"))
+    mofchecker = MOFChecker.from_ase(atoms, primitive=False)
+    assert len(mofchecker.lone_molecule_indices) == 3
 
+
+@pytest.mark.past_issue
+def test_lone_molecule_past_issue():
     atoms = read(os.path.join(THIS_DIR, "test_files", "floating_check.cif"))
     mofchecker = MOFChecker.from_ase(atoms)
     assert len(mofchecker.lone_molecule_indices) == 1
@@ -102,10 +107,6 @@ def test_lone_molecule():
         species.append(str(mofchecker.structure[ind].specie))
     assert set(species) == set(["H", "H", "H", "H", "C"])
     assert mofchecker.has_lone_molecule == True
-
-    atoms = read(os.path.join(THIS_DIR, "test_files", "overvalent_h.cif"))
-    mofchecker = MOFChecker.from_ase(atoms, primitive=False)
-    assert len(mofchecker.lone_molecule_indices) == 3
 
 
 def test_undercoordinated_c():
@@ -119,20 +120,20 @@ def test_undercoordinated_c():
     )
     assert mofchecker.has_undercoordinated_c == True
 
-    # alkine ligand but lets exclude this as the coordination environment
-    # is quite unusual
-    # mofchecker = MOFChecker(
-    #     Structure.from_file(os.path.join(THIS_DIR, "test_files", "RUDQUD_clean.cif"))
-    # )
-    # assert mofchecker.has_undercoordinated_c == False
-
-    # alkene ligand
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "missing_h_on_c.cif"))
     )
     assert mofchecker.has_undercoordinated_c == True
     assert len(mofchecker.undercoordinated_c_indices) == 2
     assert len(mofchecker.undercoordinated_c_candidate_positions) == 2
+
+
+@pytest.mark.past_issue
+def slow_check_undercoordinated_c_past_issue():
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "DALVIY_clean.cif"))
+    )
+    assert mofchecker.has_undercoordinated_c == False
 
 
 def test_undercoordinated_n():
@@ -172,6 +173,24 @@ def test_undercoordinated_n():
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "N_MOF_ASR.cif"))
     )
     assert mofchecker.has_undercoordinated_n == True
+
+
+@pytest.mark.past_issue
+def test_undercoordinated_n_past_issue():
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "axipee.cif"))
+    )
+    assert mofchecker.has_undercoordinated_n == False
+
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABOVOF_FSR.cif"))
+    )
+    assert mofchecker.has_undercoordinated_n == False
+
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "abiqae.cif"))
+    )
+    assert mofchecker.has_undercoordinated_n == False
 
 
 def test_chargecheck():

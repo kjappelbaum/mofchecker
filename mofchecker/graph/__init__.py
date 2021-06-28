@@ -28,7 +28,12 @@ with open(os.path.join(THIS_DIR, "atom_typing_radii.yml"), "r") as handle:
 with open(os.path.join(THIS_DIR, "li_radii.yml"), "r") as handle:
     LI_TYPING_CUTOFFS = yaml.load(handle)
 
-VESTA_NN = CutOffDictNN.from_preset("vesta_2019")
+
+with open(os.path.join(THIS_DIR, "tuned_vesta.yml"), "r") as handle:
+    VESTA_CUTOFFS = yaml.load(handle)
+
+
+VESTA_NN = CutOffDictNN(cut_off_dict=VESTA_CUTOFFS)
 ATR_NN = CutOffDictNN(cut_off_dict=ATOM_TYPING_CUTOFFS)
 LI_NN = CutOffDictNN(cut_off_dict=LI_TYPING_CUTOFFS)
 
@@ -70,29 +75,32 @@ def _get_cn(structure_graph, site_index):
 
 
 def get_local_env_method(method):
+    """get a local environment method based on its name"""
     method = method.lower()
 
     if method.lower() == "crystalnn":
-        # see eq. 15 and 16 in https://pubs.acs.org/doi/full/10.1021/acs.inorgchem.0c02996
-        # for the x_diff_weight parameter. in the paper it is called δen and it is set to 3
+        # see eq. 15 and 16 in
+        # https://pubs.acs.org/doi/full/10.1021/acs.inorgchem.0c02996
+        # for the x_diff_weight parameter.
+        # in the paper it is called δen and it is set to 3
         # we found better results by lowering this weight
         return CrystalNN(porous_adjustment=True, x_diff_weight=1.5, search_cutoff=4.5)
-    elif method.lower() == "econnn":
+    if method.lower() == "econnn":
         return EconNN()
-    elif method.lower() == "brunnernn":
+    if method.lower() == "brunnernn":
         return BrunnerNN_relative()
-    elif method.lower() == "minimumdistance":
+    if method.lower() == "minimumdistance":
         return MinimumDistanceNN()
-    elif method.lower() == "vesta":
+    if method.lower() == "vesta":
         return VESTA_NN
-    elif method.lower() == "voronoinn":
+    if method.lower() == "voronoinn":
         return VoronoiNN()
-    elif method.lower() == "atr":
+    if method.lower() == "atr":
         return ATR_NN
-    elif method.lower() == "li":
+    if method.lower() == "li":
         return LI_NN
-    else:
-        return JmolNN()
+
+    return JmolNN()
 
 
 def _is_in_cell(frac_coords):
@@ -107,6 +115,7 @@ def _is_any_atom_in_cell(frac_coords):
 
 
 def get_structure_graph(structure, method: str = "vesta"):
+    """Get a structure graph for a structure"""
     return StructureGraph.with_local_env_strategy(
         structure, get_local_env_method(method)
     )
@@ -161,10 +170,11 @@ def get_subgraphs_as_molecules(
         structure_graph ( pymatgen.analysis.graphs.StructureGraph): Structuregraph
         use_weights (bool): If True, use weights for the edge matching
         return_unique (bool): If true, it only returns the unique molecules.
-            If False, it will return all molecules that are completely included in the unit cell
+            If False, it will return all molecules that are completely
+            included in the unit cell
             and fragments of the ones that are only partly in the cell
-        filter_in_cell (bool): If True, it will only return molecules that have at least one atom
-            in the cell
+        filter_in_cell (bool): If True, it will only return molecules that
+            have at least one atom in the cell
     Returns:
         Tuple[List[Molecule], List[MoleculeGraph], List[List[int]], List[np.ndarray]]
     """
