@@ -108,6 +108,11 @@ def test_lone_molecule_past_issue():
     assert set(species) == set(["H", "H", "H", "H", "C"])
     assert mofchecker.has_lone_molecule == True
 
+    mofchecker = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "OTOXIF_clean.cif"))
+    )
+    assert mofchecker.has_lone_molecule == False
+
 
 def test_undercoordinated_c():
     mofchecker = MOFChecker(
