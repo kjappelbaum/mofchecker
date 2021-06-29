@@ -26,7 +26,7 @@ def test_name():
 def test_unknown_elements():
     """Parsing structure with unknown element raises warning for covalent radius."""
     # with pytest.warns(UserWarning) as record:
-    #     mofchecker = MOFChecker.from_cif(
+    #     mofchecker = MOFCheƒ√cker.from_cif(
     #         os.path.join(THIS_DIR, "test_files", "GUPQOA.cif")
     #     )
     #     mofchecker.get_mof_descriptors()
