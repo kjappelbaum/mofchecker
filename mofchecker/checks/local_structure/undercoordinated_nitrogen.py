@@ -32,7 +32,7 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
             positions,
         )
 
-    def _get_undercoordinated_nitrogens(self, tolerance: int = 15):
+    def _get_undercoordinated_nitrogens(self, tolerance: int = 25):
         """Attempts to captures missing hydrogens on nitrogen groups
         using heuristics
         """
@@ -41,7 +41,6 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
         for site_index in self.n_indices:
             cn = self.get_cn(site_index)  # pylint:disable=invalid-name
             neighbors = self.get_connected_sites(site_index)
-            print(neighbors)
             if cn == 1:
                 # this is suspicous, but it also might a CN which is perfectly fine.
                 # to check this, we first see if the neighbor is carbon
@@ -70,6 +69,7 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
                         add_sp2_hydrogen(self.structure[site_index], neighbors)
                     )
             elif cn == 3:
+                print(site_index)
                 undercoordinated_nitrogen = _guess_underbound_nitrogen_cn3(
                     self.structure, site_index, neighbors, tolerance
                 )
