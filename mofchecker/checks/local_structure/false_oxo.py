@@ -50,6 +50,10 @@ class FalseOxoCheck(BaseCoordinationCheck):
         self.structure_graph = structure_graph
 
     @property
+    def name(self):
+        return "Unexpected oxo groups"
+
+    @property
     def description(self):
         return "Checks if there is a metal with oxo group,\
              for which such a group is unexpected."

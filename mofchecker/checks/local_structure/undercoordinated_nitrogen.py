@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Check for undercoordinated nitrogens"""
+from re import I
+
 from ..utils.get_indices import get_n_indices
 from .base_missing_check import BaseMissingCheck
 from .geometry import (
@@ -18,6 +20,10 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
         self.structure = structure
         self.n_indices = get_n_indices(self.structure)
         self.structure_graph = structure_graph
+
+    @property
+    def name(self):
+        return "Undercoordinated nitrogen"
 
     @property
     def description(self):

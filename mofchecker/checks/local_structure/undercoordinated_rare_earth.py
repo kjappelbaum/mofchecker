@@ -15,6 +15,10 @@ class UnderCoordinatedRareEarthCheck(BaseCoordinationCheck):
         self.structure_graph = structure_graph
 
     @property
+    def name(self):
+        return "Undercoordinated rare earth metal"
+
+    @property
     def description(self):
         return "Check if there are any lanthanides/actinides\
             that are likely undercoordinated (i.e., CN<4)."

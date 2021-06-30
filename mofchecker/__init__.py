@@ -123,13 +123,17 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             "no_false_terminal_oxo": FalseOxoCheck.from_mofchecker(self),
         }
 
+    @property
+    def checks(self):
+        return self._checks
+
     def _set_filename(self, path):
         self._filename = os.path.abspath(path)
         self._name = Path(path).stem
 
     def get_overlapping_indices(self):
         """Return the indices of overlapping atoms"""
-        return self._checks["no_atomic_overlaps"].flagged_indices
+        return self.checks["no_atomic_overlaps"].flagged_indices
 
     @property
     def graph_hash(self):
@@ -146,13 +150,13 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     def undercoordinated_c_candidate_positions(self):
         """Candidate positions for addition H on C
         we identified as undercoordinated"""
-        return self._checks["no_undercoordinated_carbon"].candidate_positions
+        return self.checks["no_undercoordinated_carbon"].candidate_positions
 
     @property
     def undercoordinated_n_candidate_positions(self):
         """Candidate positions for addition H on N
         we identified as undercoordinated"""
-        return self._checks["no_undercoordinated_nitrogen"].candidate_positions
+        return self.checks["no_undercoordinated_nitrogen"].candidate_positions
 
     @property
     def scaffold_hash(self):
@@ -165,7 +169,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     @property
     def has_atomic_overlaps(self):
         """Check if there are any overlaps in the structure"""
-        return self._checks["no_atomic_overlaps"].is_ok
+        return self.checks["no_atomic_overlaps"].is_ok
 
     @property
     def name(self):
@@ -176,12 +180,12 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     @property
     def has_carbon(self):
         """Check if there is any carbon atom in the structure"""
-        return self._checks["has_c"].is_ok
+        return self.checks["has_c"].is_ok
 
     @property
     def has_hydrogen(self):
         """Check if there is any hydrogen atom in the structure"""
-        return self._checks["has_h"].is_ok
+        return self.checks["has_h"].is_ok
 
     @property
     def density(self):
@@ -206,7 +210,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             [bool]: True if carbon with CN > 4 in structure.
         """
-        return not self._checks["no_overcoordinated_carbon"].is_ok
+        return not self.checks["no_overcoordinated_carbon"].is_ok
 
     @property
     def overvalent_c_indices(self) -> bool:
@@ -216,7 +220,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             [list]:
         """
-        return self._checks["no_overcoordinated_carbon"].flagged_indices
+        return self.checks["no_overcoordinated_carbon"].flagged_indices
 
     @property
     def has_overvalent_h(self) -> bool:
@@ -226,7 +230,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             [bool]: True if hydrogen with CN > 1 in structure.
         """
-        return not self._checks["no_overcoordinated_hydrogen"].is_ok
+        return not self.checks["no_overcoordinated_hydrogen"].is_ok
 
     @property
     def overvalent_h_indices(self) -> bool:
@@ -236,13 +240,13 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             [list]:
         """
-        return self._checks["no_overcoordinated_hydrogen"].flagged_indices
+        return self.checks["no_overcoordinated_hydrogen"].flagged_indices
 
     @property
     def has_undercoordinated_c(self) -> bool:
         """Check if there is a carbon that likely misses
         hydrogen"""
-        return not self._checks["no_undercoordinated_carbon"].is_ok
+        return not self.checks["no_undercoordinated_carbon"].is_ok
 
     @property
     def undercoordinated_c_indices(self) -> bool:
@@ -252,13 +256,13 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             [list]:
         """
-        return self._checks["no_undercoordinated_carbon"].flagged_indices
+        return self.checks["no_undercoordinated_carbon"].flagged_indices
 
     @property
     def has_undercoordinated_n(self) -> bool:
         """Check if there is a nitrogen that likely misses
         hydrogen"""
-        return not self._checks["no_undercoordinated_nitrogen"].is_ok
+        return not self.checks["no_undercoordinated_nitrogen"].is_ok
 
     @property
     def undercoordinated_n_indices(self) -> bool:
@@ -268,13 +272,13 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             [list]:
         """
-        return self._checks["no_undercoordinated_nitrogen"].flagged_indices
+        return self.checks["no_undercoordinated_nitrogen"].flagged_indices
 
     @property
     def has_undercoordinated_rare_earth(self) -> bool:
         """Check if there is a rare earth metal that likely misses
         hydrogen"""
-        return not self._checks["no_undercoordinated_rare_earth"].is_ok
+        return not self.checks["no_undercoordinated_rare_earth"].is_ok
 
     @property
     def undercoordinated_rare_earth_indices(self) -> bool:
@@ -284,29 +288,29 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             [list]:
         """
-        return self._checks["no_undercoordinated_rare_earth"].flagged_indices
+        return self.checks["no_undercoordinated_rare_earth"].flagged_indices
 
     @property
     def is_porous(self) -> Union[bool, None]:
         """Returns True if the MOF is porous according to the CoRE-MOF definition.
         Returns None if the check could not be run successfully."""
-        return self._checks["is_porous"].is_ok
+        return self.checks["is_porous"].is_ok
 
     @property
     def has_high_charges(self) -> Union[bool, None]:
         """Check if the structure has unreasonably high EqEq charges.
         Returns None if the check could not be run successfully."""
-        return not self._checks["no_high_charges"].is_ok
+        return not self.checks["no_high_charges"].is_ok
 
     @property
     def has_suspicicious_terminal_oxo(self):
         """Flags metals with a potentially wrong terminal oxo group"""
-        return not self._checks["no_false_terminal_oxo"].is_ok
+        return not self.checks["no_false_terminal_oxo"].is_ok
 
     @property
     def suspicicious_terminal_oxo_indices(self):
         """Indices of metals with a potentially wrong terminal oxo group"""
-        return self._checks["no_false_terminal_oxo"].flagged_indices
+        return self.checks["no_false_terminal_oxo"].flagged_indices
 
     @property
     def nx_graph(self) -> nx.Graph:
@@ -359,17 +363,17 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Returns:
             [bool]: True if nitrogen with CN > 4 in structure.
         """
-        return not self._checks["no_overcoordinated_nitrogen"].is_ok
+        return not self.checks["no_overcoordinated_nitrogen"].is_ok
 
     @property
     def has_lone_molecule(self) -> bool:
         """Returns true if there is a isolated floating atom or molecule"""
-        return not self._checks["no_floating_molecule"].is_ok
+        return not self.checks["no_floating_molecule"].is_ok
 
     @property
     def lone_molecule_indices(self):
         """Returns indices of non-periodic connected component in the structure"""
-        return self._checks["no_floating_molecule"].flagged_indices
+        return self.checks["no_floating_molecule"].flagged_indices
 
     @classmethod
     def _from_file(cls, path: str):
@@ -418,7 +422,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     @property
     def has_oms(self):
         """Returns true if open metal sites are detected"""
-        return not self._checks["no_oms"].is_ok
+        return not self.checks["no_oms"].is_ok
 
     def _set_cnn(self, method="vesta"):
         if self._cnn_method == method.lower():
@@ -463,4 +467,4 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     @property
     def has_metal(self):
         """Checks if there is at least one metal in the structure"""
-        return self._checks["has_metal"].is_ok
+        return self.checks["has_metal"].is_ok

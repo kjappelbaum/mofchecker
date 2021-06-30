@@ -14,6 +14,10 @@ class OverCoordinatedHydrogenCheck(BaseCoordinationCheck):
         self.structure_graph = structure_graph
 
     @property
+    def name(self):
+        return "Overcoordinated hydrogen"
+
+    @property
     def description(self):
         return "Checks, using geometric heuristics,\
              if there are any hydrogen that are likely overcoordinated (i.e., CN>1)."

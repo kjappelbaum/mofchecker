@@ -13,6 +13,10 @@ class ChargeCheck(AbstractCheck):
         self.threshold = 3
 
     @property
+    def name(self):
+        return "High charges"
+
+    @property
     def description(self):
         return f"Check that the charges of the structure are reasonable (abs(charge) not higher than {self.threshold})."
 

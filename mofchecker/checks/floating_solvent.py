@@ -18,6 +18,10 @@ class FloatingSolventCheck(AbstractIndexCheck):
             values=dict(zip(range(len(structure_graph)), range(len(structure_graph)))),
         )
 
+    @property
+    def name(self):
+        return "Floating atom or molecule"
+
     @classmethod
     def from_mofchecker(cls, mofchecker):
         """Initialize a checker from a mofchecker instance"""

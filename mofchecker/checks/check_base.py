@@ -51,6 +51,11 @@ class AbstractMissingCheck(abc.ABC):
     def description(self):
         pass
 
+    @property
+    @abc.abstractmethod
+    def name(self):
+        pass
+
     @cached_property
     def is_ok_indices_positions(self):
         result, indices, positions = self._run_check()

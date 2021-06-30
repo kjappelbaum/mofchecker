@@ -10,6 +10,10 @@ class OverCoordinatedNitrogenCheck(BaseCoordinationCheck):
         self.structure_graph = structure_graph
 
     @property
+    def name(self):
+        return "Overcoordinated nitrogen"
+
+    @property
     def description(self):
         return "Checks, using geometric heuristics, if there are any carbons that are likely overcoordinated (i.e., CN>4)."
 

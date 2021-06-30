@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"Checks if there are atomic overlaps, based on dist < min(covr 1, covr 2)"
 import warnings
 
 import numpy as np
@@ -10,9 +11,14 @@ from ..data import _get_covalent_radius
 
 
 class AtomicOverlapCheck(AbstractIndexCheck):
+    "Checks if there are atomic overlaps, based on dist < min(covr 1, covr 2)"
     def __init__(self, structure):
         self.structure = structure
         self.indices = None
+
+    @property
+    def name(self):
+        return "Atomic overlaps"
 
     def _run_check(self):
         overlaps = _get_overlaps(self.structure)

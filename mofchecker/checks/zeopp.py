@@ -110,6 +110,10 @@ class PorosityCheck(AbstractCheck):
         self.threshold = 2.4
 
     @property
+    def name(self):
+        return "Porosity"
+
+    @property
     def description(self):
         return f"Check if the pore limiting diameter is greater than {self.threshold}."
 

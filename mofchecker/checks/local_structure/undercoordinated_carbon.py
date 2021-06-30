@@ -17,6 +17,10 @@ class UnderCoordinatedCarbonCheck(BaseMissingCheck):
         self._position_candidates = None
 
     @property
+    def name(self):
+        return "Undercoordinated carbon"
+
+    @property
     def description(self):
         return "Checks, using geometric heuristics,\
              if there are any carbons that are likely undercoordinated."
