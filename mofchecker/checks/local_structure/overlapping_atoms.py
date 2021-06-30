@@ -12,6 +12,7 @@ from ..data import _get_covalent_radius
 
 class AtomicOverlapCheck(AbstractIndexCheck):
     "Checks if there are atomic overlaps, based on dist < min(covr 1, covr 2)"
+
     def __init__(self, structure):
         self.structure = structure
         self.indices = None
