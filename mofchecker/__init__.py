@@ -439,6 +439,11 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return omscls
 
     @property
+    def has_metal(self):
+        """Checks if there is at least one metal in the structure"""
+        return self.checks["has_metal"].is_ok
+
+    @property
     def has_oms(self):
         """Returns true if open metal sites are detected"""
         return not self.checks["no_oms"].is_ok
@@ -448,7 +453,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             return
         self._cnn_method = method.lower()
 
-    @deprecated
     def get_mof_descriptors(self) -> OrderedDict:
         """Run most of the sanity checks
         and get a dictionary with the result
@@ -460,6 +464,8 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             (
                 ("name", self.name),
                 ("graph_hash", self.graph_hash),
+                ("scaffold_hash", self.scaffold_hash),
+                ("symmetry_hash", self.symmetry_hash),
                 ("formula", self.formula),
                 ("path", self._filename),
                 ("density", self.density),
@@ -480,11 +486,10 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
                 ("has_high_charges", self.has_high_charges),
                 ("is_porous", self.is_porous),
                 ("has_suspicicious_terminal_oxo", self.has_suspicicious_terminal_oxo),
+                (
+                    "has_undercoordinated_rare_earth",
+                    self.has_undercoordinated_rare_earth,
+                ),
             )
         )
         return result_dict
-
-    @property
-    def has_metal(self):
-        """Checks if there is at least one metal in the structure"""
-        return self.checks["has_metal"].is_ok
