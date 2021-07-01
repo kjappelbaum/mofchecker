@@ -40,6 +40,7 @@ from .checks.utils.get_indices import (
     get_n_indices,
 )
 from .checks.zeopp import PorosityCheck
+from .errors import deprecated
 from .graph import _get_cn, construct_clean_graph, get_structure_graph
 from .symmetry import get_spacegroup_symbol_and_number, get_symmetry_hash
 from .utils import _check_if_ordered
@@ -447,6 +448,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             return
         self._cnn_method = method.lower()
 
+    @deprecated
     def get_mof_descriptors(self) -> OrderedDict:
         """Run most of the sanity checks
         and get a dictionary with the result

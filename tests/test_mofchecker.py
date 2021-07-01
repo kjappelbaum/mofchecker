@@ -205,14 +205,6 @@ def test_chargecheck():
     assert mofchecker.has_high_charges == False
 
 
-def test_dicts():
-    mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "VUGYED_clean.cif"))
-    )
-    assert isinstance(mofchecker.check_descriptions, dict)
-    assert isinstance(mofchecker.check_expected_values, dict)
-
-
 def test_is_porous(get_cn5_paddlewheel_structure):
     mc = MOFChecker(get_cn5_paddlewheel_structure)
     assert mc.is_porous == True

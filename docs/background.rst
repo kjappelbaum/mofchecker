@@ -32,6 +32,7 @@ For a given MOF structure
 
 * the scaffold hash (:py:attr:`~mofchecker.MOFChecker.scaffold_hash`) is unique for a given connectivity (bond network), independent of the atomic species in the graph
 * the structure graph hash (:py:attr:`~mofchecker.MOFChecker.graph_hash`) is like the scaffold hash, but also considers the atomic elements (nodes) in the graph
+* the symmetrized structure hash (:py:attr:`~mofchecker.MOFChecker.symmetry_hash`) hashes the space group and the set of Wyckoff symbols
 
 What is it useful for?
 ......................
