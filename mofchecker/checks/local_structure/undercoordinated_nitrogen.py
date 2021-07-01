@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """Check for undercoordinated nitrogens"""
-from re import I
-
 from ..utils.get_indices import get_n_indices
 from .base_missing_check import BaseMissingCheck
 from .geometry import (
@@ -75,7 +73,6 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
                         add_sp2_hydrogen(self.structure[site_index], neighbors)
                     )
             elif cn == 3:
-                print(site_index)
                 undercoordinated_nitrogen = _guess_underbound_nitrogen_cn3(
                     self.structure, site_index, neighbors, tolerance
                 )
