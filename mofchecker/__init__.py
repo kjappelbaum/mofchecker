@@ -8,6 +8,7 @@ from typing import List, Union
 
 import networkx as nx
 from ase import Atoms
+from backports.cached_property import cached_property
 from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
 from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
 from pymatgen.core.structure import IStructure, Structure
@@ -39,8 +40,8 @@ from .checks.utils.get_indices import (
     get_n_indices,
 )
 from .checks.zeopp import PorosityCheck
-from .definitions import CHECK_DESCRIPTIONS, EXPECTED_CHECK_VALUES
 from .graph import _get_cn, construct_clean_graph, get_structure_graph
+from .symmetry import get_spacegroup_symbol_and_number, get_symmetry_hash
 from .utils import _check_if_ordered
 
 __version__ = get_versions()["version"]
@@ -63,13 +64,15 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Raises:
             NotImplementedError in the case of partial occupancies
         """
-        if isinstance(structure, Structure):
-            self.structure = IStructure.from_sites(structure)
-        else:
-            self.structure = structure
         _check_if_ordered(structure)
+
         if primitive:
-            self.structure = self.structure.get_primitive_structure()
+            structure = structure.get_primitive_structure()
+
+        if isinstance(structure, Structure):
+            structure = IStructure.from_sites(structure)
+
+        self.structure = structure
 
         self.metal_indices = get_metal_indices(self.structure)
 
@@ -85,8 +88,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         self._overvalent_c = None
         self._overvalent_n = None
         self._overvalent_h = None
-        self.check_expected_values = EXPECTED_CHECK_VALUES
-        self.check_descriptions = CHECK_DESCRIPTIONS
 
         self._graph = None
         self._nx_graph = None
@@ -125,6 +126,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
     @property
     def checks(self):
+        """Get a dictionary of all check classes"""
         return self._checks
 
     def _set_filename(self, path):
@@ -136,7 +138,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return self.checks["no_atomic_overlaps"].flagged_indices
 
     @property
-    def graph_hash(self):
+    def graph_hash(self) -> str:
         """Return the Weisfeiler-Lehman graph hash.
         Hashes are identical for isomorphic graphs
         (taking the atomic kinds into account)
@@ -147,19 +149,35 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         )
 
     @property
-    def undercoordinated_c_candidate_positions(self):
+    def spacegroup_symbol(self) -> str:
+        """Return the international spacegroup symbol"""
+        return get_spacegroup_symbol_and_number(self.structure)["symbol"]
+
+    @property
+    def spacegroup_number(self) -> int:
+        """Return the international spacegroup number"""
+        return get_spacegroup_symbol_and_number(self.structure)["number"]
+
+    @cached_property
+    def symmetry_hash(self) -> str:
+        """Hash the structure based on its symmetrized versions, i.e., the spacegroup
+        and Wyckoff letters."""
+        return get_symmetry_hash(self.structure)
+
+    @property
+    def undercoordinated_c_candidate_positions(self) -> list:
         """Candidate positions for addition H on C
         we identified as undercoordinated"""
         return self.checks["no_undercoordinated_carbon"].candidate_positions
 
     @property
-    def undercoordinated_n_candidate_positions(self):
+    def undercoordinated_n_candidate_positions(self) -> list:
         """Candidate positions for addition H on N
         we identified as undercoordinated"""
         return self.checks["no_undercoordinated_nitrogen"].candidate_positions
 
     @property
-    def scaffold_hash(self):
+    def scaffold_hash(self) -> str:
         """Return the Weisfeiler-Lehman graph hash.
         Hashes are identical for isomorphic graphs and there are
         guarantees that non-isomorphic graphs will get different hashes.
@@ -167,23 +185,23 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return weisfeiler_lehman_graph_hash(self.nx_graph, iterations=6)
 
     @property
-    def has_atomic_overlaps(self):
+    def has_atomic_overlaps(self) -> bool:
         """Check if there are any overlaps in the structure"""
         return self.checks["no_atomic_overlaps"].is_ok
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return filename if the MOFChecker instance was created based on
         a histogram."""
         return self._name
 
     @property
-    def has_carbon(self):
+    def has_carbon(self) -> bool:
         """Check if there is any carbon atom in the structure"""
         return self.checks["has_c"].is_ok
 
     @property
-    def has_hydrogen(self):
+    def has_hydrogen(self) -> bool:
         """Check if there is any hydrogen atom in the structure"""
         return self.checks["has_h"].is_ok
 
@@ -303,12 +321,12 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return not self.checks["no_high_charges"].is_ok
 
     @property
-    def has_suspicicious_terminal_oxo(self):
+    def has_suspicicious_terminal_oxo(self) -> bool:
         """Flags metals with a potentially wrong terminal oxo group"""
         return not self.checks["no_false_terminal_oxo"].is_ok
 
     @property
-    def suspicicious_terminal_oxo_indices(self):
+    def suspicicious_terminal_oxo_indices(self) -> bool:
         """Indices of metals with a potentially wrong terminal oxo group"""
         return self.checks["no_false_terminal_oxo"].flagged_indices
 
