@@ -7,10 +7,10 @@ from collections import Counter
 from pymatgen.symmetry.structure import SymmetrizedStructure
 
 
-def make_sha256_hash(counter: Counter) -> str:
+def make_sha256_hash(tupl: tuple) -> str:
     """Based on https://stackoverflow.com/a/42151923"""
     hasher = hashlib.sha256()
-    hasher.update(repr(make_hashable(counter)).encode())
+    hasher.update(repr(tupl).encode())
     return base64.b64encode(hasher.digest()).decode()
 
 
@@ -37,7 +37,7 @@ def hash_symmetrized_structure(
         return "".join(symmetrized_structure.wyckoff_letters) + str(
             symmetrized_structure.spacegroup.int_number
         )
-    wyckoff_letter_counts = Counter(symmetrized_structure.wyckoff_letters)
+    wyckoff_letter_counts = tuple(set(symmetrized_structure.wyckoff_letters))
     return make_sha256_hash(wyckoff_letter_counts) + str(
         symmetrized_structure.spacegroup.int_number
     )
