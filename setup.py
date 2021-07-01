@@ -33,7 +33,7 @@ setup(
         "pymatgen",
         "click",
         "networkx>=2.5",
-        "pyeqe>=0.0.8",
+        "pyeqeq>=0.0.8",
         "backports.cached-property",
         "ase",
         "pyyaml",

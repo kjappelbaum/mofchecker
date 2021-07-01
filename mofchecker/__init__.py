@@ -51,6 +51,32 @@ del get_versions
 __all__ = ["__version__", "MOFChecker"]
 
 
+DESCRIPTORS = [
+    "name",
+    "graph_hash",
+    "scaffold_hash",
+    "symmetry_hash",
+    "formula",
+    "path",
+    "density",
+    "has_carbon",
+    "has_hydrogen",
+    "has_atomic_overlaps",
+    "has_overcoordinated_c",
+    "has_overcoordinated_n",
+    "has_overcoordinated_h",
+    "has_undercoordinated_c",
+    "has_undercoordinated_n",
+    "has_undercoordinated_rare_earth",
+    "has_metal",
+    "has_lone_molecule",
+    "has_high_charges",
+    "is_porous",
+    "has_suspicicious_terminal_oxo",
+    "has_undercoordinated_rare_earth",
+]
+
+
 class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-public-methods
     """MOFChecker performs basic sanity checks for MOFs"""
 
@@ -197,6 +223,11 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return self._name
 
     @property
+    def path(self) -> str:
+        """Return filepath if created from a file."""
+        return self._filename
+
+    @property
     def has_carbon(self) -> bool:
         """Check if there is any carbon atom in the structure"""
         return self.checks["has_c"].is_ok
@@ -232,6 +263,11 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return not self.checks["no_overcoordinated_carbon"].is_ok
 
     @property
+    def has_overcoordinated_c(self) -> bool:
+        """See has_overvalent_c"""
+        return self.has_overvalent_c
+
+    @property
     def overvalent_c_indices(self) -> bool:
         """Returns indices of carbon in the structure
         that has more than 4 neighbors.
@@ -250,6 +286,11 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             [bool]: True if hydrogen with CN > 1 in structure.
         """
         return not self.checks["no_overcoordinated_hydrogen"].is_ok
+
+    @property
+    def has_overcoordinated_h(self) -> bool:
+        """See has_overvalent_h"""
+        return self.has_overvalent_h
 
     @property
     def overvalent_h_indices(self) -> bool:
@@ -385,6 +426,11 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return not self.checks["no_overcoordinated_nitrogen"].is_ok
 
     @property
+    def has_overcoordinated_n(self) -> bool:
+        """See has_overvalent_n"""
+        return self.has_overvalent_n
+
+    @property
     def has_lone_molecule(self) -> bool:
         """Returns true if there is a isolated floating atom or molecule"""
         return not self.checks["no_floating_molecule"].is_ok
@@ -453,43 +499,19 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             return
         self._cnn_method = method.lower()
 
-    def get_mof_descriptors(self) -> OrderedDict:
-        """Run most of the sanity checks
-        and get a dictionary with the result
+    def get_mof_descriptors(self, descriptors=None) -> OrderedDict:
+        """Run sanity checks and get a dictionary with the result
+
+        Args:
+            descriptors (List): If provided, compute only the passed descriptors
 
         Returns:
             OrderedDict: result of overall checks
         """
+        if descriptors is None:
+            descriptors = DESCRIPTORS
+
         result_dict = OrderedDict(
-            (
-                ("name", self.name),
-                ("graph_hash", self.graph_hash),
-                ("scaffold_hash", self.scaffold_hash),
-                ("symmetry_hash", self.symmetry_hash),
-                ("formula", self.formula),
-                ("path", self._filename),
-                ("density", self.density),
-                ("has_carbon", self.has_carbon),
-                ("has_hydrogen", self.has_hydrogen),
-                ("has_atomic_overlaps", self.has_atomic_overlaps),
-                ("has_overcoordinated_c", self.has_overvalent_c),
-                ("has_overcoordinated_n", self.has_overvalent_n),
-                ("has_overcoordinated_h", self.has_overvalent_h),
-                ("has_undercoordinated_c", self.has_undercoordinated_c),
-                ("has_undercoordinated_n", self.has_undercoordinated_n),
-                (
-                    "has_undercoordinated_rare_earth",
-                    self.has_undercoordinated_rare_earth,
-                ),
-                ("has_metal", self.has_metal),
-                ("has_lone_molecule", self.has_lone_molecule),
-                ("has_high_charges", self.has_high_charges),
-                ("is_porous", self.is_porous),
-                ("has_suspicicious_terminal_oxo", self.has_suspicicious_terminal_oxo),
-                (
-                    "has_undercoordinated_rare_earth",
-                    self.has_undercoordinated_rare_earth,
-                ),
-            )
+            ((descriptor, getattr(self, descriptor)) for descriptor in descriptors)
         )
         return result_dict

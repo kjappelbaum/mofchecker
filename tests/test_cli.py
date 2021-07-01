@@ -24,3 +24,17 @@ def test_json_output():
     json_list = json.loads(result.output)
     assert len(json_list) == 2, json_list
     assert json_list[0]["name"] == "ABAVIJ_clean", json_list[0]
+
+
+def test_select_descriptors():
+    """Test that one can select specific descriptors"""
+    runner = CliRunner()
+    result = runner.invoke(
+        cli.run,
+        [str(TEST_DIR / "ABAVIJ_clean.cif"), "-d", "has_metal"],
+    )
+    assert result.exit_code == 0
+
+    json_list = json.loads(result.output)
+    assert len(json_list) == 1, json_list
+    assert list(json_list[0].keys()) == ["has_metal"]

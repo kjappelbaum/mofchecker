@@ -5,7 +5,7 @@ import json
 
 import click
 
-from mofchecker import MOFChecker
+from mofchecker import DESCRIPTORS, MOFChecker
 
 
 @click.command()
@@ -15,10 +15,17 @@ from mofchecker import MOFChecker
     help="Perform the analysis on the primitive structure",
     show_default=True,
 )
-@click.argument(
-    "CIF_FILES", type=click.Path(exists=True, dir_okay=False), nargs=-1
+@click.option(
+    "--descriptors",
+    "-d",
+    multiple=True,
+    type=click.Choice(DESCRIPTORS),
+    default=DESCRIPTORS,
+    help="Select descriptors to be computed.",
+    show_default=False,
 )
-def run(primitive, cif_files):
+@click.argument("CIF_FILES", type=click.Path(exists=True, dir_okay=False), nargs=-1)
+def run(primitive, descriptors, cif_files):
     """
     Check provided structures and print list of JSON objects with descriptors.
     """
@@ -27,10 +34,10 @@ def run(primitive, cif_files):
     print("[")
     for index, structure_file in enumerate(cif_files):
         mofchecker = MOFChecker.from_cif(structure_file, primitive=primitive)
-        descriptors = mofchecker.get_mof_descriptors()
+        descriptors = mofchecker.get_mof_descriptors(descriptors=descriptors)
 
         string = json.dumps(descriptors, indent=2)
-        if index != len(structure_files) - 1:
+        if index != len(cif_files) - 1:
             string += ","
         print(string)
     print("]")

@@ -57,6 +57,7 @@ A web app is currently being developed [in another repository](https://github.co
 ```bash
 mofchecker --help # list options
 mofchecker structure1.cif structure2.cif  # prints JSON output
+mofchecker -d has_metal -d has_atomic_overlaps *.cif  # compute only selected descriptors
 ```
 
 ### In Python
