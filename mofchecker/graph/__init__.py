@@ -22,15 +22,15 @@ from pymatgen.core import Molecule, Structure
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 
 with open(os.path.join(THIS_DIR, "atom_typing_radii.yml"), "r") as handle:
-    ATOM_TYPING_CUTOFFS = yaml.load(handle)
+    ATOM_TYPING_CUTOFFS = yaml.load(handle, Loader=yaml.UnsafeLoader)
 
 
 with open(os.path.join(THIS_DIR, "li_radii.yml"), "r") as handle:
-    LI_TYPING_CUTOFFS = yaml.load(handle)
+    LI_TYPING_CUTOFFS = yaml.load(handle, Loader=yaml.UnsafeLoader)
 
 
 with open(os.path.join(THIS_DIR, "tuned_vesta.yml"), "r") as handle:
-    VESTA_CUTOFFS = yaml.load(handle)
+    VESTA_CUTOFFS = yaml.load(handle, Loader=yaml.UnsafeLoader)
 
 
 VESTA_NN = CutOffDictNN(cut_off_dict=VESTA_CUTOFFS)

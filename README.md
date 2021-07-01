@@ -52,6 +52,13 @@ A web app is currently being developed [in another repository](https://github.co
 
 ## Usage
 
+### Command line interface
+
+```bash
+mofchecker --help # list options
+mofchecker structure1.cif structure2.cif  # prints JSON output
+```
+
 ### In Python
 
 ```python

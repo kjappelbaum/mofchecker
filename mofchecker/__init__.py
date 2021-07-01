@@ -395,9 +395,9 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return self.checks["no_floating_molecule"].flagged_indices
 
     @classmethod
-    def _from_file(cls, path: str):
+    def _from_file(cls, path: str, **kwargs):
         structure = Structure.from_file(path)
-        mofchecker = cls(structure)
+        mofchecker = cls(structure, **kwargs)
         mofchecker._set_filename(path)  # pylint:disable=protected-access
         return mofchecker
 

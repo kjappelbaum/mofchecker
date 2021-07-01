@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 """Original idea and implementation idea contributed by Andrew Rosen,
 https://github.com/kjappelbaum/mofchecker/issues/122"""
