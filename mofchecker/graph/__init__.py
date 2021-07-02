@@ -178,6 +178,7 @@ def get_subgraphs_as_molecules(
     Returns:
         Tuple[List[Molecule], List[MoleculeGraph], List[List[int]], List[np.ndarray]]
     """
+    # pylint: disable=invalid-name
     # creating a supercell is an easy way to extract
     # molecules (and not, e.g., layers of a 2D crystal)
     # without adding extra logic
