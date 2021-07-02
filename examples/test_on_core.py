@@ -6,7 +6,8 @@ from glob import glob
 import pandas as pd
 from tqdm import tqdm  # pylint:disable=import-error
 
-from mofchecker import MOFChecker, NoMetal
+from mofchecker import MOFChecker
+from mofchecker.errors import NoMetal
 
 all_structures = glob("2019-11-01-ASR-public_12020/structure_10143/*.cif")
 

@@ -33,10 +33,11 @@ setup(
         "pymatgen",
         "click",
         "networkx>=2.5",
-        "pyeqeq",
+        "pyeqeq>=0.0.8",
         "backports.cached-property",
         "ase",
         "pyyaml",
+        "click",
     ],
     extras_require={
         "testing": ["pytest", "pytest-cov<2.12"],
@@ -47,7 +48,7 @@ setup(
             "sphinx-copybutton",
         ],
         "dev": ["versioneer"],
-        "pre-commit": ["pylint", "pre-commit"],
+        "pre-commit": ["pylint~=2.8.3", "pre-commit"],
     },
     classifiers=[
         "License :: OSI Approved :: GPL",
@@ -58,4 +59,5 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
+    entry_points={"console_scripts": ["mofchecker=mofchecker.cli:run"]},
 )
