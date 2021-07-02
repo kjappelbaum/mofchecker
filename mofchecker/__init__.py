@@ -48,7 +48,7 @@ from .utils import _check_if_ordered
 __version__ = get_versions()["version"]
 del get_versions
 
-__all__ = ["__version__", "MOFChecker"]
+__all__ = ["__version__", "MOFChecker", "DESCRIPTORS"]
 
 
 DESCRIPTORS = [
