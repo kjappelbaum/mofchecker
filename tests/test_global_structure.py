@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
-from mofchecker.checks.global_structure import (
-    HasCarbon,
-    HasHydrogen,
-    HasMetal,
-    HasNitrogen,
-)
+from mofchecker.checks.global_structure import HasCarbon, HasHydrogen
 
 
 def test_no_c(get_no_c):

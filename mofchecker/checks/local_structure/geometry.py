@@ -5,9 +5,8 @@ import math
 import numpy as np
 from pymatgen.core import Structure
 from pymatgen.util.coord import get_angle
+
 from ..utils.get_indices import is_metal
-
-
 
 
 def rotation_matrix(axis, theta):  # pylint: disable=too-many-locals
@@ -43,9 +42,10 @@ def _maximum_angle(angle):
 
 
 def get_angle_between_site_and_neighbors(site, neighbors):
-    vec_1 = site.coords -  neighbors[1].site.coords
+    vec_1 = site.coords - neighbors[1].site.coords
     vec_2 = site.coords - neighbors[0].site.coords
     return get_angle(vec_1, vec_2)
+
 
 def _guess_underbound_nitrogen_cn3(
     structure: Structure, site_index: int, neighbors: list, tolerance: int = 10
@@ -63,7 +63,7 @@ def _guess_underbound_nitrogen_cn3(
     Returns:
         bool: True if the nitrogen is likely missing some coordination partner
     """
-    min_angle  = get_angle_between_site_and_neighbors(structure[site_index], neighbors)
+    min_angle = get_angle_between_site_and_neighbors(structure[site_index], neighbors)
     any_metal = False
     for neighbor in neighbors:
         if is_metal(neighbor.site):
@@ -74,7 +74,7 @@ def _guess_underbound_nitrogen_cn3(
         if str(neighbor.site.specie) == "H":
             num_h += 1
 
-    if min_angle  < 110 + tolerance:
+    if min_angle < 110 + tolerance:
         # let's only do this if one of the neighbors is a metal.
         # sometimes the M-N bond is so long that it isn't correctly recognized
         # obviously, this now won't detect missing H on a floating NH3
@@ -113,10 +113,12 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
     # neighbor_species = set(
     #     [str(neighbors[0].site.specie), str(neighbors[1].site.specie)]
     # )
-    bond_lengths = np.array([
-       structure.get_distance(site_index, neighbors[0].index), 
-       structure.get_distance(site_index, neighbors[1].index),
-    ])
+    bond_lengths = np.array(
+        [
+            structure.get_distance(site_index, neighbors[0].index),
+            structure.get_distance(site_index, neighbors[1].index),
+        ]
+    )
     if (np.abs(180 - angle) < tolerance) or (np.abs(0 - angle) < tolerance):
         # sp hybridization if the nitrogen is linear
         # this could be a nitride or a nitrosyl
@@ -161,7 +163,7 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
         if (np.abs(mean_dihedral - 180) < tolerance) or (
             np.abs(mean_dihedral - 0) < tolerance
         ):
-            if all(bond_lengths<1.4):
+            if all(bond_lengths < 1.4):
                 return False
             return True
     # # larger angles should indicate sp2 hybridization

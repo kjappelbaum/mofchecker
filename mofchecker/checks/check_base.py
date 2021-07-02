@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=missing-module-docstring,missing-function-docstring,missing-class-docstring
 import abc
 
 from backports.cached_property import cached_property
