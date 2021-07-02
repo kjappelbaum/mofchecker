@@ -45,7 +45,6 @@ def construct_clean_graph(
     edges = {(u, v) for u, v, d in structure_graph.graph.edges(keys=False, data=True)}
     graph = nx.Graph()
     graph.add_edges_from(edges)
-    graph_descriptors = get_cycle_descriptors(graph)
     for node in graph.nodes:
 
         graph.nodes[node]["specie"] = str(structure[node].specie)
@@ -55,13 +54,6 @@ def construct_clean_graph(
             + str(structure_graph.get_coordination_of_site(node))
         )
 
-        graph.nodes[node]["memership-hash"] = get_node_string(
-            node,
-            structure_graph,
-            graph_descriptors["memberships"],
-            membership_only=True,
-        )
-
     return graph
 
 
@@ -69,7 +61,7 @@ def _get_cn(structure_graph, site_index):
     return len(structure_graph.get_connected_sites(site_index))
 
 
-def get_local_env_method(method):
+def get_local_env_method(method):  # pylint:disable=too-many-return-statements
     """get a local environment method based on its name"""
     method = method.lower()
 
@@ -116,7 +108,7 @@ def get_structure_graph(structure, method: str = "vesta"):
     )
 
 
-def _select_parts_in_cell(
+def _select_parts_in_cell(  # pylint:disable=too-many-arguments, too-many-locals
     molecules: List[Molecule],
     graphs: List[MoleculeGraph],
     indices: List[List[int]],
@@ -140,8 +132,8 @@ def _select_parts_in_cell(
     centers_ = []
     coordinates_ = []
 
-    for _, v in valid_indices.items():
-        for index in v:
+    for _, values in valid_indices.items():
+        for index in values:
             selected_indices.append(indices[index])
             molecules_.append(molecules[index])
             graphs_.append(graphs[index])
@@ -151,7 +143,7 @@ def _select_parts_in_cell(
     return molecules_, graphs_, selected_indices, centers_, coordinates_
 
 
-def get_subgraphs_as_molecules(
+def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
     structure_graph: StructureGraph,
     use_weights: bool = False,
     return_unique: bool = True,
@@ -208,14 +200,14 @@ def get_subgraphs_as_molecules(
 
     unique_subgraphs = []
 
-    def node_match(n1, n2):
-        return n1["specie"] == n2["specie"]
+    def node_match(node_1, node_2):
+        return node_1["specie"] == node_2["specie"]
 
-    def edge_match(e1, e2):
+    def edge_match(edge_1, edge_2):
         if use_weights:
-            return e1["weight"] == e2["weight"]
-        else:
-            return True
+            return edge_1["weight"] == edge_2["weight"]
+
+        return True
 
     if return_unique:
         for subgraph in molecule_subgraphs:
@@ -229,21 +221,24 @@ def get_subgraphs_as_molecules(
             if not any(already_present):
                 unique_subgraphs.append(subgraph)
 
-    def make_mols(molecule_subgraphs=molecule_subgraphs, center=False):
+    def make_mols(
+        molecule_subgraphs=molecule_subgraphs, center=False
+    ):  # pylint:disable=dangerous-default-value
         molecules = []
         indices = []
         indices_here = []
         mol_centers = []
         coordinates = []
         for subgraph in molecule_subgraphs:
-            coords = [supercell_sg.structure[n].coords for n in subgraph.nodes()]
-            species = [supercell_sg.structure[n].specie for n in subgraph.nodes()]
+            coords = [supercell_sg.structure[node].coords for node in subgraph.nodes()]
+            species = [supercell_sg.structure[node].specie for node in subgraph.nodes()]
+
             # binding = [
             #     supercell_sg.structure[n].properties["binding"]
             #     for n in subgraph.nodes()
             # ]
-            idx = [subgraph.nodes[n]["idx"] for n in subgraph.nodes()]
-            idx_here = [n for n in subgraph.nodes()]
+            idx = [subgraph.nodes[node]["idx"] for node in subgraph.nodes()]
+            idx_here = subgraph.nodes()
             molecule = Molecule(
                 species, coords
             )  #  site_properties={"binding": binding}
@@ -305,22 +300,24 @@ def get_subgraphs_as_molecules(
 
 
 def get_cycle_lengths(graph):
+    """Get the length of cycles in a graph"""
     cycles = nx.minimum_cycle_basis(graph)
     lengths = count_sublist_lengths(cycles)
     return lengths
 
 
 def count_sublist_lengths(list_of_lists):
+    """Get the lengths of sublists"""
     lengths = []
 
-    for l in list_of_lists:
-        lengths.append(len(l))
+    for mylist in list_of_lists:
+        lengths.append(len(mylist))
 
     return lengths
 
 
 def get_cycle_memberships(graph, cycles, lengths):
-
+    """See which nodes are in which cycles"""
     unique_lengths = np.unique(lengths)
 
     cycle_memberships = {}
@@ -338,6 +335,7 @@ def get_cycle_memberships(graph, cycles, lengths):
 
 
 def get_cycle_descriptors(graph):
+    """Get descriptors for the cycles in a graph"""
     cycles = nx.minimum_cycle_basis(graph)
 
     lengths = count_sublist_lengths(cycles)
@@ -352,6 +350,7 @@ def get_cycle_descriptors(graph):
 
 
 def get_node_string(index, structure_graph, memberships, membership_only: bool = False):
+    """String for the node"""
     membership_hash = "".join([str(e) for e in memberships[index].values()])
     atom_label = str(structure_graph.structure[index].specie)
     if membership_only:
