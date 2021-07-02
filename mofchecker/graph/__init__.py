@@ -46,7 +46,6 @@ def construct_clean_graph(
     graph = nx.Graph()
     graph.add_edges_from(edges)
     graph_descriptors = get_cycle_descriptors(graph)
-    sg_centrality = nx.subgraph_centrality(graph)
     for node in graph.nodes:
 
         graph.nodes[node]["specie"] = str(structure[node].specie)
@@ -55,18 +54,14 @@ def construct_clean_graph(
             + "-"
             + str(structure_graph.get_coordination_of_site(node))
         )
-        graph.nodes[node]["species-cycle"] = get_node_string(
-            node, structure_graph, graph_descriptors["memberships"]
-        )
+
         graph.nodes[node]["memership-hash"] = get_node_string(
             node,
             structure_graph,
             graph_descriptors["memberships"],
             membership_only=True,
         )
-        graph.nodes[node]["species-sg-central"] = str(structure[node].specie) + str(
-            sg_centrality[node]
-        )
+
     return graph
 
 
