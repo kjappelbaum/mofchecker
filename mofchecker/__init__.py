@@ -77,8 +77,43 @@ DESCRIPTORS = [
 ]
 
 
+class DescriptorMeta(type):
+    def __new__(meta, name, bases, dct):
+        descriptor_properties = []
+        checkers = []
+        for _, value in dct.items():
+            if hasattr(value, "descriptor"):
+                descriptor_properties.append(value)
+            elif hasattr(value, "checker"):
+                checkers.append(value)
+        dct["descriptor_properties"] = descriptor_properties
+        dct["checkers"] = checkers
+
+        return super(DescriptorMeta, meta).__new__(meta, name, bases, dct)
+
+
+def descriptor(function):
+    def inner(*args, **kwargs):
+        # do whatever
+        pass
+
+    inner.descriptor = True
+    return inner
+
+
+def checker(function):
+    def inner(*args, **kwargs):
+        # do whatever
+        pass
+
+    inner.checker = True
+    return inner
+
+
 class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-public-methods
     """MOFChecker performs basic sanity checks for MOFs"""
+
+    __metaclass__ = DescriptorMeta
 
     def __init__(self, structure: Union[Structure, IStructure], primitive: bool = True):
         """Class that can perform basic sanity checks for MOF structures
@@ -150,11 +185,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             "no_oms": MOFOMS.from_mofchecker(self),
             "no_false_terminal_oxo": FalseOxoCheck.from_mofchecker(self),
         }
-
-    @property
-    def checks(self):
-        """Get a dictionary of all check classes"""
-        return self._checks
 
     def _set_filename(self, path):
         self._filename = os.path.abspath(path)
