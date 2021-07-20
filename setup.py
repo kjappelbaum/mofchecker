@@ -48,7 +48,7 @@ setup(
             "sphinx-copybutton",
         ],
         "dev": ["versioneer"],
-        "pre-commit": ["pylint~=2.8.3", "pre-commit"],
+        "pre-commit": ["pylint>=2.8.3,<2.10.0", "pre-commit"],
     },
     classifiers=[
         "License :: OSI Approved :: GPL",
