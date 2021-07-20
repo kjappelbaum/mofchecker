@@ -33,7 +33,6 @@ setup(
         "pymatgen<2022",
         "click",
         "networkx>=2.5",
-        "pyeqeq>=0.0.8",
         "backports.cached-property",
         "ase",
         "pyyaml",
@@ -49,6 +48,7 @@ setup(
         ],
         "dev": ["versioneer"],
         "pre-commit": ["pylint>=2.8.3,<2.10.0", "pre-commit"],
+        "eqeq": ["pyeqeq>=0.0.8"],
     },
     classifiers=[
         "License :: OSI Approved :: GPL",
