@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.8.2](https://www.github.com/kjappelbaum/mofchecker/compare/v0.8.1...v0.8.2) (2021-07-20)
+
+
+### Bug Fixes
+
+* license classifier ([39b0353](https://www.github.com/kjappelbaum/mofchecker/commit/39b035373c72abf34cc0f0714184b36bdd04d5d5))
+
 ### [0.8.1](https://www.github.com/kjappelbaum/mofchecker/compare/v0.8.0...v0.8.1) (2021-07-20)
 
 
