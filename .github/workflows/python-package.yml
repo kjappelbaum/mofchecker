@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           conda install zeopp-lsmo
-          pip install pytest pytest-cov
+          pip install pytest pytest-cov pyeqeq
           pip install .
       - name: Test with pytest
         run: |
