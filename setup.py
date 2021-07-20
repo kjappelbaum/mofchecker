@@ -51,7 +51,7 @@ setup(
         "eqeq": ["pyeqeq>=0.0.8"],
     },
     classifiers=[
-        "License :: OSI Approved :: MIT",
+        "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
