@@ -24,7 +24,7 @@ setup(
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     url="https://github.com/kjappelbaum/mofchecker",
-    license="GPL",
+    license="MIT",
     packages=find_packages(),
     include_package_data=True,
     # Allows `setup.py test` to work correctly with pytest
