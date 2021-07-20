@@ -30,7 +30,7 @@ setup(
     # Allows `setup.py test` to work correctly with pytest
     setup_requires=pytest_runner,
     install_requires=[
-        "pymatgen",
+        "pymatgen<2022",
         "click",
         "networkx>=2.5",
         "pyeqeq>=0.0.8",
