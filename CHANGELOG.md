@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.8.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.7.1...v0.8.0) (2021-07-20)
+
+
+### Features
+
+* add B-C bond in cutoffs ([1c433cf](https://www.github.com/kjappelbaum/mofchecker/commit/1c433cf2df3723d601f9d1b50308e1b6a829955f))
+* add check for undercoordinated rare earth ([#137](https://www.github.com/kjappelbaum/mofchecker/issues/137)) ([cf7d838](https://www.github.com/kjappelbaum/mofchecker/commit/cf7d8385772bce05851c3dcc296b3a7f01135b90))
+* addd checks property and names of checks ([396a5ec](https://www.github.com/kjappelbaum/mofchecker/commit/396a5eca45b28da8d6189dc869e6ab4567ad8836))
+* make pyeqeq optional ([0f6bcc2](https://www.github.com/kjappelbaum/mofchecker/commit/0f6bcc2427060209af7b1d8b3b11252e4150a730))
+* refactor, return indices, use less buggy EQEq implementation ([#127](https://www.github.com/kjappelbaum/mofchecker/issues/127)) ([bfe9d14](https://www.github.com/kjappelbaum/mofchecker/commit/bfe9d14fed6e1f21974514e547b74f4752028a2c)), closes [#112](https://www.github.com/kjappelbaum/mofchecker/issues/112) [#128](https://www.github.com/kjappelbaum/mofchecker/issues/128)
+* symmetry hash ([#141](https://www.github.com/kjappelbaum/mofchecker/issues/141)) ([1ecdeb3](https://www.github.com/kjappelbaum/mofchecker/commit/1ecdeb3138a6674d72bd34d2fd8635e3ffbd43f7))
+
+
+### Bug Fixes
+
+* do not pin pymatgen ([e2ff197](https://www.github.com/kjappelbaum/mofchecker/commit/e2ff19727d56bd04aacd7227678f69b117d59bc7))
+* failing tests for descriptions ([25ce4e7](https://www.github.com/kjappelbaum/mofchecker/commit/25ce4e78cea19748b5628fd2b2fa1150e9d7b854))
+* include yml files in MANIFEST ([a0cb305](https://www.github.com/kjappelbaum/mofchecker/commit/a0cb3051785bf8bbdca811c95794b49a5b4f65e5))
+* loosen version limit om pymatgen ([981f7df](https://www.github.com/kjappelbaum/mofchecker/commit/981f7dff7b0ee9032b6cdfec7b7a8eaf7bf85a85))
+* oversensitive checks ([#138](https://www.github.com/kjappelbaum/mofchecker/issues/138)) ([499aa9f](https://www.github.com/kjappelbaum/mofchecker/commit/499aa9f8b1147e7d840b6c7802c0ba30701f6186))
+* oversensitive floating atom check ([#140](https://www.github.com/kjappelbaum/mofchecker/issues/140)) ([86d3f2d](https://www.github.com/kjappelbaum/mofchecker/commit/86d3f2d1ab0a028029380c7df4f57404155e5fca))
+* remove unused cycle basis calculation ([c3abcc2](https://www.github.com/kjappelbaum/mofchecker/commit/c3abcc25f3603a9fedea0d12328e8a0fd501a2ba))
+* remove unused cycle basis calculation ([c22cb35](https://www.github.com/kjappelbaum/mofchecker/commit/c22cb3514f093776a81125eae4ff2d4cb32497d1))
+* use set of wyckoff letters ([fe6e6b9](https://www.github.com/kjappelbaum/mofchecker/commit/fe6e6b99e24d1abf865ad523b21f34801c3da633))
+
+
+### Documentation
+
+* remove indent ([cde3030](https://www.github.com/kjappelbaum/mofchecker/commit/cde3030f1cb894e60d7b19cbec90e172524c6b8c))
+
 ### [0.7.1](https://www.github.com/kjappelbaum/mofchecker/compare/v0.7.0...v0.7.1) (2021-03-26)
 
 
