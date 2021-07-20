@@ -3,12 +3,6 @@ repos:
     rev: v2.2.3
     hooks:
       - id: trailing-whitespace
-      - id: check-yaml
-        name: Check Yaml
-        description: This hook checks yaml files for parseable syntax.
-        entry: check-yaml
-        language: python
-        types: [yaml]
       - id: detect-private-key
         name: Detect Private Key
         description: Detects the presence of private keys

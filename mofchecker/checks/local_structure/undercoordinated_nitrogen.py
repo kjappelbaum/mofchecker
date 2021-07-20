@@ -14,7 +14,9 @@ from .geometry import (
 class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
     """Check for undercoordinated nitrogens"""
 
-    def __init__(self, structure, structure_graph):
+    def __init__(
+        self, structure, structure_graph
+    ):  # pylint: disable=super-init-not-called
         self.structure = structure
         self.n_indices = get_n_indices(self.structure)
         self.structure_graph = structure_graph

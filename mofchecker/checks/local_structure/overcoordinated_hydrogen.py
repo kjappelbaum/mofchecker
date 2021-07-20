@@ -8,7 +8,9 @@ from .base_coordination_check import BaseCoordinationCheck
 class OverCoordinatedHydrogenCheck(BaseCoordinationCheck):
     """Flagging overcoordinated hydrogens"""
 
-    def __init__(self, structure, structure_graph):
+    def __init__(
+        self, structure, structure_graph
+    ):  # pylint: disable=super-init-not-called
         self.structure = structure
         self.h_indices = get_h_indices(self.structure)
         self.structure_graph = structure_graph

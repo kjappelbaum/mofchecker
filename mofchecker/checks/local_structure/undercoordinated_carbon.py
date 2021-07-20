@@ -10,7 +10,9 @@ from .geometry import _maximum_angle, add_sp2_hydrogen, add_sp3_hydrogens_on_cn1
 class UnderCoordinatedCarbonCheck(BaseMissingCheck):
     """Check for undercoordinated carbons"""
 
-    def __init__(self, structure, structure_graph):
+    def __init__(
+        self, structure, structure_graph
+    ):  # pylint: disable=super-init-not-called
         self.structure = structure
         self.c_indices = get_c_indices(self.structure)
         self.structure_graph = structure_graph

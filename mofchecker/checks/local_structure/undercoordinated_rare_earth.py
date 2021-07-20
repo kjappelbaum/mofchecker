@@ -9,7 +9,9 @@ class UnderCoordinatedRareEarthCheck(BaseCoordinationCheck):
     """ "Check if there are any lanthanides/actinides
     that are likely undercoordinated (i.e., CN<4)"""
 
-    def __init__(self, structure, structure_graph):
+    def __init__(
+        self, structure, structure_graph
+    ):  # pylint: disable=super-init-not-called
         self.structure = structure
         self.rare_earth_indices = get_rare_earth_indices(structure)
         self.structure_graph = structure_graph

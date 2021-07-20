@@ -1,5 +1,5 @@
 [MESSAGES CONTROL]
-disable = C0330, C0326, locally-disabled, fixme,  R0801 # needs to remain disabled see https://github.com/PyCQA/pylint/issues/214
+disable = C0330, C0326, locally-disabled, fixme,missing-module-docstring,missing-function-docstring,  R0801 # needs to remain disabled see https://github.com/PyCQA/pylint/issues/214
 
 
 [format]

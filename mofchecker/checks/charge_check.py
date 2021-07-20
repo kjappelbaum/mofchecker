@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
+"""Check that the charges of the structure are reasonable"""
 from tempfile import NamedTemporaryFile
 
 import numpy as np
-
 from pyeqeq.main import run_on_cif
 
 from .check_base import AbstractCheck
 
 
 class ChargeCheck(AbstractCheck):
+    """Check that the charges of the structure are reasonable"""
+
     def __init__(self, structure):
         self.structure = structure
         self.threshold = 3
@@ -19,7 +21,8 @@ class ChargeCheck(AbstractCheck):
 
     @property
     def description(self):
-        return f"Check that the charges of the structure are reasonable (abs(charge) not higher than {self.threshold})."
+        return f"Check that the charges of the structure are reasonable\
+             (abs(charge) not higher than {self.threshold})."
 
     def _run_check(self):
         with NamedTemporaryFile("w", suffix=".cif") as file:

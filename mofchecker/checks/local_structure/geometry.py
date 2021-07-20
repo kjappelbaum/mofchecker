@@ -119,7 +119,9 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
             structure.get_distance(site_index, neighbors[1].index),
         ]
     )
-    if (np.abs(180 - angle) < tolerance) or (np.abs(0 - angle) < tolerance):
+    if (np.abs(180 - angle) < tolerance) or (  # pylint: disable=no-else-return
+        np.abs(0 - angle) < tolerance
+    ):
         # sp hybridization if the nitrogen is linear
         # this could be a nitride or a nitrosyl
         # usually, there is nothing to worry about if this is the case

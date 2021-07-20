@@ -138,10 +138,10 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             "no_overcoordinated_nitrogen": OverCoordinatedNitrogenCheck.from_mofchecker(
                 self
             ),
-            "no_undercoordinated_nitrogen": UnderCoordinatedNitrogenCheck.from_mofchecker(
+            "no_undercoordinated_nitrogen": UnderCoordinatedNitrogenCheck.from_mofchecker(  # pylint: disable=line-too-long
                 self
             ),
-            "no_undercoordinated_rare_earth": UnderCoordinatedRareEarthCheck.from_mofchecker(
+            "no_undercoordinated_rare_earth": UnderCoordinatedRareEarthCheck.from_mofchecker(  # pylint: disable=line-too-long
                 self
             ),
             "no_floating_molecule": FloatingSolventCheck.from_mofchecker(self),

@@ -44,7 +44,9 @@ class FalseOxoCheck(BaseCoordinationCheck):
     """Checks if there is a metal with oxo group,
     for which such a group is unexpected."""
 
-    def __init__(self, structure, structure_graph):
+    def __init__(
+        self, structure, structure_graph
+    ):  # pylint: disable=super-init-not-called
         self.structure = structure
         self.metal_indices = get_metal_indices(self.structure)
         self.structure_graph = structure_graph
