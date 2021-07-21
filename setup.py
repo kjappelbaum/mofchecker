@@ -30,7 +30,7 @@ setup(
     # Allows `setup.py test` to work correctly with pytest
     setup_requires=pytest_runner,
     install_requires=[
-        "pymatgen<2022",
+        "pymatgen<2023",
         "click",
         "networkx>=2.5",
         "backports.cached-property",
