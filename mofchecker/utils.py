@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """Helper functions for the MOFChecker"""
+import pickle
+
+
+def read_pickle(file):
+    """Read a pickle file"""
+    with open(file, "rb") as handle:
+        return pickle.load(handle)
 
 
 def _check_metal_coordination(site, coordination_number: int) -> bool:
