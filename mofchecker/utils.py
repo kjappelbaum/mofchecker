@@ -2,6 +2,9 @@
 """Helper functions for the MOFChecker"""
 import pickle
 
+import pymatgen
+from pymatgen.core.structure import Structure
+
 
 def read_pickle(file):
     """Read a pickle file"""
@@ -49,3 +52,15 @@ def _check_if_ordered(structure):
             raise NotImplementedError(
                 f"Pymatgen currently does not support this {str(site.specie)} element"
             )
+
+
+class IStructure(pymatgen.core.structure.IStructure):
+    """pymatgen IStructure with faster, hash-based equality comparison.
+
+    This dramatically speeds up lookups in the LRU cache.
+    """
+
+    __hash__ = pymatgen.core.structure.IStructure.__hash__
+
+    def __eq__(self, other):
+        return self.__hash__() == other.__hash__()
