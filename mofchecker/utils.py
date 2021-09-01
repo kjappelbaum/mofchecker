@@ -63,4 +63,5 @@ class IStructure(pymatgen.core.structure.IStructure):
     __hash__ = pymatgen.core.structure.IStructure.__hash__
 
     def __eq__(self, other):
-        return self.__hash__() == other.__hash__()
+        """Only allow hits for same object"""
+        return id(self) == id(other)
