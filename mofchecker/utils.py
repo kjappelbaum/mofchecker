@@ -2,6 +2,7 @@
 """Helper functions for the MOFChecker"""
 import json
 import pickle
+from functools import cached_property
 
 import pymatgen
 from pymatgen.core.structure import Structure
@@ -66,9 +67,9 @@ class IStructure(pymatgen.core.structure.IStructure):
 
     def __eq__(self, other):
         """Use specific, yet performant hash for equality comparison."""
-        return _istruct_hash(self) == _istruct_hash(other)
+        return self._dict_hash == other._dict_hash
 
-
-def _istruct_hash(structure):
-    """Specific, yet performant hash for equality comparison."""
-    return hash(json.dumps(structure.as_dict(), sort_keys=True))
+    @cached_property
+    def _dict_hash(self):
+        """Specific, yet performant hash."""
+        return hash(json.dumps(self.as_dict(), sort_keys=True))
