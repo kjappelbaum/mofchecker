@@ -3,10 +3,10 @@
 import os
 
 import pytest
-from pymatgen.core import Structure
-from pymatgen.transformations.standard_transformations import RotationTransformation
 
 from mofchecker import MOFChecker
+from pymatgen.core import Structure
+from pymatgen.transformations.standard_transformations import RotationTransformation
 
 from .conftest import THIS_DIR
 
@@ -85,8 +85,11 @@ def test_graph_hash_robustness():  # pylint: disable=too-many-locals
 
 
 @pytest.mark.past_issue
-def test_graph_hash_robustness_past_issue():
-    """Test the hash on past issues"""
+def test_graph_hash_false_positives():
+    """Test the hash on past issues of false positives.
+
+    Cases where different structures gave the same hash.
+    """
     # issue 130
     cof_18141N2 = MOFChecker.from_cif(  # pylint: disable=invalid-name
         os.path.join(THIS_DIR, "test_files", "18141N2.cif")
@@ -95,18 +98,6 @@ def test_graph_hash_robustness_past_issue():
         os.path.join(THIS_DIR, "test_files", "20211N2.cif")
     )
     assert cof_18141N2.graph_hash != cof_20211N2.graph_hash
-
-    # issue 107
-    oriwet = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ORIWET.cif"))
-    )
-
-    coknun = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "COKNUN.cif"))
-    )
-
-    assert oriwet.graph_hash == coknun.graph_hash
-    assert oriwet.scaffold_hash == coknun.scaffold_hash
 
     # # Daniele's report
     mmpf7 = MOFChecker(
@@ -118,3 +109,27 @@ def test_graph_hash_robustness_past_issue():
 
     assert mmpf7.graph_hash != mmpf8.graph_hash
     assert mmpf7.scaffold_hash != mmpf8.scaffold_hash
+
+    # ZIF3/4
+    # zif3 = MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "ZIF-3.cif"))
+    # zif4 = MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "ZIF-4.cif"))
+    # assert zif3.graph_hash != zif4.graph_hash
+
+
+@pytest.mark.past_issue
+def test_graph_hash_false_negatives():
+    """Test the hash on past issues of false negatives.
+
+    Cases of structures that should match but the graph hash did not.
+    """
+    # issue 107: Mn-MOF-74: ASR ORIWET and COKNUN… give different hash
+    oriwet = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ORIWET.cif"))
+    )
+
+    coknun = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "COKNUN.cif"))
+    )
+
+    assert oriwet.graph_hash == coknun.graph_hash
+    assert oriwet.scaffold_hash == coknun.scaffold_hash

@@ -4,9 +4,9 @@ import functools
 from typing import Union
 
 import pymatgen
-from pymatgen.core.structure import IStructure, Structure
 
 from ...definitions import METALS
+from ...utils import IStructure, Structure
 from ..data import _get_vdw_radius
 
 
@@ -84,6 +84,7 @@ def get_rare_earth_indices(structure):
 def get_indices(structure: Union[Structure, IStructure]) -> dict:
     """Get all the relevant indices"""
     if isinstance(structure, Structure):
+        # raise ValueError("noticed regular structure")
         structure = IStructure.from_sites(structure)
     return _get_indices(structure)
 

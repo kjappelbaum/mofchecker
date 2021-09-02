@@ -3,7 +3,7 @@
 import functools
 from typing import Union
 
-from pymatgen.core import IStructure, Structure
+from mofchecker.utils import IStructure, Structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.symmetry.structure import SymmetrizedStructure
 
