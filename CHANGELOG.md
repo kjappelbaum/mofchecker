@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.8.2...v0.9.0) (2021-09-02)
+
+
+### Features
+
+* initial implementation of database lookup ([#147](https://www.github.com/kjappelbaum/mofchecker/issues/147)) ([2a57f1f](https://www.github.com/kjappelbaum/mofchecker/commit/2a57f1ff8834d66ee99975f790c65a4a75c0eb40))
+
 ### [0.8.2](https://www.github.com/kjappelbaum/mofchecker/compare/v0.8.1...v0.8.2) (2021-07-20)
 
 
