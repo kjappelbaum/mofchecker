@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Helper functions for the MOFChecker"""
+import json
 import pickle
 
 import pymatgen
@@ -55,13 +56,19 @@ def _check_if_ordered(structure):
 
 
 class IStructure(pymatgen.core.structure.IStructure):
-    """pymatgen IStructure with faster, hash-based equality comparison.
+    """pymatgen IStructure with faster equality comparison.
 
-    This dramatically speeds up lookups in the LRU cache.
+    This dramatically speeds up lookups in the LRU cache when an object
+    with the same __hash__ is already in the cache.
     """
 
     __hash__ = pymatgen.core.structure.IStructure.__hash__
 
     def __eq__(self, other):
-        """Only allow hits for same object"""
-        return id(self) == id(other)
+        """Use specific, yet performant hash for equality comparison."""
+        return _istruct_hash(self) == _istruct_hash(other)
+
+
+def _istruct_hash(structure):
+    """Specific, yet performant hash for equality comparison."""
+    return hash(json.dumps(structure.as_dict(), sort_keys=True))
