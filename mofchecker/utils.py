@@ -2,7 +2,7 @@
 """Helper functions for the MOFChecker"""
 import json
 import pickle
-from functools import cached_property
+from backports.cached_property import cached_property
 
 import pymatgen
 from pymatgen.core.structure import Structure
