@@ -47,7 +47,7 @@ setup(
             "sphinx-copybutton",
         ],
         "dev": ["versioneer"],
-        "pre-commit": ["pylint>=2.8.3,<2.11.0", "pre-commit"],
+        "pre-commit": ["pylint>=2.8.3,<2.12.0", "pre-commit"],
         "eqeq": ["pyeqeq>=0.0.8"],
     },
     classifiers=[
