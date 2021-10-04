@@ -39,7 +39,7 @@ setup(
         "click",
     ],
     extras_require={
-        "testing": ["pytest", "pytest-cov<2.12"],
+        "testing": ["pytest", "pytest-cov<3.1"],
         "docs": [
             "sphinx",
             "sphinx-book-theme",
