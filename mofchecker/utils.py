@@ -2,10 +2,9 @@
 """Helper functions for the MOFChecker"""
 import json
 import pickle
-from functools import cached_property
 
 import pymatgen
-from pymatgen.core.structure import Structure
+from backports.cached_property import cached_property
 
 
 def read_pickle(file):
