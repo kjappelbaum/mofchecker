@@ -30,7 +30,6 @@ setup(
     # Allows `setup.py test` to work correctly with pytest
     setup_requires=pytest_runner,
     install_requires=[
-        "pybind11<=2.6.2",
         "pymatgen>=2022.0.12,<2023",
         "click",
         "networkx>=2.5",
