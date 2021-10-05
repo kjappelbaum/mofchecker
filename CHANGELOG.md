@@ -1,5 +1,14 @@
 # Changelog
 
+### [0.9.2](https://www.github.com/kjappelbaum/mofchecker/compare/v0.9.1...v0.9.2) (2021-10-05)
+
+
+### Bug Fixes
+
+* pin pybind11 ([d4213f0](https://www.github.com/kjappelbaum/mofchecker/commit/d4213f016c993470352dee04fd9d5e6f1828c96c))
+* pinning pybind does not help ([7cd5c00](https://www.github.com/kjappelbaum/mofchecker/commit/7cd5c007eb123a3aa12c3d4fa25effd1400612da))
+* structure import ([e64a793](https://www.github.com/kjappelbaum/mofchecker/commit/e64a793de820af62de6cdf7ee98d26bfaa7b9db6))
+
 ### [0.9.1](https://www.github.com/kjappelbaum/mofchecker/compare/v0.9.0...v0.9.1) (2021-10-05)
 
 
