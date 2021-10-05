@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.9.1](https://www.github.com/kjappelbaum/mofchecker/compare/v0.9.0...v0.9.1) (2021-10-05)
+
+
+### Bug Fixes
+
+* functools.cached property needs to be backported for 3.7 ([c4fb1b2](https://www.github.com/kjappelbaum/mofchecker/commit/c4fb1b221ff2ccd174ce1b87b17300a21177724e))
+* ru,c bond threshold ([eaa9f58](https://www.github.com/kjappelbaum/mofchecker/commit/eaa9f58fd4e37366832e6b6da66143537f0a24e4))
+
 ## [0.9.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.8.2...v0.9.0) (2021-09-02)
 
 
