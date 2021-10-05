@@ -39,7 +39,7 @@ setup(
         "click",
     ],
     extras_require={
-        "testing": ["pytest", "pytest-cov<2.12"],
+        "testing": ["pytest", "pytest-cov<3.1"],
         "docs": [
             "sphinx",
             "sphinx-book-theme",
@@ -47,7 +47,7 @@ setup(
             "sphinx-copybutton",
         ],
         "dev": ["versioneer"],
-        "pre-commit": ["pylint>=2.8.3,<2.11.0", "pre-commit"],
+        "pre-commit": ["pylint>=2.8.3,<2.12.0", "pre-commit"],
         "eqeq": ["pyeqeq>=0.0.8"],
     },
     classifiers=[
