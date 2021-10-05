@@ -5,6 +5,7 @@ import pickle
 
 import pymatgen
 from backports.cached_property import cached_property
+from pymatgen.core.structure import Structure # pylint:disable=unused-import
 
 
 def read_pickle(file):
