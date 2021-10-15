@@ -2,7 +2,6 @@
 """Helper functions for the MOFChecker"""
 import json
 import pickle
-from backports.cached_property import cached_property
 
 import pymatgen
 from backports.cached_property import cached_property
