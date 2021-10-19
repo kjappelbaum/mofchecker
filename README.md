@@ -11,6 +11,8 @@
 
 `mofchecker` performs quick sanity checks on crystal structures of metal-organic frameworks (MOFs).
 
+Try the live web app at https://github.com/kjappelbaum/webmofchecker !
+
 Sanity checks:
 
 - Presence of at least one metal, carbon and hydrogen atom
