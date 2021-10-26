@@ -214,7 +214,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     @property
     def has_atomic_overlaps(self) -> bool:
         """Check if there are any overlaps in the structure"""
-        return self.checks["no_atomic_overlaps"].is_ok
+        return not self.checks["no_atomic_overlaps"].is_ok
 
     @property
     def name(self) -> str:

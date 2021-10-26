@@ -73,7 +73,7 @@ mofchecker = MOFChecker.from_cif(<path_to_cif>)
 mofchecker.has_oms
 
 # Test for clashing atoms
-mofchecker.has_overlapping_atoms
+mofchecker.has_atomic_overlaps
 
 # Run basic checks on a list of cif paths (sample_structures)
 results = []

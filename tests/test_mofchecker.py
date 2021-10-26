@@ -5,9 +5,9 @@ import os
 
 import pytest
 from ase.io import read
-from pymatgen.core import Structure
 
 from mofchecker import MOFChecker
+from pymatgen.core import Structure
 
 from .conftest import THIS_DIR
 
@@ -50,6 +50,13 @@ def test_overvalent_h():
         os.path.join(THIS_DIR, "test_files", "XIGFOJ_manual.cif")
     )
     assert not mofchecker.has_overvalent_h
+
+
+def test_overlaps():
+    mofchecker = MOFChecker.from_cif(
+        os.path.join(THIS_DIR, "test_files", "overvalent_h.cif")
+    )
+    assert not mofchecker.has_atomic_overlaps
 
 
 def test_overvalent_c(get_overvalent_c_structures):

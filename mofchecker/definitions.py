@@ -27,7 +27,7 @@ CHECK_DESCRIPTIONS = {
     "has_oms": "Uses heuristics of order parameter to estimate if there is an uncordinated metal site",
     "has_carbon": "Checks if there is any carbon in the structure",
     "has_hydrogen": "Checks of there is any hydrogen in the structure",
-    "has_atomic_overlaps": "Checks if there are atomic overlaps in the structure (estimated based on the adjacency matrix)",
+    "has_atomic_overlaps": "Checks if there are atomic overlaps in the structure (based on adjacency matrix)",
     "has_overcoordinated_c": "Checks if there is any carbon number with coordination number > 4",
     "has_overcoordinated_n": "Checks if there is any nitrogen with coordination number > 4",
     "has_overcoordinated_h": "Checks if there is any carbon with coordination number > 1",
