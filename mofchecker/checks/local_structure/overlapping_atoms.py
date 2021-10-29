@@ -3,8 +3,9 @@
 import warnings
 
 import numpy as np
-from pymatgen.core import Structure
 from scipy import sparse
+
+from pymatgen.core import Structure
 
 from ..check_base import AbstractIndexCheck
 from ..data import _get_covalent_radius
@@ -28,7 +29,7 @@ class AtomicOverlapCheck(AbstractIndexCheck):
     @property
     def description(self):
         return (
-            "Checks if there are atomic overlaps, based on dist < min(covr 1, covr 2)"
+            "True, if there are no atomic overlaps, based on dist < min(covr 1, covr 2)"
         )
 
 
