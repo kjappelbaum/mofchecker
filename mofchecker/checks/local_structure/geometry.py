@@ -110,9 +110,6 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
     """
     angle = get_angle_between_site_and_neighbors(structure[site_index], neighbors)
 
-    # neighbor_species = set(
-    #     [str(neighbors[0].site.specie), str(neighbors[1].site.specie)]
-    # )
     bond_lengths = np.array(
         [
             structure.get_distance(site_index, neighbors[0].index),

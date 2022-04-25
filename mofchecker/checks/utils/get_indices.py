@@ -84,7 +84,6 @@ def get_rare_earth_indices(structure):
 def get_indices(structure: Union[Structure, IStructure]) -> dict:
     """Get all the relevant indices"""
     if isinstance(structure, Structure):
-        # raise ValueError("noticed regular structure")
         structure = IStructure.from_sites(structure)
     return _get_indices(structure)
 
