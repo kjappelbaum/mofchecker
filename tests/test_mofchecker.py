@@ -5,9 +5,9 @@ import os
 
 import pytest
 from ase.io import read
+from pymatgen.core import Structure
 
 from mofchecker import MOFChecker
-from pymatgen.core import Structure
 
 from .conftest import THIS_DIR
 

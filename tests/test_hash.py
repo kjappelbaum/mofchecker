@@ -3,10 +3,10 @@
 import os
 
 import pytest
-
-from mofchecker import MOFChecker
 from pymatgen.core import Structure
 from pymatgen.transformations.standard_transformations import RotationTransformation
+
+from mofchecker import MOFChecker
 
 from .conftest import THIS_DIR
 
