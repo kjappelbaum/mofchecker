@@ -3,10 +3,10 @@
 import os
 
 import pytest
-
-from mofchecker import MOFChecker
 from pymatgen.core import Structure
 from pymatgen.transformations.standard_transformations import RotationTransformation
+
+from mofchecker import MOFChecker
 
 from .conftest import THIS_DIR
 
@@ -108,7 +108,6 @@ def test_graph_hash_false_positives():
 
     assert mmpf7.graph_hash != mmpf8.graph_hash
     assert mmpf7.scaffold_hash != mmpf8.scaffold_hash
-
 
 
 @pytest.mark.past_issue
