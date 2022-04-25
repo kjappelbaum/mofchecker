@@ -89,8 +89,4 @@ def get_indices(structure: Union[Structure, IStructure]) -> dict:
 
 
 def _is_any_neighbor_metal(neighbors):
-    for neighbor in neighbors:
-        if is_metal(neighbor.site):
-            return True
-
-    return False
+    return any(is_metal(neighbor.site) for neighbor in neighbors)
