@@ -74,8 +74,10 @@ class FalseOxoCheck(BaseCoordinationCheck):
                 neighbors = self.get_connected_sites(site_index)
                 for neighbor in neighbors:
                     neighbor_neighbors = self.get_connected_sites(neighbor.index)
-                    if len(neighbor_neighbors) == 1:
-                        if str(neighbor.site.specie) == "O":
-                            wrong_oxo.append(neighbor_neighbors[0].index)
+                    if (
+                        len(neighbor_neighbors) == 1
+                        and str(neighbor.site.specie) == "O"
+                    ):
+                        wrong_oxo.append(neighbor_neighbors[0].index)
 
         return wrong_oxo

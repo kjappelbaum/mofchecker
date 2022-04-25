@@ -24,9 +24,8 @@ def _check_metal_coordination(site, coordination_number: int) -> bool:
         (site.specie.is_lanthanoid)
         or (site.specie.is_actinoid)
         or (site.specie.symbol in ("Mo", "Cr", "Hf", "Mb"))
-    ):
-        if coordination_number <= 4:
-            return True
+    ) and coordination_number <= 4:
+        return True
 
     # Also for the alkaline/alkaline earth metals,
     # I would find a low coordination number surprising
