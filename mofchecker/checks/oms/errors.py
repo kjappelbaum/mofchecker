@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Custom error types"""
-from ...errors import NoMetal  # pylint: disable=unused-import
 
 
 class LowCoordinationNumber(KeyError):
