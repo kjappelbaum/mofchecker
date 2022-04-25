@@ -62,18 +62,18 @@ def test_overlaps():
 def test_overvalent_c(get_overvalent_c_structures):
     for structure in get_overvalent_c_structures:
         mofchecker = MOFChecker(structure)
-        assert mofchecker.has_overvalent_c == True
+        assert mofchecker.has_overvalent_c is True
 
     mofchecker = MOFChecker.from_cif(
         os.path.join(THIS_DIR, "test_files", "XIGFOJ_manual.cif")
     )
-    assert mofchecker.has_overvalent_c == False
+    assert mofchecker.has_overvalent_c is False
 
     # alkine ligand
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "RUDQUD_clean.cif"))
     )
-    assert mofchecker.has_overvalent_c == False
+    assert mofchecker.has_overvalent_c is False
 
 
 @pytest.mark.past_issue
@@ -82,19 +82,19 @@ def test_overvalent_c_past_issue():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "AGARUW_clean.cif"))
     )
-    assert mofchecker.has_overvalent_c == False
+    assert mofchecker.has_overvalent_c is False
 
 
 def test_lone_molecule():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAVIJ_clean.cif"))
     )
-    assert mofchecker.has_lone_molecule == False
+    assert mofchecker.has_lone_molecule is False
 
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "HKUST_floating.cif"))
     )
-    assert mofchecker.has_lone_molecule == True
+    assert mofchecker.has_lone_molecule is True
 
     assert mofchecker.lone_molecule_indices == [[144]]
 
@@ -113,29 +113,29 @@ def test_lone_molecule_past_issue():
     for ind in mofchecker.lone_molecule_indices[0]:
         species.append(str(mofchecker.structure[ind].specie))
     assert set(species) == {"H", "H", "H", "H", "C"}
-    assert mofchecker.has_lone_molecule == True
+    assert mofchecker.has_lone_molecule is True
 
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "OTOXIF_clean.cif"))
     )
-    assert mofchecker.has_lone_molecule == False
+    assert mofchecker.has_lone_molecule is False
 
 
 def test_undercoordinated_c():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAVIJ_clean.cif"))
     )
-    assert mofchecker.has_undercoordinated_c == False
+    assert mofchecker.has_undercoordinated_c is False
 
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "AHOKIR_clean.cif"))
     )
-    assert mofchecker.has_undercoordinated_c == True
+    assert mofchecker.has_undercoordinated_c is True
 
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "missing_h_on_c.cif"))
     )
-    assert mofchecker.has_undercoordinated_c == True
+    assert mofchecker.has_undercoordinated_c is True
     assert len(mofchecker.undercoordinated_c_indices) == 2
     assert len(mofchecker.undercoordinated_c_candidate_positions) == 2
 
@@ -145,46 +145,46 @@ def slow_check_undercoordinated_c_past_issue():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "DALVIY_clean.cif"))
     )
-    assert mofchecker.has_undercoordinated_c == False
+    assert mofchecker.has_undercoordinated_c is False
 
 
 def test_undercoordinated_n():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "VUGYED_clean.cif"))
     )
-    assert mofchecker.has_undercoordinated_n == False
+    assert mofchecker.has_undercoordinated_n is False
 
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "mil-53-al-nh2.cif"))
     )
-    assert mofchecker.has_undercoordinated_n == True
+    assert mofchecker.has_undercoordinated_n is True
 
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif"))
     )
-    assert mofchecker.has_undercoordinated_n == False
+    assert mofchecker.has_undercoordinated_n is False
 
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "1246903.cif"))
     )
-    assert mofchecker.has_undercoordinated_n == False
+    assert mofchecker.has_undercoordinated_n is False
 
     mofchecker = MOFChecker(
         Structure.from_file(
             os.path.join(THIS_DIR, "test_files", "1246903_missing_H.cif")
         )
     )
-    assert mofchecker.has_undercoordinated_n == True
+    assert mofchecker.has_undercoordinated_n is True
 
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABOVOF_FSR.cif"))
     )
-    assert mofchecker.has_undercoordinated_n == False
+    assert mofchecker.has_undercoordinated_n is False
 
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "N_MOF_ASR.cif"))
     )
-    assert mofchecker.has_undercoordinated_n == True
+    assert mofchecker.has_undercoordinated_n is True
 
 
 @pytest.mark.past_issue
@@ -192,26 +192,26 @@ def test_undercoordinated_n_past_issue():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "axipee.cif"))
     )
-    assert mofchecker.has_undercoordinated_n == False
+    assert mofchecker.has_undercoordinated_n is False
 
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABOVOF_FSR.cif"))
     )
-    assert mofchecker.has_undercoordinated_n == False
+    assert mofchecker.has_undercoordinated_n is False
 
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "abiqae.cif"))
     )
-    assert mofchecker.has_undercoordinated_n == False
+    assert mofchecker.has_undercoordinated_n is False
 
 
 def test_chargecheck():
     mofchecker = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "AMUFIZ_clean.cif"))
     )
-    assert mofchecker.has_high_charges == False
+    assert mofchecker.has_high_charges is False
 
 
 def test_is_porous(get_cn5_paddlewheel_structure):
     mc = MOFChecker(get_cn5_paddlewheel_structure)
-    assert mc.is_porous == True
+    assert mc.is_porous is True
