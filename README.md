@@ -7,7 +7,7 @@
 </h1>
 <p align="center">
     <a href="https://github.com/kjappelbaum/mofchecker/actions?query=workflow%3Apython_package">
-        <img alt="Tests" src="https://github.com/kjappelbaum/mofchecker/actions/workflows/python_package.yml/badge.svg" />
+        <img alt="Tests" src="https://github.com/kjappelbaum/mofchecker/actions/workflows/python-package.yml/badge.svg" />
     </a>
     <a href="https://pypi.org/project/mofchecker">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/mofchecker" />
