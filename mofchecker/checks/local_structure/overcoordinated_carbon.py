@@ -33,9 +33,8 @@ class OverCoordinatedCarbonCheck(BaseCoordinationCheck):
 
         for site_index in self.c_indices:
             cn = self.get_cn(site_index)  # pylint:disable=invalid-name
-            if (
-                cn > 4
-                and not _is_any_neighbor_metal(self.get_connected_sites(site_index))
+            if cn > 4 and not _is_any_neighbor_metal(
+                self.get_connected_sites(site_index)
             ):
                 overcoordinated_carbons.append(site_index)
 

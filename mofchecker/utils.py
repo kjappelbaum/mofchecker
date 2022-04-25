@@ -21,13 +21,10 @@ def _check_metal_coordination(site, coordination_number: int) -> bool:
     # for this reason, a Lanthanide with low
     # coordination number, e.g., <= 4 can be considered "interesting"
     if (
-        (
         (site.specie.is_lanthanoid)
         or (site.specie.is_actinoid)
         or (site.specie.symbol in ("Mo", "Cr", "Hf", "Mb"))
-    )
-        and coordination_number <= 4
-    ):
+    ) and coordination_number <= 4:
         return True
 
     # Also for the alkaline/alkaline earth metals,
