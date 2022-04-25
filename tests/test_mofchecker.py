@@ -112,7 +112,7 @@ def test_lone_molecule_past_issue():
     species = []
     for ind in mofchecker.lone_molecule_indices[0]:
         species.append(str(mofchecker.structure[ind].specie))
-    assert set(species) == set(["H", "H", "H", "H", "C"])
+    assert set(species) == {"H", "H", "H", "H", "C"}
     assert mofchecker.has_lone_molecule == True
 
     mofchecker = MOFChecker(
