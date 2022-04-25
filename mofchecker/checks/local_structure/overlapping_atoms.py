@@ -3,9 +3,8 @@
 import warnings
 
 import numpy as np
-from scipy import sparse
-
 from pymatgen.core import Structure
+from scipy import sparse
 
 from ..check_base import AbstractIndexCheck
 from ..data import _get_covalent_radius
