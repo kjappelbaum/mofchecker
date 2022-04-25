@@ -68,10 +68,6 @@ class UnderCoordinatedCarbonCheck(BaseMissingCheck):
                     )
                 )
                 if np.abs(180 - angle) > tolerance:
-                    # if (not is_metal(neighbors[0].site)) or (
-                    #     not is_metal(neighbors[1].site)
-                    # ):
-                    # if len(_vdw_radius_neighbors(self.structure, site_index)) <= 2:
                     undercoordinated_carbons.append(site_index)
 
                     h_positions.append(
