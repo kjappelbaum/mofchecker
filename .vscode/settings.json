@@ -1,5 +1,6 @@
 {
-    "python.formatting.provider": "black",
-    "restructuredtext.confPath": "",
-    "python.linting.pylintEnabled": true
+  "python.formatting.provider": "black",
+  "restructuredtext.confPath": "",
+  "python.linting.pylintEnabled": true,
+  "esbonio.sphinx.confDir": ""
 }
