@@ -6,7 +6,7 @@ from typing import Union
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.symmetry.structure import SymmetrizedStructure
 
-from mofchecker.utils import IStructure, Structure
+from pymatgen.core import IStructure, Structure
 
 from .hash import hash_symmetrized_structure
 

@@ -9,7 +9,8 @@ from ...graph import _get_cn
 from ..check_base import AbstractIndexCheck
 from ..utils.get_indices import get_metal_indices
 from .definitions import OP_DEF
-from .errors import HighCoordinationNumber, LowCoordinationNumber, NoMetal
+from .errors import HighCoordinationNumber, LowCoordinationNumber
+from ...errors import NoMetal
 
 
 class MOFOMS(AbstractIndexCheck):

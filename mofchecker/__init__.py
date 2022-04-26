@@ -17,7 +17,7 @@ from pymatgen.io.cif import CifParser
 from mofchecker.checks.local_structure.undercoordinated_rare_earth import (
     UnderCoordinatedRareEarthCheck,
 )
-from mofchecker.utils import IStructure, Structure
+from pymatgen.core import IStructure, Structure
 
 from ._version import get_versions
 from .checks.charge_check import ChargeCheck

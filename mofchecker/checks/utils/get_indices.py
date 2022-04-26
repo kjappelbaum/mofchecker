@@ -4,9 +4,8 @@ import functools
 from typing import Union
 
 import pymatgen
-
+from pymatgen.core import IStructure, Structure
 from ...definitions import METALS
-from ...utils import IStructure, Structure
 from ..data import _get_vdw_radius
 
 
