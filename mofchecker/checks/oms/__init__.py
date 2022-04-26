@@ -5,12 +5,12 @@ from typing import List
 import numpy as np
 from pymatgen.analysis.local_env import LocalStructOrderParams
 
+from ...errors import NoMetal
 from ...graph import _get_cn
 from ..check_base import AbstractIndexCheck
 from ..utils.get_indices import get_metal_indices
 from .definitions import OP_DEF
 from .errors import HighCoordinationNumber, LowCoordinationNumber
-from ...errors import NoMetal
 
 
 class MOFOMS(AbstractIndexCheck):

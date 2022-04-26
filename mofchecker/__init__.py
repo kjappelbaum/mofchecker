@@ -11,13 +11,13 @@ from ase import Atoms
 from backports.cached_property import cached_property
 from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
 from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
+from pymatgen.core import IStructure, Structure
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.cif import CifParser
 
 from mofchecker.checks.local_structure.undercoordinated_rare_earth import (
     UnderCoordinatedRareEarthCheck,
 )
-from pymatgen.core import IStructure, Structure
 
 from ._version import get_versions
 from .checks.charge_check import ChargeCheck
