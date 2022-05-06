@@ -15,14 +15,13 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(".."))
-from mofchecker import __version__
 
 # -- Project information -----------------------------------------------------
 
 project = "mofchecker"
-copyright = "2020, Kevin M. Jablonka"
+copyright = "2022, Kevin M. Jablonka"
 author = "Kevin M. Jablonka"
-release = __version__
+release = "0.9.2"
 
 
 # -- General configuration ---------------------------------------------------
