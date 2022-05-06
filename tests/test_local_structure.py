@@ -35,9 +35,7 @@ def test_false_oxo():
 
 def test_undercoordinated_rare_earth_check():
     """Testing the check for undercoordinated rare earth metals"""
-    structure = Structure.from_file(
-        os.path.join(THIS_DIR, "test_files", "GADRAH_Ce_clean.cif")
-    )
+    structure = Structure.from_file(os.path.join(THIS_DIR, "test_files", "GADRAH_Ce_clean.cif"))
     structure_graph = get_structure_graph(structure, "vesta")
 
     checker = UnderCoordinatedRareEarthCheck(structure, structure_graph)

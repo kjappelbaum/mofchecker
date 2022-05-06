@@ -2,8 +2,8 @@
 """Base class for checks for missing atoms, i.e., "undervalent" checks"""
 import abc
 
-from ...graph import _get_cn
 from ..check_base import AbstractMissingCheck
+from ...graph import _get_cn
 
 
 class BaseMissingCheck(AbstractMissingCheck):

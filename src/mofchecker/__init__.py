@@ -11,13 +11,13 @@ from ase import Atoms
 from backports.cached_property import cached_property
 from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
 from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
+from pymatgen.core import IStructure, Structure
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.cif import CifParser
 
 from mofchecker.checks.local_structure.undercoordinated_rare_earth import (
     UnderCoordinatedRareEarthCheck,
 )
-from pymatgen.core import IStructure, Structure
 
 from ._version import get_versions
 from .checks.charge_check import ChargeCheck
@@ -33,12 +33,7 @@ from .checks.local_structure import (
     UnderCoordinatedNitrogenCheck,
 )
 from .checks.oms import MOFOMS
-from .checks.utils.get_indices import (
-    get_c_indices,
-    get_h_indices,
-    get_metal_indices,
-    get_n_indices,
-)
+from .checks.utils.get_indices import get_c_indices, get_h_indices, get_metal_indices, get_n_indices
 from .checks.zeopp import PorosityCheck
 from .errors import deprecated
 from .graph import _get_cn, construct_clean_graph, get_structure_graph
@@ -126,24 +121,12 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             "has_metal": HasMetal(self.structure),
             "has_nitrogen": HasNitrogen(self.structure),
             "no_atomic_overlaps": AtomicOverlapCheck(self.structure),
-            "no_undercoordinated_carbon": UnderCoordinatedCarbonCheck.from_mofchecker(
-                self
-            ),
-            "no_overcoordinated_carbon": OverCoordinatedCarbonCheck.from_mofchecker(
-                self
-            ),
-            "no_overcoordinated_hydrogen": OverCoordinatedHydrogenCheck.from_mofchecker(
-                self
-            ),
-            "no_overcoordinated_nitrogen": OverCoordinatedNitrogenCheck.from_mofchecker(
-                self
-            ),
-            "no_undercoordinated_nitrogen": UnderCoordinatedNitrogenCheck.from_mofchecker(
-                self
-            ),
-            "no_undercoordinated_rare_earth": UnderCoordinatedRareEarthCheck.from_mofchecker(
-                self
-            ),
+            "no_undercoordinated_carbon": UnderCoordinatedCarbonCheck.from_mofchecker(self),
+            "no_overcoordinated_carbon": OverCoordinatedCarbonCheck.from_mofchecker(self),
+            "no_overcoordinated_hydrogen": OverCoordinatedHydrogenCheck.from_mofchecker(self),
+            "no_overcoordinated_nitrogen": OverCoordinatedNitrogenCheck.from_mofchecker(self),
+            "no_undercoordinated_nitrogen": UnderCoordinatedNitrogenCheck.from_mofchecker(self),
+            "no_undercoordinated_rare_earth": UnderCoordinatedRareEarthCheck.from_mofchecker(self),
             "no_floating_molecule": FloatingSolventCheck.from_mofchecker(self),
             "no_high_charges": ChargeCheck(self.structure),
             "is_porous": PorosityCheck(self.structure),
@@ -171,9 +154,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         (taking the atomic kinds into account)
         and there are guarantees that non-isomorphic graphs will get different hashes.
         """
-        return weisfeiler_lehman_graph_hash(
-            self.nx_graph, node_attr="specie", iterations=6
-        )
+        return weisfeiler_lehman_graph_hash(self.nx_graph, node_attr="specie", iterations=6)
 
     @property
     def spacegroup_symbol(self) -> str:
@@ -393,9 +374,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Uses internal cache for speedup.
         """
         if site_index not in self._connected_sites:
-            self._connected_sites[site_index] = self.graph.get_connected_sites(
-                site_index
-            )
+            self._connected_sites[site_index] = self.graph.get_connected_sites(site_index)
         return self._connected_sites[site_index]
 
     def get_cn(self, site_index) -> int:

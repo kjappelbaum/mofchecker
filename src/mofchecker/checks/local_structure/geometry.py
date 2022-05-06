@@ -159,9 +159,7 @@ def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
         )
 
         mean_dihedral = np.min(np.abs([dihedral_a, dihedral_b, dihedral_c, dihedral_d]))
-        if (np.abs(mean_dihedral - 180) < tolerance) or (
-            np.abs(mean_dihedral - 0) < tolerance
-        ):
+        if (np.abs(mean_dihedral - 180) < tolerance) or (np.abs(mean_dihedral - 0) < tolerance):
             if all(bond_lengths < 1.4):
                 return False
             return True
@@ -256,12 +254,8 @@ def add_sp3_hydrogens_on_cn1(site, neighbors, length: float = 1):
     """
     vector = make_vec(neighbors[0].site.coords, site.coords)
 
-    center = site.coords + vector / np.linalg.norm(vector) * length * np.cos(
-        np.deg2rad(71)
-    )
-    orthogonal_vector = (
-        get_some_orthorgonal_vector(vector) * length * np.sin(np.deg2rad(71))
-    )
+    center = site.coords + vector / np.linalg.norm(vector) * length * np.cos(np.deg2rad(71))
+    orthogonal_vector = get_some_orthorgonal_vector(vector) * length * np.sin(np.deg2rad(71))
 
     second_vec = np.dot(rotation_matrix(vector, np.deg2rad(120)), orthogonal_vector)
     third_vec = np.dot(rotation_matrix(vector, np.deg2rad(240)), orthogonal_vector)

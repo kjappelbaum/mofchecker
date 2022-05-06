@@ -2,17 +2,15 @@
 """Check for undercoordinated carbons"""
 import numpy as np
 
-from ..utils.get_indices import get_c_indices
 from .base_missing_check import BaseMissingCheck
 from .geometry import _maximum_angle, add_sp2_hydrogen, add_sp3_hydrogens_on_cn1
+from ..utils.get_indices import get_c_indices
 
 
 class UnderCoordinatedCarbonCheck(BaseMissingCheck):
     """Check for undercoordinated carbons"""
 
-    def __init__(
-        self, structure, structure_graph
-    ):  # pylint: disable=super-init-not-called
+    def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
         self.structure = structure
         self.c_indices = get_c_indices(self.structure)
         self.structure_graph = structure_graph
@@ -32,9 +30,7 @@ class UnderCoordinatedCarbonCheck(BaseMissingCheck):
             undercoordinated_carbons,
             candidate_positions,
         ) = self._get_undercoordinated_carbons()
-        assert len(undercoordinated_carbons) == len(
-            candidate_positions
-        ), "Unexpected check error"
+        assert len(undercoordinated_carbons) == len(candidate_positions), "Unexpected check error"
         return (
             len(undercoordinated_carbons) == 0,
             undercoordinated_carbons,
@@ -58,21 +54,15 @@ class UnderCoordinatedCarbonCheck(BaseMissingCheck):
                 # this will fail for alkine
                 undercoordinated_carbons.append(site_index)
                 # make it sp3
-                h_positions.append(
-                    add_sp3_hydrogens_on_cn1(self.structure[site_index], neighbors)
-                )
+                h_positions.append(add_sp3_hydrogens_on_cn1(self.structure[site_index], neighbors))
             if cn == 2:
                 angle = _maximum_angle(
-                    self.structure.get_angle(
-                        site_index, neighbors[0].index, neighbors[1].index
-                    )
+                    self.structure.get_angle(site_index, neighbors[0].index, neighbors[1].index)
                 )
                 if np.abs(180 - angle) > tolerance:
                     undercoordinated_carbons.append(site_index)
 
-                    h_positions.append(
-                        add_sp2_hydrogen(self.structure[site_index], neighbors)
-                    )
+                    h_positions.append(add_sp2_hydrogen(self.structure[site_index], neighbors))
 
             # i wond't catch CN3 as this would need careful evaluation of the bond order
 

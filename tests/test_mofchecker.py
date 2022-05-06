@@ -33,29 +33,21 @@ def test_unknown_elements():
     # assert len(record) >= 1
 
     with pytest.raises(NotImplementedError):
-        mofchecker = MOFChecker.from_cif(
-            os.path.join(THIS_DIR, "test_files", "GUPQOA.cif")
-        )
+        mofchecker = MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "GUPQOA.cif"))
         mofchecker.get_mof_descriptors()
 
 
 def test_overvalent_h():
-    mofchecker = MOFChecker.from_cif(
-        os.path.join(THIS_DIR, "test_files", "overvalent_h.cif")
-    )
+    mofchecker = MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "overvalent_h.cif"))
     assert mofchecker.has_overvalent_h
     assert len(mofchecker.overvalent_h_indices) == 3
 
-    mofchecker = MOFChecker.from_cif(
-        os.path.join(THIS_DIR, "test_files", "XIGFOJ_manual.cif")
-    )
+    mofchecker = MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "XIGFOJ_manual.cif"))
     assert not mofchecker.has_overvalent_h
 
 
 def test_overlaps():
-    mofchecker = MOFChecker.from_cif(
-        os.path.join(THIS_DIR, "test_files", "overvalent_h.cif")
-    )
+    mofchecker = MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "overvalent_h.cif"))
     assert not mofchecker.has_atomic_overlaps
 
 
@@ -64,9 +56,7 @@ def test_overvalent_c(get_overvalent_c_structures):
         mofchecker = MOFChecker(structure)
         assert mofchecker.has_overvalent_c is True
 
-    mofchecker = MOFChecker.from_cif(
-        os.path.join(THIS_DIR, "test_files", "XIGFOJ_manual.cif")
-    )
+    mofchecker = MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "XIGFOJ_manual.cif"))
     assert mofchecker.has_overvalent_c is False
 
     # alkine ligand
@@ -159,9 +149,7 @@ def test_undercoordinated_n():
     )
     assert mofchecker.has_undercoordinated_n is True
 
-    mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif"))
-    )
+    mofchecker = MOFChecker(Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif")))
     assert mofchecker.has_undercoordinated_n is False
 
     mofchecker = MOFChecker(
@@ -170,9 +158,7 @@ def test_undercoordinated_n():
     assert mofchecker.has_undercoordinated_n is False
 
     mofchecker = MOFChecker(
-        Structure.from_file(
-            os.path.join(THIS_DIR, "test_files", "1246903_missing_H.cif")
-        )
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "1246903_missing_H.cif"))
     )
     assert mofchecker.has_undercoordinated_n is True
 
@@ -189,9 +175,7 @@ def test_undercoordinated_n():
 
 @pytest.mark.past_issue
 def test_undercoordinated_n_past_issue():
-    mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "axipee.cif"))
-    )
+    mofchecker = MOFChecker(Structure.from_file(os.path.join(THIS_DIR, "test_files", "axipee.cif")))
     assert mofchecker.has_undercoordinated_n is False
 
     mofchecker = MOFChecker(
@@ -199,9 +183,7 @@ def test_undercoordinated_n_past_issue():
     )
     assert mofchecker.has_undercoordinated_n is False
 
-    mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "abiqae.cif"))
-    )
+    mofchecker = MOFChecker(Structure.from_file(os.path.join(THIS_DIR, "test_files", "abiqae.cif")))
     assert mofchecker.has_undercoordinated_n is False
 
 

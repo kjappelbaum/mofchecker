@@ -13,9 +13,7 @@ from .conftest import THIS_DIR
 
 def test_graph_hash():
     """Basic check that the function call works"""
-    mofchecker = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif"))
-    )
+    mofchecker = MOFChecker(Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif")))
     assert isinstance(mofchecker.graph_hash, str)
 
 
@@ -68,15 +66,11 @@ def test_graph_hash_robustness():  # pylint: disable=too-many-locals
     mof_5 = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "mof-5_cellopt.cif"))
     )
-    zif_8 = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ZIF-8-RASPA.cif"))
-    )
+    zif_8 = MOFChecker(Structure.from_file(os.path.join(THIS_DIR, "test_files", "ZIF-8-RASPA.cif")))
     assert mof_5.graph_hash != zif_8.graph_hash
 
     # # Mn-MOF-74 and UiO-67
-    coknun = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "coknun01.cif"))
-    )
+    coknun = MOFChecker(Structure.from_file(os.path.join(THIS_DIR, "test_files", "coknun01.cif")))
     wizmac = MOFChecker(
         Structure.from_file(os.path.join(THIS_DIR, "test_files", "WIZMAV02_auto.cif"))
     )
@@ -99,12 +93,8 @@ def test_graph_hash_false_positives():
     assert cof_18141N2.graph_hash != cof_20211N2.graph_hash
 
     # # Daniele's report
-    mmpf7 = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "943643.cif"))
-    )
-    mmpf8 = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "943644.cif"))
-    )
+    mmpf7 = MOFChecker(Structure.from_file(os.path.join(THIS_DIR, "test_files", "943643.cif")))
+    mmpf8 = MOFChecker(Structure.from_file(os.path.join(THIS_DIR, "test_files", "943644.cif")))
 
     assert mmpf7.graph_hash != mmpf8.graph_hash
     assert mmpf7.scaffold_hash != mmpf8.scaffold_hash
@@ -117,13 +107,9 @@ def test_graph_hash_false_negatives():
     Cases of structures that should match but the graph hash did not.
     """
     # issue 107: Mn-MOF-74: ASR ORIWET and COKNUN… give different hash
-    oriwet = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "ORIWET.cif"))
-    )
+    oriwet = MOFChecker(Structure.from_file(os.path.join(THIS_DIR, "test_files", "ORIWET.cif")))
 
-    coknun = MOFChecker(
-        Structure.from_file(os.path.join(THIS_DIR, "test_files", "COKNUN.cif"))
-    )
+    coknun = MOFChecker(Structure.from_file(os.path.join(THIS_DIR, "test_files", "COKNUN.cif")))
 
     assert oriwet.graph_hash == coknun.graph_hash
     assert oriwet.scaffold_hash == coknun.scaffold_hash
