@@ -38,9 +38,39 @@ ATR_NN = CutOffDictNN(cut_off_dict=ATOM_TYPING_CUTOFFS)
 LI_NN = CutOffDictNN(cut_off_dict=LI_TYPING_CUTOFFS)
 
 
-def construct_clean_graph(
-    structure: Structure, structure_graph: StructureGraph
-) -> nx.Graph:
+def get_structure_graph_without_leaf_nodes(
+    structure_graph: StructureGraph,
+) -> Tuple[StructureGraph, nx.Graph]:
+    """
+    Returns a StructureGraph without leaf nodes.
+    """
+
+    leaf_sites = []
+
+    for i, _ in enumerate(structure_graph.structure):
+        if structure_graph.get_coordination_of_site(i) == 1:
+            leaf_sites.append(i)
+
+    graph_ = structure_graph.__copy__()
+    graph_.structure = Structure.from_sites(graph_.structure.sites)
+    graph_.remove_nodes(leaf_sites)
+
+    edges = {(u, v) for u, v, d in graph_.graph.edges(keys=False, data=True)}
+    graph = nx.Graph()
+    graph.add_edges_from(edges)
+    for node in graph.nodes:
+
+        graph.nodes[node]["specie"] = str(graph_.structure[node].specie)
+        graph.nodes[node]["specie-cn"] = (
+            str(graph_.structure[node].specie)
+            + "-"
+            + str(structure_graph.get_coordination_of_site(node))
+        )
+
+    return graph_, graph
+
+
+def construct_clean_graph(structure: Structure, structure_graph: StructureGraph) -> nx.Graph:
     """Creates a networkx graph with atom numbers as node labels"""
     edges = {(u, v) for u, v, d in structure_graph.graph.edges(keys=False, data=True)}
     graph = nx.Graph()
@@ -49,9 +79,7 @@ def construct_clean_graph(
 
         graph.nodes[node]["specie"] = str(structure[node].specie)
         graph.nodes[node]["specie-cn"] = (
-            str(structure[node].specie)
-            + "-"
-            + str(structure_graph.get_coordination_of_site(node))
+            str(structure[node].specie) + "-" + str(structure_graph.get_coordination_of_site(node))
         )
 
     return graph
@@ -100,9 +128,7 @@ def _is_any_atom_in_cell(frac_coords):
 
 def get_structure_graph(structure, method: str = "vesta"):
     """Get a structure graph for a structure"""
-    return StructureGraph.with_local_env_strategy(
-        structure, get_local_env_method(method)
-    )
+    return StructureGraph.with_local_env_strategy(structure, get_local_env_method(method))
 
 
 def _select_parts_in_cell(  # pylint:disable=too-many-arguments, too-many-locals
@@ -173,8 +199,7 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
 
     # find subgraphs
     all_subgraphs = [
-        supercell_sg.graph.subgraph(c).copy()
-        for c in nx.connected_components(supercell_sg.graph)
+        supercell_sg.graph.subgraph(c).copy() for c in nx.connected_components(supercell_sg.graph)
     ]
 
     # discount subgraphs that lie across *supercell* boundaries
@@ -210,9 +235,7 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
     if return_unique:
         for subgraph in molecule_subgraphs:
             already_present = [
-                nx.is_isomorphic(
-                    subgraph, g, node_match=node_match, edge_match=edge_match
-                )
+                nx.is_isomorphic(subgraph, g, node_match=node_match, edge_match=edge_match)
                 for g in unique_subgraphs
             ]
 
@@ -233,12 +256,8 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
 
             idx = [subgraph.nodes[node]["idx"] for node in subgraph.nodes()]
             idx_here = subgraph.nodes()
-            molecule = Molecule(
-                species, coords
-            )  #  site_properties={"binding": binding}
-            mol_centers.append(
-                np.mean(supercell_sg.structure.cart_coords[idx_here], axis=0)
-            )
+            molecule = Molecule(species, coords)  #  site_properties={"binding": binding}
+            mol_centers.append(np.mean(supercell_sg.structure.cart_coords[idx_here], axis=0))
             # shift so origin is at center of mass
             if center:
                 molecule = molecule.get_centered_molecule()
@@ -250,21 +269,14 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
 
     def relabel_graph(multigraph):
         mapping = dict(zip(multigraph, range(0, len(multigraph.nodes()))))
-        return nx.readwrite.json_graph.adjacency_data(
-            nx.relabel_nodes(multigraph, mapping)
-        )
+        return nx.readwrite.json_graph.adjacency_data(nx.relabel_nodes(multigraph, mapping))
 
     if return_unique:
-        mol, idx, indices_here, centers, coordinates = make_mols(
-            unique_subgraphs, center=True
-        )
+        mol, idx, indices_here, centers, coordinates = make_mols(unique_subgraphs, center=True)
         return_subgraphs = unique_subgraphs
         return (
             mol,
-            [
-                MoleculeGraph(mol, relabel_graph(graph))
-                for mol, graph in zip(mol, return_subgraphs)
-            ],
+            [MoleculeGraph(mol, relabel_graph(graph)) for mol, graph in zip(mol, return_subgraphs)],
             idx,
             centers,
             coordinates,
@@ -273,8 +285,7 @@ def get_subgraphs_as_molecules(  # pylint:disable=too-many-locals
     mol, idx, indices_here, centers, coordinates = make_mols(molecule_subgraphs)
 
     return_subgraphs = [
-        MoleculeGraph(mol, relabel_graph(graph))
-        for mol, graph in zip(mol, molecule_subgraphs)
+        MoleculeGraph(mol, relabel_graph(graph)) for mol, graph in zip(mol, molecule_subgraphs)
     ]
 
     if filter_in_cell:

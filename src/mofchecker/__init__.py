@@ -41,7 +41,12 @@ from .checks.utils.get_indices import (
 )
 from .checks.zeopp import PorosityCheck
 from .errors import deprecated
-from .graph import _get_cn, construct_clean_graph, get_structure_graph
+from .graph import (
+    _get_cn,
+    construct_clean_graph,
+    get_structure_graph,
+    get_structure_graph_without_leaf_nodes,
+)
 from .symmetry import get_spacegroup_symbol_and_number, get_symmetry_hash
 from .utils import _check_if_ordered
 
@@ -54,7 +59,9 @@ __all__ = ["__version__", "MOFChecker", "DESCRIPTORS"]
 DESCRIPTORS = [
     "name",
     "graph_hash",
-    "scaffold_hash",
+    "undecorated_graph_hash",
+    "decorated_scaffold_hash",
+    "undecorated_scaffold_hash",
     "symmetry_hash",
     "formula",
     "path",
@@ -118,6 +125,10 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
         self._graph = None
         self._nx_graph = None
+
+        self._scaffold_nx_graph = None
+        self._scafold_structure_graph = None
+
         self._connected_sites = {}
         self._cns = {}
         self._checks = {
@@ -126,24 +137,12 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             "has_metal": HasMetal(self.structure),
             "has_nitrogen": HasNitrogen(self.structure),
             "no_atomic_overlaps": AtomicOverlapCheck(self.structure),
-            "no_undercoordinated_carbon": UnderCoordinatedCarbonCheck.from_mofchecker(
-                self
-            ),
-            "no_overcoordinated_carbon": OverCoordinatedCarbonCheck.from_mofchecker(
-                self
-            ),
-            "no_overcoordinated_hydrogen": OverCoordinatedHydrogenCheck.from_mofchecker(
-                self
-            ),
-            "no_overcoordinated_nitrogen": OverCoordinatedNitrogenCheck.from_mofchecker(
-                self
-            ),
-            "no_undercoordinated_nitrogen": UnderCoordinatedNitrogenCheck.from_mofchecker(
-                self
-            ),
-            "no_undercoordinated_rare_earth": UnderCoordinatedRareEarthCheck.from_mofchecker(
-                self
-            ),
+            "no_undercoordinated_carbon": UnderCoordinatedCarbonCheck.from_mofchecker(self),
+            "no_overcoordinated_carbon": OverCoordinatedCarbonCheck.from_mofchecker(self),
+            "no_overcoordinated_hydrogen": OverCoordinatedHydrogenCheck.from_mofchecker(self),
+            "no_overcoordinated_nitrogen": OverCoordinatedNitrogenCheck.from_mofchecker(self),
+            "no_undercoordinated_nitrogen": UnderCoordinatedNitrogenCheck.from_mofchecker(self),
+            "no_undercoordinated_rare_earth": UnderCoordinatedRareEarthCheck.from_mofchecker(self),
             "no_floating_molecule": FloatingSolventCheck.from_mofchecker(self),
             "no_high_charges": ChargeCheck(self.structure),
             "is_porous": PorosityCheck(self.structure),
@@ -171,9 +170,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         (taking the atomic kinds into account)
         and there are guarantees that non-isomorphic graphs will get different hashes.
         """
-        return weisfeiler_lehman_graph_hash(
-            self.nx_graph, node_attr="specie", iterations=6
-        )
+        return weisfeiler_lehman_graph_hash(self.nx_graph, node_attr="specie", iterations=6)
 
     @property
     def spacegroup_symbol(self) -> str:
@@ -204,12 +201,30 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return self.checks["no_undercoordinated_nitrogen"].candidate_positions
 
     @property
-    def scaffold_hash(self) -> str:
+    def undecorated_graph_hash(self) -> str:
         """Return the Weisfeiler-Lehman graph hash.
         Hashes are identical for isomorphic graphs and there are
         guarantees that non-isomorphic graphs will get different hashes.
         """
         return weisfeiler_lehman_graph_hash(self.nx_graph, iterations=6)
+
+    @property
+    def decorated_scaffold_hash(self) -> str:
+        """Return the Weisfeiler-Lehman graph hash.
+        Hashes are identical for isomorphic graphs and there are
+        guarantees that non-isomorphic graphs will get different hashes.
+        """
+        _, g = self._scaffold_graphs()
+        return weisfeiler_lehman_graph_hash(g, node_attr="specie", iterations=6)
+
+    @property
+    def undecorated_scaffold_hash(self) -> str:
+        """Return the Weisfeiler-Lehman graph hash.
+        Hashes are identical for isomorphic graphs and there are
+        guarantees that non-isomorphic graphs will get different hashes.
+        """
+        _, g = self._scaffold_graphs()
+        return weisfeiler_lehman_graph_hash(g, iterations=6)
 
     @property
     def has_atomic_overlaps(self) -> bool:
@@ -379,6 +394,14 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             _ = self.graph
         return self._nx_graph
 
+    def _scaffold_graphs(self) -> nx.Graph:
+        """Returns a networkx graph with atom numbers as node labels"""
+        if self._scaffold_nx_graph is None:
+            sg, g = get_structure_graph_without_leaf_nodes()
+            self._scaffold_nx_graph = g
+            self._scafold_structure_graph = sg
+        return self._scaffold_structure_graph, self._scaffold_nx_graph
+
     @property
     def graph(self) -> StructureGraph:
         """pymatgen structure graph."""
@@ -393,9 +416,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Uses internal cache for speedup.
         """
         if site_index not in self._connected_sites:
-            self._connected_sites[site_index] = self.graph.get_connected_sites(
-                site_index
-            )
+            self._connected_sites[site_index] = self.graph.get_connected_sites(site_index)
         return self._connected_sites[site_index]
 
     def get_cn(self, site_index) -> int:

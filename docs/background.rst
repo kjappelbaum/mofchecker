@@ -30,8 +30,10 @@ Graph hash and scaffold hash
 
 For a given MOF structure
 
-* the scaffold hash (:py:attr:`~mofchecker.MOFChecker.scaffold_hash`) is unique for a given connectivity (bond network), independent of the atomic species in the graph
-* the structure graph hash (:py:attr:`~mofchecker.MOFChecker.graph_hash`) is like the scaffold hash, but also considers the atomic elements (nodes) in the graph
+* the undecorated graph hash (:py:attr:`~mofchecker.MOFChecker.undecorated_graph_hash`) is unique for a given connectivity (bond network), independent of the atomic species in the graph
+* the structure graph hash (:py:attr:`~mofchecker.MOFChecker.graph_hash`) is like the undecorated graph hash, but also considers the atomic elements (nodes) in the graph
+*  the undecorated scaffold hash (:py:attr:`~mofchecker.MOFChecker.undecorated_scaffold_hash`) is unique for a given connectivity (bond network), independent of the atomic species in the graph, ignoring leaf nodes
+* the decorated scaffold hash (:py:attr:`~mofchecker.MOFChecker.decorated_scaffold_hash`) is like the undecorated scaffold hash, but also considers the atomic elements (nodes) in the graph
 * the symmetrized structure hash (:py:attr:`~mofchecker.MOFChecker.symmetry_hash`) hashes the space group and the set of Wyckoff symbols
 
 What is it useful for?
@@ -44,12 +46,12 @@ The concept of duplicate structures, as defined by comparing their :py:attr:`~mo
     [...], from a MOF point of view two structures are considered identical if they share the same bond network, with respect to the atom types and their embedding:
     i.e., if two structures can in principle be deformed into each other without breaking and forming bonds.
 
-The scaffold hash can be useful to find families of related MOFs.
+The undecorated hash can be useful to find families of related MOFs.
 For example, all members of the (unfunctionalized) MOF-74 family, such as Ni-MOF-74 or Mg-MOF-74, group under the same hash.
 
 .. image:: _static/hash_comparison_mof_74.jpg
   :width: 600
-  :alt: Ni-MOF-74 and Mg-MOF-74 have the same scaffold hash, but different structure graph hashes.
+  :alt: Ni-MOF-74 and Mg-MOF-74 have the same undecorated graph hash, but different structure graph hashes.
 
 How does it work?
 ....................
