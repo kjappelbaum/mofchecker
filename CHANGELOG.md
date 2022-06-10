@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.10.0](https://www.github.com/kjappelbaum/mofchecker/compare/v0.9.2...v0.10.0) (2022-06-10)
+
+
+### Features
+
+* implement  scaffold hash ([cc7c1e9](https://www.github.com/kjappelbaum/mofchecker/commit/cc7c1e9283060b06c21c0539279a43354dcd870b))
+
+
+### Bug Fixes
+
+* badge ([30deee2](https://www.github.com/kjappelbaum/mofchecker/commit/30deee2431bc7f6e15086e47b284e5141698618f))
+* broken imports ([344e0b9](https://www.github.com/kjappelbaum/mofchecker/commit/344e0b9368ffb10bd05dfdbb4f6cecd2938210b5))
+* negate has_atomic_overlaps ([#172](https://www.github.com/kjappelbaum/mofchecker/issues/172)) ([7beccc4](https://www.github.com/kjappelbaum/mofchecker/commit/7beccc423974dcc4daccbc2509791220ecedbb4f))
+* update scaffold hash implementation ([e5bffc6](https://www.github.com/kjappelbaum/mofchecker/commit/e5bffc6bb99fe67ff086b0b83072818e1ac38e82))
+
+
+### Documentation
+
+* update readme ([0ea006b](https://www.github.com/kjappelbaum/mofchecker/commit/0ea006bca9f831d976da5b6c6fd0378b136bb128))
+
 ### [0.9.2](https://www.github.com/kjappelbaum/mofchecker/compare/v0.9.1...v0.9.2) (2021-10-05)
 
 
