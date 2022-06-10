@@ -2,8 +2,8 @@
 """Base class for checks on coordination numbers/environments"""
 import abc
 
-from ...graph import _get_cn
 from ..check_base import AbstractIndexCheck
+from ...graph import _get_cn
 
 
 class BaseCoordinationCheck(AbstractIndexCheck):

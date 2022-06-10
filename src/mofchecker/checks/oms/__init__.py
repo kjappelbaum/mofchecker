@@ -5,12 +5,12 @@ from typing import List
 import numpy as np
 from pymatgen.analysis.local_env import LocalStructOrderParams
 
-from ...graph import _get_cn
-from ..check_base import AbstractIndexCheck
-from ..utils.get_indices import get_metal_indices
 from .definitions import OP_DEF
 from .errors import HighCoordinationNumber, LowCoordinationNumber
+from ..check_base import AbstractIndexCheck
+from ..utils.get_indices import get_metal_indices
 from ...errors import NoMetal
+from ...graph import _get_cn
 
 
 class MOFOMS(AbstractIndexCheck):
@@ -48,9 +48,7 @@ class MOFOMS(AbstractIndexCheck):
     def _get_metal_descriptors(self):
         descriptordict = {}
         for site_index in self._metal_indices:
-            descriptordict[site_index] = self._get_metal_descriptors_for_site(
-                site_index
-            )
+            descriptordict[site_index] = self._get_metal_descriptors_for_site(site_index)
 
         self.metal_features = descriptordict
 
@@ -104,10 +102,7 @@ class MOFOMS(AbstractIndexCheck):
             lsop = np.array(lsop) * np.array(weights)
             open_contributions = lsop[is_open].sum()
             close_contributions = lsop.sum() - open_contributions
-            return (
-                open_contributions / (open_contributions + close_contributions)
-                > threshold
-            )
+            return open_contributions / (open_contributions + close_contributions) > threshold
         return None
 
     def _get_metal_descriptors_for_site(self, site_index: int):

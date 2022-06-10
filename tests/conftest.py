@@ -11,9 +11,7 @@ THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 
 @pytest.fixture(scope="module")
 def get_cn5_paddlewheel_structure():
-    return Structure.from_file(
-        os.path.join(THIS_DIR, "test_files", "paddlewheel_cn5.cif")
-    )
+    return Structure.from_file(os.path.join(THIS_DIR, "test_files", "paddlewheel_cn5.cif"))
 
 
 @pytest.fixture(scope="module")
@@ -42,23 +40,15 @@ def get_testdict():
             os.path.join(THIS_DIR, "test_files", "AMUFIZ_clean.cif")
         ): True,  # CN=2 error is caught here
         str(os.path.join(THIS_DIR, "test_files", "DEJCIF_clean.cif")): True,
-        str(
-            os.path.join(THIS_DIR, "test_files", "DAWWEF_clean.cif")
-        ): True,  # CN=4 see-saw
+        str(os.path.join(THIS_DIR, "test_files", "DAWWEF_clean.cif")): True,  # CN=4 see-saw
         str(os.path.join(THIS_DIR, "test_files", "UFEXOT_clean.cif")): True,
         str(os.path.join(THIS_DIR, "test_files", "REHHIX_clean.cif")): True,
         str(os.path.join(THIS_DIR, "test_files", "ZADDAJ_clean.cif")): True,
         # str(os.path.join(THIS_DIR, 'test_files', 'ELIYUU_clean.cif')): False
         str(os.path.join(THIS_DIR, "test_files", "ZUWXUM_clean.cif")): False,
-        str(
-            os.path.join(THIS_DIR, "test_files", "VUGYED_clean.cif")
-        ): True,  # wrong in CoRE
-        str(
-            os.path.join(THIS_DIR, "test_files", "TONTIB_clean.cif")
-        ): False,  # wrong in CoRE
-        str(
-            os.path.join(THIS_DIR, "test_files", "ELUQIM13_clean.cif")
-        ): False,  # wrong in CoRE
+        str(os.path.join(THIS_DIR, "test_files", "VUGYED_clean.cif")): True,  # wrong in CoRE
+        str(os.path.join(THIS_DIR, "test_files", "TONTIB_clean.cif")): False,  # wrong in CoRE
+        str(os.path.join(THIS_DIR, "test_files", "ELUQIM13_clean.cif")): False,  # wrong in CoRE
     }
 
     return dct
@@ -71,9 +61,7 @@ def get_no_h():
     names = ["ZADDAJ_clean.cif"]
 
     for name in names:
-        structures.append(
-            Structure.from_file(os.path.join(THIS_DIR, "test_files", name))
-        )
+        structures.append(Structure.from_file(os.path.join(THIS_DIR, "test_files", name)))
 
     return structures
 
@@ -85,9 +73,7 @@ def get_no_c():
     names = ["VOXVEL_clean.cif"]
 
     for name in names:
-        structures.append(
-            Structure.from_file(os.path.join(THIS_DIR, "test_files", name))
-        )
+        structures.append(Structure.from_file(os.path.join(THIS_DIR, "test_files", name)))
 
     return structures
 
@@ -99,9 +85,7 @@ def get_clashing_structures():
     names = ["RUYGEZ_clean.cif", "PADHIM_clean.cif"]
 
     for name in names:
-        structures.append(
-            Structure.from_file(os.path.join(THIS_DIR, "test_files", name))
-        )
+        structures.append(Structure.from_file(os.path.join(THIS_DIR, "test_files", name)))
 
     return structures
 
@@ -112,8 +96,6 @@ def get_overvalent_c_structures():
     names = ["ZUQBUK_clean.cif"]
 
     for name in names:
-        structures.append(
-            Structure.from_file(os.path.join(THIS_DIR, "test_files", name))
-        )
+        structures.append(Structure.from_file(os.path.join(THIS_DIR, "test_files", name)))
 
     return structures

@@ -2,6 +2,7 @@
 """Helper functions for the graph hash calculation"""
 import os
 from collections import defaultdict
+from copy import deepcopy
 from typing import List, Tuple
 
 import networkx as nx
@@ -18,7 +19,6 @@ from pymatgen.analysis.local_env import (
     VoronoiNN,
 )
 from pymatgen.core import Molecule, Structure
-from copy import deepcopy
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 

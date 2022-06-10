@@ -5,8 +5,9 @@ from typing import Union
 
 import pymatgen
 from pymatgen.core import IStructure, Structure
-from ...definitions import METALS
+
 from ..data import _get_vdw_radius
+from ...definitions import METALS
 
 
 def _vdw_radius_neighbors(structure, site_index, tolerance: float = 1.5):

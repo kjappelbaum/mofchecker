@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Check for undercoordinated nitrogens"""
-from ..utils.get_indices import get_n_indices
 from .base_missing_check import BaseMissingCheck
 from .geometry import (
     _guess_underbound_nitrogen_cn2,
@@ -9,14 +8,13 @@ from .geometry import (
     add_sp3_hydrogen,
     add_sp_hydrogen,
 )
+from ..utils.get_indices import get_n_indices
 
 
 class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
     """Check for undercoordinated nitrogens"""
 
-    def __init__(
-        self, structure, structure_graph
-    ):  # pylint: disable=super-init-not-called
+    def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
         self.structure = structure
         self.n_indices = get_n_indices(self.structure)
         self.structure_graph = structure_graph
@@ -53,13 +51,9 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
                 # and then what its coordination number is. If it is greater than 2
                 # then we likely do not have a CN for which the carbon should be a
                 # linear sp one
-                if (self.get_cn(neighbors[0].index) > 2) and not neighbors[
-                    0
-                ].site.specie.is_metal:
+                if (self.get_cn(neighbors[0].index) > 2) and not neighbors[0].site.specie.is_metal:
                     undercoordinated_nitrogens.append(site_index)
-                    h_positions.append(
-                        add_sp_hydrogen(self.structure[site_index], neighbors)
-                    )
+                    h_positions.append(add_sp_hydrogen(self.structure[site_index], neighbors))
             elif cn == 2:
                 undercoordinated_nitrogen = _guess_underbound_nitrogen_cn2(
                     self.structure,
@@ -71,16 +65,12 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
                 )
                 if undercoordinated_nitrogen:
                     undercoordinated_nitrogens.append(site_index)
-                    h_positions.append(
-                        add_sp2_hydrogen(self.structure[site_index], neighbors)
-                    )
+                    h_positions.append(add_sp2_hydrogen(self.structure[site_index], neighbors))
             elif cn == 3:
                 undercoordinated_nitrogen = _guess_underbound_nitrogen_cn3(
                     self.structure, site_index, neighbors, tolerance
                 )
                 if undercoordinated_nitrogen:
                     undercoordinated_nitrogens.append(site_index)
-                    h_positions.append(
-                        add_sp3_hydrogen(self.structure[site_index], neighbors)
-                    )
+                    h_positions.append(add_sp3_hydrogen(self.structure[site_index], neighbors))
         return undercoordinated_nitrogens, h_positions
