@@ -18,6 +18,7 @@ from pymatgen.analysis.local_env import (
     VoronoiNN,
 )
 from pymatgen.core import Molecule, Structure
+from copy import deepcopy
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -68,6 +69,57 @@ def get_structure_graph_without_leaf_nodes(
         )
 
     return graph_, graph
+
+
+def get_structure_graph_with_broken_bridges(
+    structure_graph: StructureGraph,
+) -> Tuple[StructureGraph, nx.Graph]:
+    """
+    Returns a StructureGraph without the small subgraphs one obtains after breaking edgess.
+    """
+    g = deepcopy(structure_graph.graph).to_undirected()
+    bridges = _generate_bridges(g)
+    for k, v in bridges.items():
+        for neighbor in v:
+            g.remove_edge(k, neighbor)
+
+    subgraphs = [sg for sg in nx.connected_components(g)]
+
+    subgraphs_len = [len(sg) for sg in subgraphs]
+    longest_subgraph = np.argmax(subgraphs_len)
+
+    # going via remove nodes seems easier than removing the edges (for which we'd need to deal with the periodic attributes)
+    to_delete = []
+    for i, sg in enumerate(subgraphs):
+        if i != longest_subgraph:
+            to_delete.extend(sg)
+
+    graph_ = structure_graph.__copy__()
+    graph_.structure = Structure.from_sites(graph_.structure.sites)
+    graph_.remove_nodes(to_delete)
+
+    edges = {(u, v) for u, v, d in graph_.graph.edges(keys=False, data=True)}
+    graph = nx.Graph()
+    graph.add_edges_from(edges)
+    for node in graph.nodes:
+
+        graph.nodes[node]["specie"] = str(graph_.structure[node].specie)
+        graph.nodes[node]["specie-cn"] = (
+            str(graph_.structure[node].specie)
+            + "-"
+            + str(structure_graph.get_coordination_of_site(node))
+        )
+
+    return graph_, graph
+
+
+def _generate_bridges(nx_graph):
+    bridges = list(nx.bridges(nx_graph))
+
+    bridges_dict = defaultdict(list)
+    for key, value in bridges:
+        bridges_dict[key].append(value)
+    return dict(bridges_dict)
 
 
 def construct_clean_graph(structure: Structure, structure_graph: StructureGraph) -> nx.Graph:

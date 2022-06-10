@@ -54,6 +54,9 @@ def test_graph_hash_robustness():  # pylint: disable=too-many-locals
     )
     assert mof_74_zr.graph_hash != todyuj_checker.graph_hash
     assert mof_74_zr.graph_hash != vogtiv_checker.graph_hash
+    mof_74_zr_nh2 = MOFChecker(
+        Structure.from_file(os.path.join(THIS_DIR, "test_files", "MOF-74-Zr-NH2.cif"))
+    )
 
     # # MOF-74-Zn.cif
     mof_74_zn = MOFChecker(
@@ -61,6 +64,12 @@ def test_graph_hash_robustness():  # pylint: disable=too-many-locals
     )
     assert mof_74_zr.undecorated_graph_hash == mof_74_zn.undecorated_graph_hash
     assert mof_74_zr.graph_hash != mof_74_zn.graph_hash
+    assert mof_74_zr.undecorated_scaffold_hash == mof_74_zn.undecorated_scaffold_hash
+    assert mof_74_zr.decorated_scaffold_hash != mof_74_zn.decorated_scaffold_hash
+    assert mof_74_zr_nh2.graph_hash != mof_74_zr.graph_hash
+    assert mof_74_zr_nh2.undecorated_graph_hash != mof_74_zr.undecorated_graph_hash
+    assert mof_74_zr_nh2.undecorated_scaffold_hash == mof_74_zr.undecorated_scaffold_hash
+    assert mof_74_zr_nh2.decorated_scaffold_hash == mof_74_zr.decorated_scaffold_hash
 
     # # MOF-5 is not ZIF-8
     mof_5 = MOFChecker(

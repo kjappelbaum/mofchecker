@@ -32,7 +32,7 @@ For a given MOF structure
 
 * the undecorated graph hash (:py:attr:`~mofchecker.MOFChecker.undecorated_graph_hash`) is unique for a given connectivity (bond network), independent of the atomic species in the graph
 * the structure graph hash (:py:attr:`~mofchecker.MOFChecker.graph_hash`) is like the undecorated graph hash, but also considers the atomic elements (nodes) in the graph
-*  the undecorated scaffold hash (:py:attr:`~mofchecker.MOFChecker.undecorated_scaffold_hash`) is unique for a given connectivity (bond network), independent of the atomic species in the graph, ignoring leaf nodes
+*  the undecorated scaffold hash (:py:attr:`~mofchecker.MOFChecker.undecorated_scaffold_hash`) is unique for a given connectivity (bond network), independent of the atomic species in the graph, ignoring the small subgraphs one obtains when breaking edges (i.e. removing solvents, functional groups, etc.)
 * the decorated scaffold hash (:py:attr:`~mofchecker.MOFChecker.decorated_scaffold_hash`) is like the undecorated scaffold hash, but also considers the atomic elements (nodes) in the graph
 * the symmetrized structure hash (:py:attr:`~mofchecker.MOFChecker.symmetry_hash`) hashes the space group and the set of Wyckoff symbols
 

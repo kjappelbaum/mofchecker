@@ -45,7 +45,7 @@ from .graph import (
     _get_cn,
     construct_clean_graph,
     get_structure_graph,
-    get_structure_graph_without_leaf_nodes,
+    get_structure_graph_with_broken_bridges,
 )
 from .symmetry import get_spacegroup_symbol_and_number, get_symmetry_hash
 from .utils import _check_if_ordered
@@ -397,9 +397,9 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
     def _scaffold_graphs(self) -> nx.Graph:
         """Returns a networkx graph with atom numbers as node labels"""
         if self._scaffold_nx_graph is None:
-            sg, g = get_structure_graph_without_leaf_nodes()
+            sg, g = get_structure_graph_with_broken_bridges(self._graph)
             self._scaffold_nx_graph = g
-            self._scafold_structure_graph = sg
+            self._scaffold_structure_graph = sg
         return self._scaffold_structure_graph, self._scaffold_nx_graph
 
     @property
