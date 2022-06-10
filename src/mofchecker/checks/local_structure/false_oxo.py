@@ -2,8 +2,8 @@
 """Original idea and implementation idea contributed by Andrew Rosen,
 https://github.com/kjappelbaum/mofchecker/issues/122"""
 
-from ..utils.get_indices import get_metal_indices
 from .base_coordination_check import BaseCoordinationCheck
+from ..utils.get_indices import get_metal_indices
 
 NO_TERMINAL_OXO = [
     "Li",
@@ -44,9 +44,7 @@ class FalseOxoCheck(BaseCoordinationCheck):
     """Checks if there is a metal with oxo group,
     for which such a group is unexpected."""
 
-    def __init__(
-        self, structure, structure_graph
-    ):  # pylint: disable=super-init-not-called
+    def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
         self.structure = structure
         self.metal_indices = get_metal_indices(self.structure)
         self.structure_graph = structure_graph
@@ -74,10 +72,7 @@ class FalseOxoCheck(BaseCoordinationCheck):
                 neighbors = self.get_connected_sites(site_index)
                 for neighbor in neighbors:
                     neighbor_neighbors = self.get_connected_sites(neighbor.index)
-                    if (
-                        len(neighbor_neighbors) == 1
-                        and str(neighbor.site.specie) == "O"
-                    ):
+                    if len(neighbor_neighbors) == 1 and str(neighbor.site.specie) == "O":
                         wrong_oxo.append(neighbor_neighbors[0].index)
 
         return wrong_oxo

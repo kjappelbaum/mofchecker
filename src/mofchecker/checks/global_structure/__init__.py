@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 """Checks on the composition"""
 from ..check_base import AbstractCheck
-from ..utils.get_indices import (
-    get_c_indices,
-    get_h_indices,
-    get_metal_indices,
-    get_n_indices,
-)
+from ..utils.get_indices import get_c_indices, get_h_indices, get_metal_indices, get_n_indices
 
 
 class HasCarbon(AbstractCheck):

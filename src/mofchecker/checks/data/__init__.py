@@ -16,9 +16,7 @@ def _get_covalent_radius(element):
 
     except KeyError:
         radius = _COVALENT_RADII_MEDIAN
-        warnings.warn(
-            f"Covalent radius for {element} unknown. Using median {radius:.2f}."
-        )
+        warnings.warn(f"Covalent radius for {element} unknown. Using median {radius:.2f}.")
     return radius
 
 
@@ -28,7 +26,5 @@ def _get_vdw_radius(element):
 
     except KeyError:
         radius = _VDW_RADII_MEDIAN
-        warnings.warn(
-            f"Van-der-Waals radius for {element} unknown. Using median {radius:.2f}."
-        )
+        warnings.warn(f"Van-der-Waals radius for {element} unknown. Using median {radius:.2f}.")
     return radius

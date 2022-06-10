@@ -27,14 +27,10 @@ class AtomicOverlapCheck(AbstractIndexCheck):
 
     @property
     def description(self):
-        return (
-            "True, if there are no atomic overlaps, based on dist < min(covr 1, covr 2)"
-        )
+        return "True, if there are no atomic overlaps, based on dist < min(covr 1, covr 2)"
 
 
-def _compute_overlap_matrix(
-    distance_matrix: np.array, allatomtypes: list, tolerance: float = 1.0
-):
+def _compute_overlap_matrix(distance_matrix: np.array, allatomtypes: list, tolerance: float = 1.0):
     """
     Find atomic overlap based on pairwise distance and Ccvalent radii.
 
