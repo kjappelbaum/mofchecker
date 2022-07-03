@@ -10,6 +10,7 @@ ignore =
     S603
     W503 # Line break before binary operator (flake8 is wrong)
     E203  # whitespace before ':'
+    S101 # assert
 exclude =
     .tox,
     .git,
@@ -27,6 +28,6 @@ max-line-length = 120
 max-complexity = 20
 import-order-style = pycharm
 application-import-names =
-    gpt3forchem
+    mofchecker
     tests
 format = ${cyan}%(path)s${reset}:${yellow_bold}%(row)d${reset}:${green_bold}%(col)d${reset}: ${red_bold}%(code)s${reset} %(text)s
