@@ -10,16 +10,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python  ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - name: Setup conda
+        uses: s-weigand/setup-conda
         with:
+          update-conda: true
           python-version: ${{ matrix.python-version }}
+          conda-channels: anaconda, conda-forge
       - name: Install dependencies
         run: |
-          pip install pre-commit
-          pip freeze
-      - name: Run pre-commit
-        run: pre-commit run --all-files || ( git status --short ; git diff ; exit 1 )
+          conda install zeopp-lsmo numpy
+          pip install pytest pytest-cov pyeqeq
+          pip install .
+      - name: Test with pytest
+        run: |
+          pytest -v --cov=mofchecker --cov-report=xml --color=yes tests --durations=10
+      - name: CodeCov
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-{{ '${{ matrix.os }}' }}-py{{ '${{ matrix.python-version }}' }}
+
   docs:
     name: Documentation
     runs-on: ubuntu-latest

@@ -11,6 +11,7 @@ ignore =
     W503 # Line break before binary operator (flake8 is wrong)
     E203  # whitespace before ':'
     S101 # assert
+    D400 # end if a period 
 exclude =
     .tox,
     .git,
