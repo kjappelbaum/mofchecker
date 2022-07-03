@@ -77,7 +77,7 @@ def get_structure_graph_with_broken_bridges(
     """
     Returns a StructureGraph without the small subgraphs one obtains after breaking edgess.
     """
-    g = deepcopy(structure_graph.graph).to_undirected()
+    g = nx.DiGraph(deepcopy(structure_graph.graph)).to_undirected()
     bridges = _generate_bridges(g)
     for k, v in bridges.items():
         for neighbor in v:
