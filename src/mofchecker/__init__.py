@@ -14,8 +14,17 @@ from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
 from pymatgen.core import IStructure, Structure
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.cif import CifParser
-
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
+from structuregraph_helpers.analysis import get_cn
+from structuregraph_helpers.create import construct_clean_graph, get_structure_graph
+from structuregraph_helpers.hash import (
+    decorated_graph_hash,
+    decorated_no_leaf_hash,
+    decorated_scaffold_hash,
+    undecorated_graph_hash,
+    undecorated_no_leaf_hash,
+    undecorated_scaffold_hash,
+)
 
 from mofchecker.checks.local_structure.undercoordinated_rare_earth import (
     UnderCoordinatedRareEarthCheck,
@@ -37,17 +46,6 @@ from .checks.local_structure import (
 from .checks.oms import MOFOMS
 from .checks.utils.get_indices import get_c_indices, get_h_indices, get_metal_indices, get_n_indices
 from .checks.zeopp import PorosityCheck
-from structuregraph_helpers.analysis import get_cn
-from structuregraph_helpers.create import construct_clean_graph, get_structure_graph
-from structuregraph_helpers.hash import (
-    decorated_graph_hash,
-    undecorated_graph_hash,
-    decorated_scaffold_hash,
-    undecorated_scaffold_hash,
-    decorated_no_leaf_hash,
-    undecorated_no_leaf_hash,
-)
-
 from .symmetry import get_spacegroup_symbol_and_number, get_symmetry_hash
 from .utils import _check_if_ordered
 

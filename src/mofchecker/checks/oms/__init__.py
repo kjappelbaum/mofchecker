@@ -4,13 +4,13 @@ from typing import List
 
 import numpy as np
 from pymatgen.analysis.local_env import LocalStructOrderParams
+from structuregraph_helpers.analysis import get_cn
 
 from .definitions import OP_DEF
 from .errors import HighCoordinationNumber, LowCoordinationNumber
 from ..check_base import AbstractIndexCheck
 from ..utils.get_indices import get_metal_indices
 from ...errors import NoMetal
-from structuregraph_helpers.analysis import get_cn
 
 
 class MOFOMS(AbstractIndexCheck):
