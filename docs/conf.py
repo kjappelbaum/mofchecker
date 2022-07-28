@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath(".."))
 project = "mofchecker"
 copyright = "2022, Kevin M. Jablonka"
 author = "Kevin M. Jablonka"
-release = "0.9.2"
+release = "0.9.3-dev"
 
 
 # -- General configuration ---------------------------------------------------
