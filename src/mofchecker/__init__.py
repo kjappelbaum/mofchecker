@@ -30,7 +30,7 @@ from mofchecker.checks.local_structure.undercoordinated_rare_earth import (
     UnderCoordinatedRareEarthCheck,
 )
 
-from ._version import get_versions
+from .version import get_version
 from .checks.charge_check import ChargeCheck
 from .checks.floating_solvent import FloatingSolventCheck
 from .checks.global_structure import HasCarbon, HasHydrogen, HasMetal, HasNitrogen
@@ -49,8 +49,7 @@ from .checks.zeopp import PorosityCheck
 from .symmetry import get_spacegroup_symbol_and_number, get_symmetry_hash
 from .utils import _check_if_ordered
 
-__version__ = get_versions()["version"]
-del get_versions
+__version__ = get_version()
 
 __all__ = ["__version__", "MOFChecker", "DESCRIPTORS"]
 
