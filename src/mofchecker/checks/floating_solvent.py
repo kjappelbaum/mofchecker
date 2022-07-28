@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """Check that attempts to find connected components in the cell that do not cross PBC"""
 import networkx as nx
+from structuregraph_helpers.subgraph import get_subgraphs_as_molecules
 
 from .check_base import AbstractIndexCheck
-from structuregraph_helpers.subgraph import get_subgraphs_as_molecules
 
 
 class FloatingSolventCheck(AbstractIndexCheck):

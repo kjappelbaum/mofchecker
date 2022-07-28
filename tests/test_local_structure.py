@@ -3,13 +3,13 @@
 import os
 
 from pymatgen.core import Structure
+from structuregraph_helpers.create import get_structure_graph
 
 from mofchecker.checks.local_structure.false_oxo import FalseOxoCheck
 from mofchecker.checks.local_structure.overlapping_atoms import AtomicOverlapCheck
 from mofchecker.checks.local_structure.undercoordinated_rare_earth import (
     UnderCoordinatedRareEarthCheck,
 )
-from structuregraph_helpers.create import get_structure_graph
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 

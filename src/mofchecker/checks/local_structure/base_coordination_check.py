@@ -2,8 +2,9 @@
 """Base class for checks on coordination numbers/environments"""
 import abc
 
-from ..check_base import AbstractIndexCheck
 from structuregraph_helpers.analysis import get_cn
+
+from ..check_base import AbstractIndexCheck
 
 
 class BaseCoordinationCheck(AbstractIndexCheck):
