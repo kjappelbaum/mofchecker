@@ -14,7 +14,7 @@ __all__ = [
     "get_git_hash",
 ]
 
-release = "0.9.3-dev"
+VERSION = "0.9.3-dev"
 
 
 def get_git_hash() -> str:
@@ -34,7 +34,7 @@ def get_git_hash() -> str:
 
 def get_version(with_git_hash: bool = False):
     """Get the :mod:`sonipredict` version string, including a git hash."""
-    return f"{release}-{get_git_hash()}" if with_git_hash else release
+    return f"{VERSION}-{get_git_hash()}" if with_git_hash else VERSION
 
 
 if __name__ == "__main__":
