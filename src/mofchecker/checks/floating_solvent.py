@@ -3,7 +3,7 @@
 import networkx as nx
 
 from .check_base import AbstractIndexCheck
-from ..graph import get_subgraphs_as_molecules
+from structuregraph_helpers.subgraph import get_subgraphs_as_molecules
 
 
 class FloatingSolventCheck(AbstractIndexCheck):

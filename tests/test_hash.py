@@ -29,7 +29,8 @@ def test_graph_hash_robustness():  # pylint: disable=too-many-locals
 
     # create supercell
     structure.make_supercell([1, 2, 1])
-    assert MOFChecker(structure).graph_hash == original_hash
+    mc = MOFChecker(structure)
+    assert mc.graph_hash == original_hash
 
     # check the MOF-74 structures
     mohgoi_checker = MOFChecker(

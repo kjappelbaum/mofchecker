@@ -14,7 +14,6 @@ from .conftest import THIS_DIR
 def test_get_symmetry_hash():
     """Test the symmetry hashes"""
     zif3 = MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "ZIF-3.cif"))
-    print(type(zif3.structure))
     hash_a = get_symmetry_hash(zif3.structure, tight=True)
     assert len(hash_a) == 275
     hash_b = get_symmetry_hash(zif3.structure)
@@ -40,5 +39,4 @@ def test_get_symmetry_hash():
 
     # create supercell
     structure.make_supercell([1, 2, 1])
-    print(type(structure))
     assert get_symmetry_hash(MOFChecker(structure).structure) == original_hash

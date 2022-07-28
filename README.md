@@ -67,7 +67,7 @@ Note that you need to install [zeopp](https://anaconda.org/conda-forge/zeopp-lsm
 ```bash
 conda install -c conda-forge zeopp-lsmo
 ```
-
+    
 
 
 A web app is currently being developed [in another repository](https://github.com/kjappelbaum/webmofchecker) and deployed on [MatCloud](http://mofchecker.matcloud.xyz/).

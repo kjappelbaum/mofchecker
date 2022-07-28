@@ -58,7 +58,7 @@ How does it work?
 
 mofchecker
 
-#. reduces the structure to the primitive cell using `pymatgen <http://pymatgen.org/>`_ and `spglib <https://spglib.github.io/spglib/>`_ (use ``primitive=False`` to disable this)
+#. symmetrizes the cell using `pymatgen <http://pymatgen.org/>`_ and `spglib <https://spglib.github.io/spglib/>`_ (use :code:`symprec=None, angle_tolerance=None` to disable this)
 #. analyzes the bonding network and creates a corresponding structure graph using `pymatgen <http://pymatgen.org/>`_ (use :py:meth:`~mofchecker.MOFChecker._set_cnn` to switch to a different bond analysis method).
 #. computes the Weisfeiler-Lehman hash of the structure graph using `networkx <https://networkx.org/>`_.
 

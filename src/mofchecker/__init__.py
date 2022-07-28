@@ -15,6 +15,8 @@ from pymatgen.core import IStructure, Structure
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.cif import CifParser
 
+from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
+
 from mofchecker.checks.local_structure.undercoordinated_rare_earth import (
     UnderCoordinatedRareEarthCheck,
 )
@@ -35,13 +37,17 @@ from .checks.local_structure import (
 from .checks.oms import MOFOMS
 from .checks.utils.get_indices import get_c_indices, get_h_indices, get_metal_indices, get_n_indices
 from .checks.zeopp import PorosityCheck
-from .errors import deprecated
-from .graph import (
-    _get_cn,
-    construct_clean_graph,
-    get_structure_graph,
-    get_structure_graph_with_broken_bridges,
+from structuregraph_helpers.analysis import get_cn
+from structuregraph_helpers.create import construct_clean_graph, get_structure_graph
+from structuregraph_helpers.hash import (
+    decorated_graph_hash,
+    undecorated_graph_hash,
+    decorated_scaffold_hash,
+    undecorated_scaffold_hash,
+    decorated_no_leaf_hash,
+    undecorated_no_leaf_hash,
 )
+
 from .symmetry import get_spacegroup_symbol_and_number, get_symmetry_hash
 from .utils import _check_if_ordered
 
@@ -79,21 +85,38 @@ DESCRIPTORS = [
 ]
 
 
-class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-public-methods
+class MOFChecker:
     """MOFChecker performs basic sanity checks for MOFs"""
 
-    def __init__(self, structure: Union[Structure, IStructure], primitive: bool = True):
+    def __init__(
+        self,
+        structure: Union[Structure, IStructure],
+        symprec: float = 0.5,
+        angle_tolerance: float = 5,
+        primitive: bool = True,
+    ):
         """Class that can perform basic sanity checks for MOF structures
 
         Args:
             structure (Structure): pymatgen Structure object
-            primitive (bool): If True, it will perform the analysis
-                on the primitive structure
+            symprec (float): Symmetry precision
+            angle_tolerance (float): Angle tolerance
+            primitive (bool): If True,
+                use primitive cell for structure
 
         Raises:
             NotImplementedError in the case of partial occupancies
         """
         _check_if_ordered(structure)
+
+        if (symprec is not None) or (angle_tolerance is not None):
+            try:
+                structure = SpacegroupAnalyzer(
+                    structure, symprec=symprec, angle_tolerance=angle_tolerance
+                ).get_symmetrized_structure()
+            except TypeError:
+                # If symmetrization fails
+                pass
 
         if primitive:
             structure = structure.get_primitive_structure()
@@ -120,9 +143,6 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
 
         self._graph = None
         self._nx_graph = None
-
-        self._scaffold_nx_graph = None
-        self._scafold_structure_graph = None
 
         self._connected_sites = {}
         self._cns = {}
@@ -165,7 +185,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         (taking the atomic kinds into account)
         and there are guarantees that non-isomorphic graphs will get different hashes.
         """
-        return weisfeiler_lehman_graph_hash(self.nx_graph, node_attr="specie", iterations=6)
+        return decorated_graph_hash(self._graph, lqg=False)
 
     @property
     def spacegroup_symbol(self) -> str:
@@ -201,7 +221,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Hashes are identical for isomorphic graphs and there are
         guarantees that non-isomorphic graphs will get different hashes.
         """
-        return weisfeiler_lehman_graph_hash(self.nx_graph, iterations=6)
+        return undecorated_graph_hash(self._graph, lqg=False)
 
     @property
     def decorated_scaffold_hash(self) -> str:
@@ -209,8 +229,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Hashes are identical for isomorphic graphs and there are
         guarantees that non-isomorphic graphs will get different hashes.
         """
-        _, g = self._scaffold_graphs()
-        return weisfeiler_lehman_graph_hash(g, node_attr="specie", iterations=6)
+        return decorated_scaffold_hash(self._graph, lqg=False)
 
     @property
     def undecorated_scaffold_hash(self) -> str:
@@ -218,8 +237,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         Hashes are identical for isomorphic graphs and there are
         guarantees that non-isomorphic graphs will get different hashes.
         """
-        _, g = self._scaffold_graphs()
-        return weisfeiler_lehman_graph_hash(g, iterations=6)
+        return undecorated_scaffold_hash(self._graph, lqg=False)
 
     @property
     def has_atomic_overlaps(self) -> bool:
@@ -389,20 +407,12 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             _ = self.graph
         return self._nx_graph
 
-    def _scaffold_graphs(self) -> nx.Graph:
-        """Returns a networkx graph with atom numbers as node labels"""
-        if self._scaffold_nx_graph is None:
-            sg, g = get_structure_graph_with_broken_bridges(self._graph)
-            self._scaffold_nx_graph = g
-            self._scaffold_structure_graph = sg
-        return self._scaffold_structure_graph, self._scaffold_nx_graph
-
     @property
     def graph(self) -> StructureGraph:
         """pymatgen structure graph."""
         if self._graph is None:
             self._graph = get_structure_graph(self.structure, self._cnn_method)
-            self._nx_graph = construct_clean_graph(self.structure, self._graph)
+            self._nx_graph = construct_clean_graph(self._graph)
         return self._graph
 
     def get_connected_sites(self, site_index) -> List[ConnectedSite]:
@@ -428,7 +438,7 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         if site_index not in self._cns:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                self._cns[site_index] = _get_cn(self.graph, site_index)
+                self._cns[site_index] = get_cn(self.graph, site_index)
         return self._cns[site_index]
 
     @property
@@ -464,13 +474,20 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
         return mofchecker
 
     @classmethod
-    def from_cif(cls, path: Union[str, Path], primitive: bool = True):
+    def from_cif(
+        cls,
+        path: Union[str, Path],
+        symprec: float = 0.5,
+        angle_tolerance: float = 5,
+        primitive: bool = False,
+    ):
         """Create a MOFChecker instance from a CIF file
 
         Args:
             path (Union[str, Path]): Path to string file
-            primitive (bool): If True, it will perform the analysis
-                on the primitive structure
+            symprec (float): Symmetry tolerance
+            angle_tolerance (float): Angle tolerance
+            primitive (bool): Whether to use primitive cell
 
         Returns:
             MOFChecker: Instance of MOFChecker
@@ -479,25 +496,32 @@ class MOFChecker:  # pylint:disable=too-many-instance-attributes, too-many-publi
             warnings.simplefilter("ignore")
             cifparser = CifParser(path)
             structure = cifparser.get_structures()[0]
-            omscls = cls(structure, primitive=primitive)
-            omscls._set_filename(path)  # pylint:disable=protected-access
+            omscls = cls(
+                structure, symprec=symprec, angle_tolerance=angle_tolerance, primitive=primitive
+            )
+            omscls._set_filename(path)  #
             return omscls
 
     @classmethod
-    def from_ase(cls, atoms: Atoms, primitive: bool = True):
+    def from_ase(
+        cls, atoms: Atoms, symprec: float = 0.5, angle_tolerance: float = 5, primitive: bool = False
+    ):
         """Create a MOFChecker instance from an ASE atoms object
 
         Args:
             atoms (Atoms): ase atoms object
-            primitive (bool): If True, it will perform the analysis
-                on the primitive structure
+            symprec (float): Symmetry tolerance
+            angle_tolerance (float): Angle tolerance
+            primitive (bool): Whether to use primitive cell
 
         Returns:
             MOFChecker: Instance of MOFChecker
         """
         adaptor = AseAtomsAdaptor()
         structure = adaptor.get_structure(atoms)
-        omscls = cls(structure, primitive=primitive)
+        omscls = cls(
+            structure, symprec=symprec, angle_tolerance=angle_tolerance, primitive=primitive
+        )
         return omscls
 
     @property

@@ -10,7 +10,7 @@ from .errors import HighCoordinationNumber, LowCoordinationNumber
 from ..check_base import AbstractIndexCheck
 from ..utils.get_indices import get_metal_indices
 from ...errors import NoMetal
-from ...graph import _get_cn
+from structuregraph_helpers.analysis import get_cn
 
 
 class MOFOMS(AbstractIndexCheck):
@@ -30,7 +30,7 @@ class MOFOMS(AbstractIndexCheck):
 
     def get_cn(self, index):
         """Return the coordination number"""
-        return _get_cn(self.structure_graph, index)
+        return get_cn(self.structure_graph, index)
 
     @classmethod
     def from_mofchecker(cls, mofchecker):
