@@ -375,11 +375,14 @@ class MOFChecker:
     def undercoordinated_rare_earth_indices(self) -> bool:
         """Returns indices of rare earth metals in the structure
         that likely miss some neighbors.
-
-        Returns:
-            [list]:
         """
         return self.checks["no_undercoordinated_rare_earth"].flagged_indices
+
+    @property
+    def has_undercoordinated_akali_alkaline(self) -> bool:
+        """Check if there is a alkali or alkaline earth metal that likely misses
+        some neighbors."""
+        return not self.checks["no_undercoordinated_akali_alkaline"].is_ok
 
     @property
     def is_porous(self) -> Union[bool, None]:

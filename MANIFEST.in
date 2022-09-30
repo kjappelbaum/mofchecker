@@ -1,7 +1,4 @@
 include LICENSE
 include MANIFEST.in
-include versioneer.py
-include mofchecker/_version.py
-include requirements.txt
-include mofchecker/graph/*yml
-include mofchecker/database/*.pkl
+include src/mofchecker/version.py
+include src/mofchecker/database/*.pkl
