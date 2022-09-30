@@ -7,6 +7,9 @@ from structuregraph_helpers.create import get_structure_graph
 
 from mofchecker.checks.local_structure.false_oxo import FalseOxoCheck
 from mofchecker.checks.local_structure.overlapping_atoms import AtomicOverlapCheck
+from mofchecker.checks.local_structure.undercoordinated_alkaline import (
+    UnderCoordinatedAlkaliAlkaline,
+)
 from mofchecker.checks.local_structure.undercoordinated_rare_earth import (
     UnderCoordinatedRareEarthCheck,
 )
@@ -41,3 +44,13 @@ def test_undercoordinated_rare_earth_check():
     checker = UnderCoordinatedRareEarthCheck(structure, structure_graph)
     assert not checker.is_ok
     assert len(checker.flagged_indices) == 4
+
+
+def test_undercoordinated_alkali_alkaline_check():
+    """Testing the check for undercoordinated alkali/alkaline earth metals"""
+    structure = Structure.from_file(os.path.join(THIS_DIR, "test_files", "MOTMAK_clean.cif"))
+    structure_graph = get_structure_graph(structure, "vesta")
+
+    checker = UnderCoordinatedAlkaliAlkaline(structure, structure_graph)
+    assert not checker.is_ok
+    assert len(checker.flagged_indices) == 2
