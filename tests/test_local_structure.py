@@ -45,6 +45,7 @@ def test_undercoordinated_rare_earth_check():
     assert not checker.is_ok
     assert len(checker.flagged_indices) == 4
 
+
 def test_undercoordinated_alkali_alkaline_check():
     """Testing the check for undercoordinated alkali/alkaline earth metals"""
     structure = Structure.from_file(os.path.join(THIS_DIR, "test_files", "MOTMAK_clean.cif"))
