@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.8"]
-    runs-on: ubuntu-lates
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Setup conda
