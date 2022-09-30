@@ -26,11 +26,13 @@ from structuregraph_helpers.hash import (
     undecorated_scaffold_hash,
 )
 
+from mofchecker.checks.local_structure.undercoordinated_alkaline import (
+    UnderCoordinatedAlkaliAlkaline,
+)
 from mofchecker.checks.local_structure.undercoordinated_rare_earth import (
     UnderCoordinatedRareEarthCheck,
 )
 
-from .version import get_version
 from .checks.charge_check import ChargeCheck
 from .checks.floating_solvent import FloatingSolventCheck
 from .checks.global_structure import HasCarbon, HasHydrogen, HasMetal, HasNitrogen
@@ -48,6 +50,7 @@ from .checks.utils.get_indices import get_c_indices, get_h_indices, get_metal_in
 from .checks.zeopp import PorosityCheck
 from .symmetry import get_spacegroup_symbol_and_number, get_symmetry_hash
 from .utils import _check_if_ordered
+from .version import get_version
 
 __version__ = get_version()
 
@@ -78,7 +81,7 @@ DESCRIPTORS = [
     "has_high_charges",
     "is_porous",
     "has_suspicicious_terminal_oxo",
-    "has_undercoordinated_rare_earth",
+    "has_undercoordinated_akali_alkaline",
 ]
 
 
@@ -155,6 +158,9 @@ class MOFChecker:
             "no_overcoordinated_nitrogen": OverCoordinatedNitrogenCheck.from_mofchecker(self),
             "no_undercoordinated_nitrogen": UnderCoordinatedNitrogenCheck.from_mofchecker(self),
             "no_undercoordinated_rare_earth": UnderCoordinatedRareEarthCheck.from_mofchecker(self),
+            "no_undercoordinated_alkali_alkaline": UnderCoordinatedAlkaliAlkaline.from_mofchecker(
+                self
+            ),
             "no_floating_molecule": FloatingSolventCheck.from_mofchecker(self),
             "no_high_charges": ChargeCheck(self.structure),
             "is_porous": PorosityCheck(self.structure),
