@@ -26,6 +26,7 @@ from structuregraph_helpers.hash import (
     undecorated_scaffold_hash,
 )
 
+from mofchecker.checks.local_structure.geometrically_exposed_metal import GeometricallyExposedMetal
 from mofchecker.checks.local_structure.undercoordinated_alkaline import (
     UnderCoordinatedAlkaliAlkaline,
 )
@@ -82,6 +83,7 @@ DESCRIPTORS = [
     "is_porous",
     "has_suspicicious_terminal_oxo",
     "has_undercoordinated_alkali_alkaline",
+    "has_geometrically_exposed_metal",
 ]
 
 
@@ -161,6 +163,7 @@ class MOFChecker:
             "no_undercoordinated_alkali_alkaline": UnderCoordinatedAlkaliAlkaline.from_mofchecker(
                 self
             ),
+            "no_geometrically_exposed_metal": GeometricallyExposedMetal.from_mofchecker(self),
             "no_floating_molecule": FloatingSolventCheck.from_mofchecker(self),
             "no_high_charges": ChargeCheck(self.structure),
             "is_porous": PorosityCheck(self.structure),
@@ -383,6 +386,11 @@ class MOFChecker:
         """Check if there is a alkali or alkaline earth metal that likely misses
         some neighbors."""
         return not self.checks["no_undercoordinated_alkali_alkaline"].is_ok
+
+    @property
+    def has_geometrically_exposed_metal(self) -> bool:
+        """Check if there is a metal that is geometrically exposed"""
+        return not self.checks["no_geometrically_exposed_metal"].is_ok
 
     @property
     def is_porous(self) -> Union[bool, None]:
