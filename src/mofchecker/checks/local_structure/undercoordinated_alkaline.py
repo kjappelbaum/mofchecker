@@ -40,7 +40,7 @@ class UnderCoordinatedAlkaliAlkaline(BaseCoordinationCheck):
         )
 
     def _get_undercoordinated_alkali_alkaline(self):
-        """Check for all alkali/alkaline earth metals of CN < 4"""
+        """Check for all alkali/alkaline earth metals of CN < 4."""
         undercoordinated_alkali_alkaline_earth_metals = []
 
         for site_index in self.alkali_alkaline_indices:

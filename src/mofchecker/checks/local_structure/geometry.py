@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Utilities for geometry operations."""
 import math
+from typing import Iterable
 
 import numpy as np
-from pymatgen.core import Structure
+from pymatgen.core import Site, Structure
 from pymatgen.util.coord import get_angle
 
 from ..utils.get_indices import is_metal
@@ -13,6 +14,13 @@ def rotation_matrix(axis, theta):
     """Return the rotation matrix associated with counterclockwise rotation about the given axis by theta radians.
 
     Stolen from https://stackoverflow.com/questions/6802577/rotation-of-3d-vector
+
+    Args:
+        axis (np.array): axis of rotation
+        theta (float): angle of rotation in radians
+
+    Returns:
+        np.array: rotation matrix
     """
     axis = axis / math.sqrt(np.dot(axis, axis))
     a = math.cos(theta / 2.0)  # pylint:disable=invalid-name
@@ -40,7 +48,8 @@ def _maximum_angle(angle):
     return max([angle, diff_to_180])
 
 
-def get_angle_between_site_and_neighbors(site, neighbors):
+def get_angle_between_site_and_neighbors(site: Site, neighbors: Iterable[Site]) -> float:
+    """Get the minimum angle between a site and its two neighbors."""
     vec_1 = site.coords - neighbors[1].site.coords
     vec_2 = site.coords - neighbors[0].site.coords
     return get_angle(vec_1, vec_2)
@@ -89,7 +98,7 @@ def _guess_underbound_nitrogen_cn2(
     neighbors: list,
     connected_sites_a: list,
     connected_sites_b: list,
-    tolerance: int = 25,
+    tolerance: float = 25,
 ) -> bool:
     """Check if there is a nitrogen with CN 2 that probably misses some coordination.
 
@@ -99,7 +108,7 @@ def _guess_underbound_nitrogen_cn2(
         neighbors (list): List of neighboring sites
         connected_sites_a (list): List of neighbor sites for first neighbor
         connected_sites_b (list): List of neighbor sites for second neighbor
-        tolerance (int, optional): Tolerance for angle checks in degree.
+        tolerance (float): Tolerance for angle checks in degree.
              Defaults to 25.
 
     Returns:
@@ -179,7 +188,7 @@ def make_vec(start, end, length=None):
 
 
 def add_sp_hydrogen(site, neighbors, length: float = 1):
-    """x#C -> x#C-H."""
+    """Turn x#C -> x#C-H."""
     assert len(neighbors) == 1
     vector = make_vec(site.coords, neighbors[0].site.coords, length)
     h_coords = site.coords + vector
@@ -187,7 +196,7 @@ def add_sp_hydrogen(site, neighbors, length: float = 1):
 
 
 def add_sp2_hydrogen(site, neighbors, length: float = 1):
-    """convert x-C=z to x-CH-z."""
+    """Convert x-C=z to x-CH-z."""
     assert len(neighbors) == 2
 
     vector0 = make_vec(neighbors[0].site.coords, site.coords)
@@ -199,7 +208,7 @@ def add_sp2_hydrogen(site, neighbors, length: float = 1):
 
 
 def add_methylene_hydrogens(site, neighbors, length: float = 1):
-    """convert x-C-z to z-CH2-z."""
+    """Convert x-C-z to z-CH2-z."""
     assert len(neighbors) == 2
     vector = make_vec(neighbors[0].site.coords, site.coords)
     vector1 = make_vec(neighbors[1].site.coords, site.coords)
@@ -219,9 +228,16 @@ def add_methylene_hydrogens(site, neighbors, length: float = 1):
 
 
 def get_some_orthorgonal_vector(vector):
-    """Based on a vector generate some orthogonal vector by cross product with a random vector.
+    """Generate a orthogonal vector by cross product with a random vector.
 
-    Will fail if the randly chosen vector is parallel to the input vector."""
+    Will fail if the randly chosen vector is parallel to the input vector.
+
+    Args:
+        vector (np.array): Input vector
+
+    Returns:
+        np.array: Orthogonal vector
+    """
     rand_vec = np.array([np.random.rand(), np.random.rand(), np.random.rand()])
     new_vec = np.cross(rand_vec, vector)
     new_vec /= np.linalg.norm(new_vec)
@@ -229,7 +245,7 @@ def get_some_orthorgonal_vector(vector):
 
 
 def add_sp3_hydrogen(site, neighbors, length: float = 1):
-    """H2N-M --> H3N-M."""
+    """Turn H2N-M --> H3N-M."""
     vector = make_vec(neighbors[0].site.coords, site.coords)
     vector1 = make_vec(neighbors[1].site.coords, site.coords)
 
@@ -245,10 +261,18 @@ def add_sp3_hydrogen(site, neighbors, length: float = 1):
 def add_sp3_hydrogens_on_cn1(site, neighbors, length: float = 1):
     """Add hydrogens to a SP3 carbon with coordination number 1.
 
-    We make a simple geometric construction based on a triangle which normal vector is
-    - the vector from the current neighbor and the central atom.
+    We make a simple geometric construction based on a triangle
+    which normal vector is the vector from the current neighbor and the central atom.
     The cross product then gives us the next vector which we then only need to rotate
     twice around 120 degrees.
+
+    Args:
+        site (pymatgen.core.structure.Site): Site to add hydrogens to
+        neighbors (list): List of neighbors
+        length (float): Length of the bond. Defaults to 1.
+
+    Returns:
+        List[np.array]: List of new positions
     """
     vector = make_vec(neighbors[0].site.coords, site.coords)
 

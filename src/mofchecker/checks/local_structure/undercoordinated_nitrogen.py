@@ -48,8 +48,15 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
             positions,
         )
 
-    def _get_undercoordinated_nitrogens(self, tolerance: int = 25):
-        """Captures missing hydrogens on nitrogen groups using heuristics."""
+    def _get_undercoordinated_nitrogens(self, tolerance: float = 25):
+        """Capture missing hydrogens on nitrogen groups using heuristics.
+
+        Args:
+            tolerance (float): angle tolerance for the check
+
+        Returns:
+            List[int], np.typing.ArrayLike: list of undercoordinated nitrogens and candidate positions
+        """
         undercoordinated_nitrogens = []
         h_positions = []
         for site_index in self.n_indices:

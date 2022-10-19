@@ -6,7 +6,7 @@ from tempfile import NamedTemporaryFile
 import numpy as np
 
 from .check_base import AbstractCheck
-from .types import StructureIStructureType
+from ..types import StructureIStructureType
 
 
 class ChargeCheck(AbstractCheck):

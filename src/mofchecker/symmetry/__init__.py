@@ -12,9 +12,15 @@ from .hash import hash_symmetrized_structure
 
 @functools.lru_cache(maxsize=2, typed=False)
 def get_symmetrized_structure(structure: IStructure) -> SymmetrizedStructure:
-    """Constructs a SymmetrizedStructure.
+    """Construct a SymmetrizedStructure.
 
     That is. a structure where the spacegroup and symmetry operations are defined.
+
+    Args:
+        structure (IStructure): structure to symmetrize
+
+    Returns:
+        SymmetrizedStructure: symmetrized structure
     """
     return SpacegroupAnalyzer(structure).get_symmetrized_structure()
 

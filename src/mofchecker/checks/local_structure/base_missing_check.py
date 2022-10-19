@@ -33,7 +33,7 @@ class BaseMissingCheck(AbstractMissingCheck):
 
     @classmethod
     def from_mofchecker(cls, mofchecker):
-        """Initialize a checker instance from a mofchecker instance"""
+        """Initialize a checker instance from a mofchecker instance."""
         checker = cls(mofchecker.structure, mofchecker.graph)
         checker.get_cn = mofchecker.get_cn
         checker.get_connected_sites = mofchecker.get_connected_sites

@@ -44,6 +44,14 @@ def _compute_overlap_matrix(distance_matrix: np.array, allatomtypes: list, toler
 
     Criterion: if dist < min (covr 1, covr 2) -> overlap
         (this function is used in molsimplify)
+
+    Args:
+        distance_matrix (np.array): pairwise distance matrix
+        allatomtypes (list): list of atom types
+        tolerance (float): tolerance for overlap
+
+    Returns:
+        overlap_matrix (sparse matrix): overlap matrix
     """
     with warnings.catch_warnings():
         warnings.filterwarnings("once")  # only warn once for missing radius data

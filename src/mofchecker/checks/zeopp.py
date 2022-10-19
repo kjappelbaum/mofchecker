@@ -10,8 +10,8 @@ import numpy as np
 from pymatgen.core import Structure
 
 from .check_base import AbstractCheck
-from .types import StructureIStructureType
 from .utils import is_tool
+from ..types import StructureIStructureType
 
 ZEOPP_BASE_COMMAND = ["network", "-ha", "-res"]
 NO_ZEOPP_WARNING = "Did not find the zeo++ network binary in the path. \

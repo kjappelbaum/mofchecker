@@ -11,5 +11,4 @@ class HighCoordinationNumber(KeyError):
 
 
 class NoOpenDefined(KeyError):
-    """Error in case the open check is not defined
-    for this coordination number."""
+    """Error in case the open check is not defined for this coordination number."""

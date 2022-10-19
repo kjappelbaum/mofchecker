@@ -1,6 +1,8 @@
 {
   "python.formatting.provider": "black",
   "restructuredtext.confPath": "",
-  "python.linting.pylintEnabled": true,
-  "esbonio.sphinx.confDir": ""
+  "python.linting.pylintEnabled": false,
+  "esbonio.sphinx.confDir": "",
+  "python.linting.flake8Enabled": true,
+  "python.linting.enabled": true
 }

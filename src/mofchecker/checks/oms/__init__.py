@@ -9,10 +9,10 @@ from structuregraph_helpers.analysis import get_cn
 
 from .definitions import OP_DEF
 from .errors import HighCoordinationNumber, LowCoordinationNumber
-from .types import StructureIStructureType
 from ..check_base import AbstractIndexCheck
 from ..utils.get_indices import get_metal_indices
 from ...errors import NoMetal
+from ...types import StructureIStructureType
 
 
 class MOFOMS(AbstractIndexCheck):
@@ -54,7 +54,7 @@ class MOFOMS(AbstractIndexCheck):
         return checker
 
     def get_metal_descriptors_for_site(self, site_index: int) -> dict:
-        """Computes the checks for one metal site."""
+        """Compute the checks for one metal site."""
         if len(self._metal_indices) == 0:
             raise NoMetal
         return self._get_metal_descriptors_for_site(site_index)

@@ -40,7 +40,7 @@ class UnderCoordinatedRareEarthCheck(BaseCoordinationCheck):
         )
 
     def _get_undercoordinated_rare_earth_metals(self):
-        """Check for all rare earth metals if CN < 4"""
+        """Check for all rare earth metals if CN < 4."""
         undercoordinated_rare_earth_metals = []
 
         for site_index in self.rare_earth_indices:
