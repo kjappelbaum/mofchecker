@@ -19,6 +19,12 @@ class MOFOMS(AbstractIndexCheck):
     """A 'checker' for finding open metal sites."""
 
     def __init__(self, structure: StructureIStructureType, structure_graph: StructureGraph):
+        """Initialize the MOFOMS class.
+        
+        Args:
+            structure (StructureIStructureType): pymatgen structure
+            structure_graph (StructureGraph): pymatgen structure graph
+        """
         self.structure = structure
         self.structure_graph = structure_graph
         self._metal_indices = get_metal_indices(structure)
@@ -82,7 +88,10 @@ class MOFOMS(AbstractIndexCheck):
         return len(indices) == 0, indices
 
     def check_oms(self) -> List[int]:
-        """True if the structure contains open metal sites (OMS).
+        """Check if there are any open metal sites in the structure.
+
+        True if the structure contains open metal sites (OMS).
+
         Also returns True in case of low coordination numbers (CN <=3)
         which typically indicate open coordination for MOFs.
         For high coordination numbers, no good order parameter for open
@@ -173,8 +182,9 @@ class MOFOMS(AbstractIndexCheck):
             return cn, None, None, None, None
 
     def is_site_open(self, site_index: int) -> bool:
-        """Check for a site if is open (based on the values of
-        some coordination geometry fingerprints)
+        """Check for a site if is open.
+
+        This is based on the values of some coordination geometry fingerprints.
 
         Args:
             site_index (int): Index of the site in the structure
