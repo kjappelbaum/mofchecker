@@ -1,25 +1,35 @@
 # -*- coding: utf-8 -*-
-"""Checks, using geometric heuristics if there are any carbons
-that are likely overcoordinated (i.e., CN>4)"""
+"""Checks, using geometric heuristics if there are any carbons that are likely overcoordinated (i.e., CN>4)."""
+from pymatgen.analysis.graphs import StructureGraph
+
+from mofchecker.types import StructureIStructureType
+
 from .base_coordination_check import BaseCoordinationCheck
 from ..utils.get_indices import _is_any_neighbor_metal, get_n_indices
 
 
 class OverCoordinatedNitrogenCheck(BaseCoordinationCheck):
-    """Checks, using geometric heuristics if there are any carbons
-    that are likely overcoordinated (i.e., CN>4)"""
+    """Checks, using geometric heuristics if there are any carbons that are likely overcoordinated (i.e., CN>4)."""
 
-    def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
+    def __init__(self, structure: StructureIStructureType, structure_graph: StructureGraph):
+        """Initialize a new OverCoordinatedNitrogenCheck.
+
+        Args:
+            structure (StructureIStructureType): Structure to check.
+            structure_graph (StructureGraph): StructureGraph of the structure.
+        """
         self.structure = structure
         self.n_indices = get_n_indices(self.structure)
         self.structure_graph = structure_graph
 
     @property
     def name(self):
+        """Return the name of the check."""
         return "Overcoordinated nitrogen"
 
     @property
     def description(self):
+        """Return a description of the check."""
         return "Checks, using geometric heuristics,\
              if there are any carbons that are likely overcoordinated (i.e., CN>4)."
 

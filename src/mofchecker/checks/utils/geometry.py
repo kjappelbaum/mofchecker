@@ -6,8 +6,15 @@ from numpy.linalg import matrix_rank
 from pymatgen.analysis.graphs import StructureGraph
 
 
-def are_coplanar(coords) -> bool:
-    """Check if the given coordinates are coplanar."""
+def are_coplanar(coords: np.typing.ArrayLike) -> bool:
+    """Check if the given coordinates are coplanar.
+
+    Args:
+        coords (np.typing.ArrayLike): The coordinates to check.
+
+    Returns:
+        bool: True if the coordinates are coplanar, False otherwise.
+    """
     coords = np.unique(np.array(coords), axis=0)
     coords -= coords.mean(axis=0)
     if matrix_rank(coords, tol=0.1) <= 2:
@@ -28,10 +35,17 @@ def _get_coords_and_elements_of_neighbors(graph, index):
 
 
 def get_open_angle(graph: StructureGraph, index: int) -> float:
-    """Get 360 - cone angle of the site with the given index."""
+    """Get 360 - cone angle of the site with the given index.
+
+    Args:
+        graph (StructureGraph): The StructureGraph to analyse.
+        index (int): The index of the site to analyse.
+
+    Returns:
+        float: The open angle of the site.
+    """
     coords, species = _get_coords_and_elements_of_neighbors(graph, index)
     encodings = encode_many(species, "van_der_waals_radius")
-    print(are_coplanar(coords))
     try:
         angle, _, _ = cone_angle(coords, encodings, 0)
         return 360 - angle
@@ -45,7 +59,16 @@ def get_open_angle(graph: StructureGraph, index: int) -> float:
 
 def has_open_angle(graph: StructureGraph, index: int, threshold: float = 80) -> bool:
     """Check if the site with the given index has an open angle.
+
     Nans are treated as False.
+
+    Args:
+        graph (StructureGraph): The StructureGraph to analyse.
+        index (int): The index of the site to analyse.
+        threshold (float): The threshold for the open angle. Defaults to 80.
+
+    Returns:
+        bool: True if the site has an open angle, False otherwise.
     """
     angle = get_open_angle(graph, index)
     if angle > threshold:

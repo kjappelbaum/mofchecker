@@ -1,45 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Constants for the MOFChecker"""
-# pylint: disable=line-too-long, duplicate-code
-
-
-EXPECTED_CHECK_VALUES = {
-    "has_oms": False,
-    "has_carbon": True,
-    "has_hydrogen": True,
-    "has_atomic_overlaps": False,
-    "has_overcoordinated_c": False,
-    "has_overcoordinated_n": False,
-    "has_overcoordinated_h": False,
-    "has_undercoordinated_c": False,
-    "has_undercoordinated_n": False,
-    "has_metal": True,
-    "has_lone_atom": False,
-    "has_lone_molecule": False,
-    "hash_high_charge": False,
-    "has_undercoordinated_metal": False,
-    "is_porous": True,
-}
-
-# VdW radii http://periodic.lanl.gov/index.shtml
-
-CHECK_DESCRIPTIONS = {
-    "has_oms": "Uses heuristics of order parameter to estimate if there is an uncordinated metal site",
-    "has_carbon": "Checks if there is any carbon in the structure",
-    "has_hydrogen": "Checks of there is any hydrogen in the structure",
-    "has_atomic_overlaps": "Checks if there are atomic overlaps in the structure (based on adjacency matrix)",
-    "has_overcoordinated_c": "Checks if there is any carbon number with coordination number > 4",
-    "has_overcoordinated_n": "Checks if there is any nitrogen with coordination number > 4",
-    "has_overcoordinated_h": "Checks if there is any carbon with coordination number > 1",
-    "has_undercoordinated_c": "Checks with there is any carbon non-linear (i.e., sp2, sp3) carbon with less than two neighbors",
-    "has_undercoordinated_n": "Checks if there is a nitrogen that likely misses a hydrogen (e.g., coordinated to a sp2, sp3 carbon)",
-    "has_metal": "Checks if there is any metal in the structure",
-    "has_lone_atom": "Checks if there is floating atom in the structure",
-    "has_lone_molecule": "Checks if there is a floating atom or molecule in the structure",
-    "hash_high_charge": "Runs charge equilibration and check if any atom has a high charge (default >3 or <-3)",
-    "has_undercoordinated_metal": "Checks for lanthanides, alkali and alkaline metals with surprisingly low coordination",
-    "is_porous": "Check if the largest included sphere is larger than 2.4 Angstrom",
-}
+"""Constants for the MOFChecker."""
 
 METALS = (
     "Li",

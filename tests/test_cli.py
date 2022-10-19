@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Test for the command line interface"""
+"""Test for the command line interface."""
 import json
 import pathlib
 
@@ -13,7 +13,7 @@ TEST_DIR = pathlib.Path(THIS_DIR) / "test_files"
 
 
 def test_json_output():
-    """Test that output is valid JSON"""
+    """Test that output is valid JSON."""
     runner = CliRunner()
     result = runner.invoke(
         cli.run,
@@ -27,7 +27,7 @@ def test_json_output():
 
 
 def test_select_descriptors():
-    """Test that one can select specific descriptors"""
+    """Test that one can select specific descriptors."""
     runner = CliRunner()
     result = runner.invoke(
         cli.run,

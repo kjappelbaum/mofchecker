@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Functions for running basic pore analysis with zeo++"""
+"""Running basic pore analysis with zeo++."""
 import os
 import subprocess
 import warnings
@@ -11,6 +11,7 @@ from pymatgen.core import Structure
 
 from .check_base import AbstractCheck
 from .utils import is_tool
+from ..types import StructureIStructureType
 
 ZEOPP_BASE_COMMAND = ["network", "-ha", "-res"]
 NO_ZEOPP_WARNING = "Did not find the zeo++ network binary in the path. \
@@ -20,8 +21,7 @@ __all__ = ["check_if_porous"]
 
 
 def run_zeopp(structure: Structure) -> dict:
-    """Run zeopp with network -ha -res (http://www.zeoplusplus.org/examples.html)
-    to find the pore diameters
+    """Run zeopp with network -ha -res to find the pore diameters.
 
     Args:
         structure (Structure): pymatgen Structure object
@@ -59,7 +59,7 @@ def run_zeopp(structure: Structure) -> dict:
 
 
 def _parse_zeopp(filecontent: str) -> dict:
-    """Parse the results line of a network call to zeopp
+    """Parse the results line of a network call to zeopp.
 
     Args:
         filecontent (str): results file
@@ -81,12 +81,13 @@ def _parse_zeopp(filecontent: str) -> dict:
 
 
 def check_if_porous(structure: Structure, threshold: float = 2.4) -> Union[bool, None]:
-    """Runs zeo++ to check if structure is porous according to the CoRE-MOF
-    definition (PLD > 2.4, https://pubs.acs.org/doi/10.1021/acs.jced.9b00835)
+    """Run zeo++ to check if structure is porous.
+
+    We consider the CoRE-MOF definition (PLD > 2.4, https://pubs.acs.org/doi/10.1021/acs.jced.9b00835)
 
     Args:
         structure (Structure): MOF structure to check
-        threshold (float, optional): Threshold on the sphere diameter in Angstrom.
+        threshold (float): Threshold on the sphere diameter in Angstrom.
             Defaults to 2.4.
 
     Returns:
@@ -103,18 +104,21 @@ def check_if_porous(structure: Structure, threshold: float = 2.4) -> Union[bool,
 
 
 class PorosityCheck(AbstractCheck):
-    """Use zeo++ to check if the structure is porous"""
+    """Use zeo++ to check if the structure is porous."""
 
-    def __init__(self, structure):
+    def __init__(self, structure: StructureIStructureType):
+        """Create a porosity check instance."""
         self.structure = structure
         self.threshold = 2.4
 
     @property
     def name(self):
+        """Return the name of the check."""
         return "Porosity"
 
     @property
     def description(self):
+        """Return a description of the check."""
         return f"Check if the pore limiting diameter is greater than {self.threshold}."
 
     def _run_check(self):

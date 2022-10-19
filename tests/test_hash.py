@@ -12,7 +12,7 @@ from .conftest import THIS_DIR
 
 
 def test_graph_hash():
-    """Basic check that the function call works"""
+    """Basic check that the function call works."""
     mofchecker = MOFChecker(Structure.from_file(os.path.join(THIS_DIR, "test_files", "ABAXUZ.cif")))
     assert isinstance(mofchecker.graph_hash, str)
 

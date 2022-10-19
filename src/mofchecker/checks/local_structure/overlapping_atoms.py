@@ -1,24 +1,32 @@
 # -*- coding: utf-8 -*-
-"Checks if there are atomic overlaps, based on dist < min(covr 1, covr 2)"
+"""Checks if there are atomic overlaps, based on dist < min(covr 1, covr 2)."""
 import warnings
 
 import numpy as np
 from pymatgen.core import Structure
 from scipy import sparse
 
+from mofchecker.types import StructureIStructureType
+
 from ..check_base import AbstractIndexCheck
 from ..data import _get_covalent_radius
 
 
 class AtomicOverlapCheck(AbstractIndexCheck):
-    "Checks if there are atomic overlaps, based on dist < min(covr 1, covr 2)"
+    """Checks if there are atomic overlaps, based on dist < min(covr 1, covr 2)."""
 
-    def __init__(self, structure):
+    def __init__(self, structure: StructureIStructureType):
+        """Initialize the check.
+
+        Args:
+            structure (StructureIStructureType): The structure to check.
+        """
         self.structure = structure
         self.indices = None
 
     @property
     def name(self):
+        """Return the name of the check."""
         return "Atomic overlaps"
 
     def _run_check(self):
@@ -27,15 +35,23 @@ class AtomicOverlapCheck(AbstractIndexCheck):
 
     @property
     def description(self):
+        """Return a description of the check."""
         return "True, if there are no atomic overlaps, based on dist < min(covr 1, covr 2)"
 
 
 def _compute_overlap_matrix(distance_matrix: np.array, allatomtypes: list, tolerance: float = 1.0):
-    """
-    Find atomic overlap based on pairwise distance and Ccvalent radii.
+    """Find atomic overlap based on pairwise distance and Ccvalent radii.
 
     Criterion: if dist < min (covr 1, covr 2) -> overlap
         (this function is used in molsimplify)
+
+    Args:
+        distance_matrix (np.array): pairwise distance matrix
+        allatomtypes (list): list of atom types
+        tolerance (float): tolerance for overlap
+
+    Returns:
+        overlap_matrix (sparse matrix): overlap matrix
     """
     with warnings.catch_warnings():
         warnings.filterwarnings("once")  # only warn once for missing radius data
@@ -53,7 +69,7 @@ def _compute_overlap_matrix(distance_matrix: np.array, allatomtypes: list, toler
     return sparse.csr_matrix(overlap_matrix)
 
 
-def _get_overlaps(s: Structure) -> list:  # pylint: disable=invalid-name
+def _get_overlaps(s: Structure) -> list:
     """Find overlapping atoms in a structure."""
     distance_matrix = s.distance_matrix
     atomtypes = [str(species) for species in s.species]

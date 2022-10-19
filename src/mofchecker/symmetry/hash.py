@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Compute hashes for symmetrized structures based on the Wyckoff letters"""
+"""Compute hashes for symmetrized structures based on the Wyckoff letters."""
 import base64
 import hashlib
 from collections import Counter
@@ -8,26 +8,26 @@ from pymatgen.symmetry.structure import SymmetrizedStructure
 
 
 def make_sha256_hash(tupl: tuple) -> str:
-    """Based on https://stackoverflow.com/a/42151923"""
+    """Based on https://stackoverflow.com/a/42151923."""
     hasher = hashlib.sha256()
     hasher.update(repr(tupl).encode())
     return base64.b64encode(hasher.digest()).decode()
 
 
 def make_hashable(counter: Counter) -> tuple:
-    """Based on https://stackoverflow.com/a/42151923"""
+    """Based on https://stackoverflow.com/a/42151923."""
     return tuple(sorted((key, value) for key, value in counter.items()))
 
 
 def hash_symmetrized_structure(
     symmetrized_structure: SymmetrizedStructure, tight: bool = False
 ) -> str:
-    """Run the hashing
+    """Run the hashing.
 
     Args:
         symmetrized_structure (SymmetrizedStructure): A structure object
             that has the Wyckoff letters as property/attribute
-        tight (bool, optional): If True, also consider the ordering
+        tight (bool): If True, also consider the ordering
             of the Wyckoff letters. Defaults to False.
 
     Returns:

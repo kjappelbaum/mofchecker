@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""pytest fixtures"""
-# pylint: disable=missing-function-docstring
+"""pytest fixtures."""
 import os
 
 import pytest

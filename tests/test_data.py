@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Test for the utils module"""
+"""Test for the utils module."""
 from mofchecker.checks.data import _get_covalent_radius, _get_vdw_radius
 
 ELEMENTS = [
@@ -124,12 +124,12 @@ ELEMENTS = [
 
 
 def test__get_vdw_radius():
-    """Make sure we also get some number for the non-natural occuring elements"""
+    """Make sure we also get some number for the non-natural occuring elements."""
     for element in ELEMENTS:
         assert isinstance(_get_vdw_radius(element), float)
 
 
 def test__get_cov_radius():
-    """Make sure we also get some number for the non-natural occuring elements"""
+    """Make sure we also get some number for the non-natural occuring elements."""
     for element in ELEMENTS:
         assert isinstance(_get_covalent_radius(element), float)

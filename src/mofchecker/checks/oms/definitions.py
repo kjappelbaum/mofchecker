@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 """Thresholds on the order parameters for OMS detection.
-Manually tuned and hence probably not super general"""
-# see Zimmermann, N. E. R.; Jain, A.
-# Local Structure Order Parameters and Site Fingerprints
-# for Quantification of Coordination Environment and Crystal Structure Similarity.
-# RSC Adv. 2020, 10 (10), 6063–6081. https://doi.org/10.1039/C9RA07755C.
+
+Manually tuned and hence probably not super general.
+
+original reference:
+Zimmermann, N. E. R.; Jain, A.
+Local Structure Order Parameters and Site Fingerprints
+for Quantification of Coordination Environment and Crystal Structure Similarity.
+RSC Adv. 2020, 10 (10), 6063–6081. https://doi.org/10.1039/C9RA07755C.
+"""
+
 
 OP_DEF = {
     4: {

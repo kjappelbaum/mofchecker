@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-"""Version information for :mod:`sonipredict`.
+"""Version information for :mod:`mofchecker`.
 
-Run with ``python -m sonipredict.version``
+Run with ``python -m mofchecker.version``
 """
 
 import os
@@ -38,4 +38,4 @@ def get_version(with_git_hash: bool = False):
 
 
 if __name__ == "__main__":
-    print(get_version(with_git_hash=True))  # noqa:T001
+    print(get_version(with_git_hash=True))  # noqa:T201

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Testing the checks on the local chemical environment"""
+"""Testing the checks on the local chemical environment."""
 import os
 
 from pymatgen.core import Structure
@@ -19,14 +19,14 @@ THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 def test_clashing(get_clashing_structures):
-    """Testing the check for overlapping atoms"""
+    """Testing the check for overlapping atoms."""
     for structure in get_clashing_structures:
         overlap_check = AtomicOverlapCheck(structure)
         assert not overlap_check.is_ok
 
 
 def test_false_oxo():
-    """Testing the check for suspicious oxo groups"""
+    """Testing the check for suspicious oxo groups."""
     structure = Structure.from_file(
         os.path.join(THIS_DIR, "test_files", "false_terminal_oxo_ca.cif")
     )
@@ -38,7 +38,7 @@ def test_false_oxo():
 
 
 def test_undercoordinated_rare_earth_check():
-    """Testing the check for undercoordinated rare earth metals"""
+    """Testing the check for undercoordinated rare earth metals."""
     structure = Structure.from_file(os.path.join(THIS_DIR, "test_files", "GADRAH_Ce_clean.cif"))
     structure_graph = get_structure_graph(structure, "vesta")
 
@@ -48,7 +48,7 @@ def test_undercoordinated_rare_earth_check():
 
 
 def test_undercoordinated_alkali_alkaline_check():
-    """Testing the check for undercoordinated alkali/alkaline earth metals"""
+    """Testing the check for undercoordinated alkali/alkaline earth metals."""
     structure = Structure.from_file(os.path.join(THIS_DIR, "test_files", "MOTMAK_clean.cif"))
     structure_graph = get_structure_graph(structure, "vesta")
 

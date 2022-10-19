@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Utility function for getting the indices for certain atoms in the structure"""
+"""Utility function for getting the indices for certain atoms in the structure."""
 import functools
 from typing import Union
 
@@ -17,9 +17,17 @@ def _vdw_radius_neighbors(structure, site_index, tolerance: float = 1.5):
 
 
 def is_metal(site: pymatgen.core.Site) -> bool:
-    """according to conquest help:
-    transition metal, lanthanide, actinide,
-    or Al, Ga, In, Tl, Ge, Sn, Pb, Sb, Bi, Po"""
+    """Return True if the site is a metal.
+
+    Considers transition metal, lanthanide, actinide,
+    or Al, Ga, In, Tl, Ge, Sn, Pb, Sb, Bi, Po
+
+    Args:
+        site: pymatgen.core.Site
+
+    Returns:
+        bool: True if the site is a metal
+    """
     if str(site.specie) in METALS:
         return True
     return False
@@ -64,37 +72,37 @@ def _get_alkali_alkaline_indices(structure):
 
 
 def get_h_indices(structure):
-    """Get the indices of all H"""
+    """Get the indices of all H."""
     return get_indices(structure)["h"]
 
 
 def get_c_indices(structure):
-    """Get the indices of all C"""
+    """Get the indices of all C."""
     return get_indices(structure)["c"]
 
 
 def get_n_indices(structure):
-    """Get the indices of all N"""
+    """Get the indices of all N."""
     return get_indices(structure)["n"]
 
 
 def get_metal_indices(structure):
-    """Get the indices of all metals"""
+    """Get the indices of all metals."""
     return get_indices(structure)["metal"]
 
 
 def get_rare_earth_indices(structure):
-    """Get the indices of all rare-earth metals"""
+    """Get the indices of all rare-earth metals."""
     return get_indices(structure)["rare_earth"]
 
 
 def get_alkali_alkaline_indices(structure):
-    """Get the indices of all alkali and alkaline earth metals"""
+    """Get the indices of all alkali and alkaline earth metals."""
     return get_indices(structure)["alkali_alkaline"]
 
 
 def get_indices(structure: Union[Structure, IStructure]) -> dict:
-    """Get all the relevant indices"""
+    """Get all the relevant indices."""
     if isinstance(structure, Structure):
         structure = IStructure.from_sites(structure)
     return _get_indices(structure)

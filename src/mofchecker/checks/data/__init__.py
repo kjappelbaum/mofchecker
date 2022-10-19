@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Module for radii lookups"""
+"""Module for radii lookups."""
 import warnings
 
 import numpy as np

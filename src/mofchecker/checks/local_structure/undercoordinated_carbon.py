@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Check for undercoordinated carbons"""
+"""Check for undercoordinated carbons."""
 import numpy as np
+from pymatgen.analysis.graphs import StructureGraph
+
+from mofchecker.types import StructureIStructureType
 
 from .base_missing_check import BaseMissingCheck
 from .geometry import _maximum_angle, add_sp2_hydrogen, add_sp3_hydrogens_on_cn1
@@ -8,9 +11,15 @@ from ..utils.get_indices import get_c_indices
 
 
 class UnderCoordinatedCarbonCheck(BaseMissingCheck):
-    """Check for undercoordinated carbons"""
+    """Check for undercoordinated carbons."""
 
-    def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
+    def __init__(self, structure: StructureIStructureType, structure_graph: StructureGraph):
+        """Initialize the check.
+
+        Args:
+            structure (StructureIStructureType): The structure to check]
+            structure_graph (StructureGraph): The structure graph of the structure
+        """
         self.structure = structure
         self.c_indices = get_c_indices(self.structure)
         self.structure_graph = structure_graph
@@ -18,10 +27,12 @@ class UnderCoordinatedCarbonCheck(BaseMissingCheck):
 
     @property
     def name(self):
+        """Return the name of the check."""
         return "Undercoordinated carbon"
 
     @property
     def description(self):
+        """Return a description of the check."""
         return "Checks, using geometric heuristics,\
              if there are any carbons that are likely undercoordinated."
 
@@ -37,12 +48,20 @@ class UnderCoordinatedCarbonCheck(BaseMissingCheck):
             candidate_positions,
         )
 
-    def _get_undercoordinated_carbons(self, tolerance: int = 10):
-        """Idea is that carbon should at least have three neighbors if it is not sp1.
+    def _get_undercoordinated_carbons(self, tolerance: float = 10):
+        """Return a list of undercoordinated carbons and a list of candidate positions.
+
+        Idea is that carbon should at least have three neighbors if it is not sp1.
         In sp1 case it is linear. So we can just check if there are carbons with
         non-linear coordination with less than three neighbors. An example in CoRE
         MOF would be AHOKIR. In principle this should also flag the quite common
         case of benzene rings with missing hydrogens.
+
+        Args:
+            tolerance (float): The tolerance for the angle between the neighbors of the carbon.
+
+        Returns:
+            List[int], np.typing.ArrayLike: The list of undercoordinated carbons and a list of candidate positions.
         """
         undercoordinated_carbons = []
         h_positions = []  # output must be list of lists to allow for filtering

@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-"""MOFChecker: Basic sanity checks for MOFs"""
+"""Basic sanity checks for MOFs."""
 import os
 import warnings
 from collections import OrderedDict
 from pathlib import Path
-from typing import List, Union
+from typing import Iterable, List, Union
 
 import networkx as nx
 from ase import Atoms
 from backports.cached_property import cached_property
-from networkx.algorithms.graph_hashing import weisfeiler_lehman_graph_hash
 from pymatgen.analysis.graphs import ConnectedSite, StructureGraph
 from pymatgen.core import IStructure, Structure
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -19,10 +18,8 @@ from structuregraph_helpers.analysis import get_cn
 from structuregraph_helpers.create import construct_clean_graph, get_structure_graph
 from structuregraph_helpers.hash import (
     decorated_graph_hash,
-    decorated_no_leaf_hash,
     decorated_scaffold_hash,
     undecorated_graph_hash,
-    undecorated_no_leaf_hash,
     undecorated_scaffold_hash,
 )
 
@@ -88,7 +85,7 @@ DESCRIPTORS = [
 
 
 class MOFChecker:
-    """MOFChecker performs basic sanity checks for MOFs"""
+    """MOFChecker performs basic sanity checks for MOFs."""
 
     def __init__(
         self,
@@ -97,7 +94,7 @@ class MOFChecker:
         angle_tolerance: float = 5,
         primitive: bool = True,
     ):
-        """Class that can perform basic sanity checks for MOF structures
+        """Construct a MOFChecker instance.
 
         Args:
             structure (Structure): pymatgen Structure object
@@ -173,7 +170,7 @@ class MOFChecker:
 
     @property
     def checks(self):
-        """Get a dictionary of all check classes"""
+        """Get a dictionary of all check classes."""
         return self._checks
 
     def _set_filename(self, path):
@@ -181,79 +178,112 @@ class MOFChecker:
         self._name = Path(path).stem
 
     def get_overlapping_indices(self):
-        """Return the indices of overlapping atoms"""
+        """Return the indices of overlapping atoms."""
         return self.checks["no_atomic_overlaps"].flagged_indices
 
     @property
     def graph_hash(self) -> str:
         """Return the Weisfeiler-Lehman graph hash.
+
         Hashes are identical for isomorphic graphs
         (taking the atomic kinds into account)
         and there are guarantees that non-isomorphic graphs will get different hashes.
+
+        Returns:
+            str: Graph hash
         """
         return decorated_graph_hash(self._graph, lqg=False)
 
     @property
     def spacegroup_symbol(self) -> str:
-        """Return the international spacegroup symbol"""
+        """Return the international spacegroup symbol."""
         return get_spacegroup_symbol_and_number(self.structure)["symbol"]
 
     @property
     def spacegroup_number(self) -> int:
-        """Return the international spacegroup number"""
+        """Return the international spacegroup number."""
         return get_spacegroup_symbol_and_number(self.structure)["number"]
 
     @cached_property
     def symmetry_hash(self) -> str:
-        """Hash the structure based on its symmetrized versions, i.e., the spacegroup
-        and Wyckoff letters."""
+        """Hash the structure based on its symmetrized versions.
+
+        That is, the spacegroup and Wyckoff letters.
+
+        Returns:
+            str: Symmetry hash
+        """
         return get_symmetry_hash(self.structure)
 
     @property
-    def undercoordinated_c_candidate_positions(self) -> list:
-        """Candidate positions for addition H on C
-        we identified as undercoordinated"""
+    def undercoordinated_c_candidate_positions(self) -> Iterable[Iterable[float]]:
+        """Candidate positions for addition H on undercoordinated C.
+
+        Returns:
+            Iterable[Iterable[float]]: Candidate positions
+        """
         return self.checks["no_undercoordinated_carbon"].candidate_positions
 
     @property
-    def undercoordinated_n_candidate_positions(self) -> list:
-        """Candidate positions for addition H on N
-        we identified as undercoordinated"""
+    def undercoordinated_n_candidate_positions(self) -> Iterable[Iterable[float]]:
+        """Candidate positions for addition H on undercoordinated N.
+
+        Returns:
+            Iterable[Iterable[float]]: Candidate positions
+        """
         return self.checks["no_undercoordinated_nitrogen"].candidate_positions
 
     @property
     def undecorated_graph_hash(self) -> str:
         """Return the Weisfeiler-Lehman graph hash.
+
+        Undecorated means that the atomic kinds are not taken into account.
         Hashes are identical for isomorphic graphs and there are
         guarantees that non-isomorphic graphs will get different hashes.
+
+        Returns:
+            str: Graph hash without atomic kinds
         """
         return undecorated_graph_hash(self._graph, lqg=False)
 
     @property
     def decorated_scaffold_hash(self) -> str:
-        """Return the Weisfeiler-Lehman graph hash.
+        """Return the Weisfeiler-Lehman graph hash for the scaffold.
+
+        The scaffold is the graph with the all terminal groups and
+        atoms removed (i.e., formally, bridges are broken).
         Hashes are identical for isomorphic graphs and there are
         guarantees that non-isomorphic graphs will get different hashes.
+
+        Returns:
+            str: Graph hash for the scaffold
         """
         return decorated_scaffold_hash(self._graph, lqg=False)
 
     @property
     def undecorated_scaffold_hash(self) -> str:
-        """Return the Weisfeiler-Lehman graph hash.
+        """Return the Weisfeiler-Lehman graph hash for the undecorated scaffold.
+
+        The scaffold is the graph with the all terminal groups and
+        atoms removed (i.e., formally, bridges are broken).
+        Undecorated means that the atomic numbers are not taken into account.
+
         Hashes are identical for isomorphic graphs and there are
         guarantees that non-isomorphic graphs will get different hashes.
+
+        Returns:
+            str: Graph hash for the undecorated scaffold
         """
         return undecorated_scaffold_hash(self._graph, lqg=False)
 
     @property
     def has_atomic_overlaps(self) -> bool:
-        """Check if there are any overlaps in the structure"""
+        """Check if there are any overlaps in the structure."""
         return not self.checks["no_atomic_overlaps"].is_ok
 
     @property
     def name(self) -> str:
-        """Return filename if the MOFChecker instance was created based on
-        a histogram."""
+        """Return filename stem if the MOFChecker instance was created based on a file."""
         return self._name
 
     @property
@@ -263,183 +293,195 @@ class MOFChecker:
 
     @property
     def has_carbon(self) -> bool:
-        """Check if there is any carbon atom in the structure"""
+        """Check if there is any carbon atom in the structure."""
         return self.checks["has_c"].is_ok
 
     @property
     def has_hydrogen(self) -> bool:
-        """Check if there is any hydrogen atom in the structure"""
+        """Check if there is any hydrogen atom in the structure."""
         return self.checks["has_h"].is_ok
 
     @property
-    def density(self):
-        """Density of structure"""
+    def density(self) -> float:
+        """Density of structure."""
         return self.structure.density
 
     @property
-    def volume(self):
-        """Volume of structure in A^3"""
+    def volume(self) -> float:
+        """Volume of structure in A^3."""
         return self.structure.volume
 
     @property
-    def formula(self):
-        """Return the chemical formula of the structure"""
+    def formula(self) -> str:
+        """Return the chemical formula of the structure."""
         return self.structure.formula
 
+    # ToDo: deprecate one of overvalent/overcoordinated
     @property
     def has_overvalent_c(self) -> bool:
-        """Returns true if there is some carbon in the structure
-        that has more than 4 neighbors.
+        """Return true ifsome carbon in the structure has more than 4 neighbors.
 
         Returns:
-            [bool]: True if carbon with CN > 4 in structure.
+            bool: True if carbon with CN > 4 in structure.
         """
         return not self.checks["no_overcoordinated_carbon"].is_ok
 
     @property
     def has_overcoordinated_c(self) -> bool:
-        """See has_overvalent_c"""
+        """Return true ifsome carbon in the structure has more than 4 neighbors.
+
+        Alias for has_overvalent_c.
+
+        Returns:
+            bool: True if carbon with CN > 4 in structure.
+        """
         return self.has_overvalent_c
 
     @property
-    def overvalent_c_indices(self) -> bool:
-        """Returns indices of carbon in the structure
-        that has more than 4 neighbors.
+    def overvalent_c_indices(self) -> List[int]:
+        """Return indices of carbons with more than 4 neighbors.
 
         Returns:
-            [list]:
+            List[int]: Indices of carbons with CN > 4.
         """
         return self.checks["no_overcoordinated_carbon"].flagged_indices
 
     @property
     def has_overvalent_h(self) -> bool:
-        """Returns true if there is some hydrogen in the structure
-        that has more than 1 neighbor.
+        """Return true if some hydrogen has more than 1 neighbor.
 
         Returns:
-            [bool]: True if hydrogen with CN > 1 in structure.
+            bool: True if hydrogen with CN > 1 in structure.
         """
         return not self.checks["no_overcoordinated_hydrogen"].is_ok
 
     @property
     def has_overcoordinated_h(self) -> bool:
-        """See has_overvalent_h"""
+        """See has_overvalent_h."""
         return self.has_overvalent_h
 
     @property
-    def overvalent_h_indices(self) -> bool:
-        """Returns indices of hydrogen in the structure
-        that has more than 1 neighbors.
+    def overvalent_h_indices(self) -> List[int]:
+        """Return indices of hydrogens with more than 1 neighbors.
 
         Returns:
-            [list]:
+            List[int]: Indices of hydrogens with CN > 1.
         """
         return self.checks["no_overcoordinated_hydrogen"].flagged_indices
 
     @property
     def has_undercoordinated_c(self) -> bool:
-        """Check if there is a carbon that likely misses
-        hydrogen"""
+        """Check if there is a carbon that likely misses hydrogen."""
         return not self.checks["no_undercoordinated_carbon"].is_ok
 
     @property
-    def undercoordinated_c_indices(self) -> bool:
-        """Returns indices of carbon in the structure
-        that likely miss some neighbors.
+    def undercoordinated_c_indices(self) -> List[int]:
+        """Return indices of carbon in the structure that likely miss some neighbors.
 
         Returns:
-            [list]:
+            List[int]: Indices of carbons with CN < 4.
         """
         return self.checks["no_undercoordinated_carbon"].flagged_indices
 
     @property
     def has_undercoordinated_n(self) -> bool:
-        """Check if there is a nitrogen that likely misses
-        hydrogen"""
+        """Return False if there is a nitrogen that likely misses hydrogen."""
         return not self.checks["no_undercoordinated_nitrogen"].is_ok
 
     @property
-    def undercoordinated_n_indices(self) -> bool:
-        """Returns indices of nitrogen in the structure
-        that likely miss some neighbors.
+    def undercoordinated_n_indices(self) -> List[int]:
+        """Return indices of nitrogen that likely miss some neighbors.
 
         Returns:
-            [list]:
+            List[int]: Indices of nitrogens with CN < 4.
         """
         return self.checks["no_undercoordinated_nitrogen"].flagged_indices
 
     @property
     def has_undercoordinated_rare_earth(self) -> bool:
-        """Check if there is a rare earth metal that likely misses
-        hydrogen"""
+        """Return True if there is a rare earth metal that likely misses hydrogen."""
         return not self.checks["no_undercoordinated_rare_earth"].is_ok
 
     @property
-    def undercoordinated_rare_earth_indices(self) -> bool:
-        """Returns indices of rare earth metals in the structure
-        that likely miss some neighbors.
-        """
+    def undercoordinated_rare_earth_indices(self) -> List[int]:
+        """Return indices of rare earth metals in the structure that likely miss some neighbors."""
         return self.checks["no_undercoordinated_rare_earth"].flagged_indices
 
     @property
     def has_undercoordinated_alkali_alkaline(self) -> bool:
-        """Check if there is a alkali or alkaline earth metal that likely misses
-        some neighbors."""
+        """Return True if there is a alkali or alkaline earth metal that likely misses some neighbors."""
         return not self.checks["no_undercoordinated_alkali_alkaline"].is_ok
 
     @property
     def has_geometrically_exposed_metal(self) -> bool:
-        """Check if there is a metal that is geometrically exposed"""
+        """Check if there is a metal that is geometrically exposed."""
         return not self.checks["no_geometrically_exposed_metal"].is_ok
 
     @property
     def is_porous(self) -> Union[bool, None]:
-        """Returns True if the MOF is porous according to the CoRE-MOF definition.
-        Returns None if the check could not be run successfully."""
+        """Return True if the MOF is porous according to the CoRE-MOF definition.
+
+        Returns None if the check could not be run successfully.
+
+        Returns:
+            Union[bool, None]: True if porous, False if not porous, None if check could not be run.
+        """
         return self.checks["is_porous"].is_ok
 
     @property
     def has_high_charges(self) -> Union[bool, None]:
         """Check if the structure has unreasonably high EqEq charges.
-        Returns None if the check could not be run successfully."""
+
+        Returns None if the check could not be run successfully.
+
+        Returns:
+            Union[bool, None]: True if charges are too high,
+                False if charges are ok, None if check could not be run.
+        """
         return not self.checks["no_high_charges"].is_ok
 
     @property
     def has_suspicicious_terminal_oxo(self) -> bool:
-        """Flags metals with a potentially wrong terminal oxo group"""
+        """Flag metals with a potentially wrong terminal oxo group."""
         return not self.checks["no_false_terminal_oxo"].is_ok
 
     @property
-    def suspicicious_terminal_oxo_indices(self) -> bool:
-        """Indices of metals with a potentially wrong terminal oxo group"""
+    def suspicicious_terminal_oxo_indices(self) -> List[int]:
+        """Return indices of metals with a potentially wrong terminal oxo group."""
         return self.checks["no_false_terminal_oxo"].flagged_indices
 
     @property
     def nx_graph(self) -> nx.Graph:
-        """Returns a networkx graph with atom numbers as node labels"""
+        """Return a networkx graph with atom numbers as node labels."""
         if self._nx_graph is None:
             _ = self.graph
         return self._nx_graph
 
     @property
     def graph(self) -> StructureGraph:
-        """pymatgen structure graph."""
+        """Return a pymatgen structure graph."""
         if self._graph is None:
             self._graph = get_structure_graph(self.structure, self._cnn_method)
             self._nx_graph = construct_clean_graph(self._graph)
         return self._graph
 
-    def get_connected_sites(self, site_index) -> List[ConnectedSite]:
+    def get_connected_sites(self, site_index: int) -> List[ConnectedSite]:
         """Get connected sites for given index.
 
         Uses internal cache for speedup.
+
+        Args:
+            site_index (int): Index of the site to get connected sites for.
+
+        Returns:
+            List[ConnectedSite]: List of connected sites.
         """
         if site_index not in self._connected_sites:
             self._connected_sites[site_index] = self.graph.get_connected_sites(site_index)
         return self._connected_sites[site_index]
 
-    def get_cn(self, site_index) -> int:
-        """Get coordination number for site with CrystalNN method
+    def get_cn(self, site_index: int) -> int:
+        """Get coordination number for site.
 
         Uses internal cache for speedup.
 
@@ -457,27 +499,32 @@ class MOFChecker:
 
     @property
     def has_overvalent_n(self) -> bool:
-        """Returns true if there is some nitrogen in the structure
-        that has more than 4 neighbors.
+        """Return True if some nitrogen has more than 4 neighbors.
 
         Returns:
-            [bool]: True if nitrogen with CN > 4 in structure.
+            bool: True if nitrogen with CN > 4 in structure.
         """
         return not self.checks["no_overcoordinated_nitrogen"].is_ok
 
     @property
     def has_overcoordinated_n(self) -> bool:
-        """See has_overvalent_n"""
+        """Return True if some nitrogen has more than 4 neighbors.
+
+        Alias for has_overvalent_n.
+
+        Returns:
+            bool: True if nitrogen with CN > 4 in structure.
+        """
         return self.has_overvalent_n
 
     @property
     def has_lone_molecule(self) -> bool:
-        """Returns true if there is a isolated floating atom or molecule"""
+        """Return true if there is a isolated floating atom or molecule."""
         return not self.checks["no_floating_molecule"].is_ok
 
     @property
-    def lone_molecule_indices(self):
-        """Returns indices of non-periodic connected component in the structure"""
+    def lone_molecule_indices(self) -> List[int]:
+        """Return indices of non-periodic connected component in the structure."""
         return self.checks["no_floating_molecule"].flagged_indices
 
     @classmethod
@@ -494,8 +541,8 @@ class MOFChecker:
         symprec: float = 0.5,
         angle_tolerance: float = 5,
         primitive: bool = False,
-    ):
-        """Create a MOFChecker instance from a CIF file
+    ) -> "MOFChecker":
+        """Create a MOFChecker instance from a CIF file.
 
         Args:
             path (Union[str, Path]): Path to string file
@@ -519,8 +566,8 @@ class MOFChecker:
     @classmethod
     def from_ase(
         cls, atoms: Atoms, symprec: float = 0.5, angle_tolerance: float = 5, primitive: bool = False
-    ):
-        """Create a MOFChecker instance from an ASE atoms object
+    ) -> "MOFChecker":
+        """Create a MOFChecker instance from an ASE atoms object.
 
         Args:
             atoms (Atoms): ase atoms object
@@ -539,13 +586,13 @@ class MOFChecker:
         return omscls
 
     @property
-    def has_metal(self):
-        """Checks if there is at least one metal in the structure"""
+    def has_metal(self) -> bool:
+        """Return True if the structure has a metal."""
         return self.checks["has_metal"].is_ok
 
     @property
-    def has_oms(self):
-        """Returns true if open metal sites are detected"""
+    def has_oms(self) -> bool:
+        """Return true if open metal sites are detected."""
         return not self.checks["no_oms"].is_ok
 
     def _set_cnn(self, method="vesta"):
@@ -554,7 +601,7 @@ class MOFChecker:
         self._cnn_method = method.lower()
 
     def get_mof_descriptors(self, descriptors=None) -> OrderedDict:
-        """Run sanity checks and get a dictionary with the result
+        """Run sanity checks and get a dictionary with the result.
 
         Args:
             descriptors (List): If provided, compute only the passed descriptors

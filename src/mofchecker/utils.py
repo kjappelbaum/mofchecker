@@ -1,14 +1,46 @@
 # -*- coding: utf-8 -*-
-"""Helper functions for the MOFChecker"""
+"""Helper functions for the MOFChecker."""
+import functools
 import json
 import pickle
+import warnings
+from types import FunctionType
 
 import pymatgen
 from backports.cached_property import cached_property
 
+from .types import PathType
 
-def read_pickle(file):
-    """Read a pickle file"""
+
+def deprecated(func: FunctionType) -> FunctionType:
+    """Mark function as deprecated using a decorator.
+
+    It will result in a warning being emitted
+    when the function is used.
+
+    Args:
+        func (FunctionType): function to be decorated
+
+    Returns:
+        FunctionType: decorated function
+    """
+
+    @functools.wraps(func)
+    def new_func(*args, **kwargs):
+        warnings.simplefilter("always", DeprecationWarning)  # turn off filter
+        warnings.warn(
+            "Call to deprecated function {}.".format(func.__name__),
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        warnings.simplefilter("default", DeprecationWarning)  # reset filter
+        return func(*args, **kwargs)
+
+    return new_func
+
+
+def read_pickle(file: PathType):
+    """Read a pickle file."""
     with open(file, "rb") as handle:
         return pickle.load(handle)
 
@@ -25,20 +57,13 @@ def _check_metal_coordination(site, coordination_number: int) -> bool:
         or (site.specie.symbol in ("Mo", "Cr", "Hf", "Mb"))
     ) and coordination_number <= 4:
         return True
-
-    # Also for the alkaline/alkaline earth metals,
-    # I would find a low coordination number surprising
-    # elif site.specie.is_alkali or site.specie.is_alkaline:
-    #     if coordination_number <= 4:
-    #         return True
-
     return False
 
 
-def print_dict(dictionary):
+def print_dict(dictionary: dict) -> None:
     """Print a dictionary to stdout line by line."""
-    for k, v in dictionary.items():  # pylint: disable=invalid-name
-        print(k, v)
+    for k, v in dictionary.items():
+        print(k, v)  # noqa:T201
 
 
 def _check_if_ordered(structure):

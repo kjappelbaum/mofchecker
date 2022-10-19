@@ -1,23 +1,35 @@
 # -*- coding: utf-8 -*-
-"""Check if there are carbons with more neighbors than expected"""
+"""Check if there are carbons with more neighbors than expected."""
+from pymatgen.analysis.graphs import StructureGraph
+
+from mofchecker.types import StructureIStructureType
+
 from .base_coordination_check import BaseCoordinationCheck
 from ..utils.get_indices import _is_any_neighbor_metal, get_c_indices
 
 
 class OverCoordinatedCarbonCheck(BaseCoordinationCheck):
-    """Check if there are carbons with more neighbors than expected"""
+    """Check if there are carbons with more neighbors than expected."""
 
-    def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
+    def __init__(self, structure: StructureIStructureType, structure_graph: StructureGraph):
+        """Initialize the OverCoordinatedCarbonCheck check.
+
+        Args:
+            structure (StructureIStructureType): The structure to check.
+            structure_graph (StructureGraph): The structure graph to use for the check.
+        """
         self.structure = structure
         self.c_indices = get_c_indices(self.structure)
         self.structure_graph = structure_graph
 
     @property
     def name(self):
+        """Return the name of the check."""
         return "Overcoordinated carbons"
 
     @property
     def description(self):
+        """Return a description of the check."""
         return "Checks, using geometric heuristics,\
              if there are any carbons that are likely overcoordinated (i.e., CN>4)."
 
