@@ -13,7 +13,7 @@ from .types import PathType
 
 
 def deprecated(func: FunctionType) -> FunctionType:
-    """Decorator to mark function as deprecated.
+    """Mark function as deprecated using a decorator.
 
     It will result in a warning being emitted
     when the function is used.

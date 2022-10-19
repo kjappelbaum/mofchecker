@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Checks, using geometric heuristics if there are any carbons
-that are likely overcoordinated (i.e., CN>4)"""
+"""Checks, using geometric heuristics if there are any carbons that are likely overcoordinated (i.e., CN>4)."""
 from .base_coordination_check import BaseCoordinationCheck
 from ..utils.get_indices import _is_any_neighbor_metal, get_n_indices
 
 
 class OverCoordinatedNitrogenCheck(BaseCoordinationCheck):
-    """Checks, using geometric heuristics if there are any carbons
-    that are likely overcoordinated (i.e., CN>4)"""
+    """Checks, using geometric heuristics if there are any carbons that are likely overcoordinated (i.e., CN>4)."""
 
     def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
         self.structure = structure

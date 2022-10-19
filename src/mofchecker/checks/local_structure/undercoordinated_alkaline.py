@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-""""Check if there are any alkali/alkaline earth metals
-that are likely undercoordinated (i.e., CN<4)"""
+"""Check if there are any alkali/alkaline earth metals that are likely undercoordinated (i.e., CN<4)."""
+from pymatgen.analysis.graphs import StructureGraph
+
 from .base_coordination_check import BaseCoordinationCheck
 from ..utils.get_indices import get_alkali_alkaline_indices
+from ...types import StructureIStructureType
 
 
 class UnderCoordinatedAlkaliAlkaline(BaseCoordinationCheck):
-    """ "Check if there are any alkali/alkaline earth metals
-    that are likely undercoordinated (i.e., CN<4)"""
+    """Check if there are any alkali/alkaline earth metals that are likely undercoordinated (i.e., CN<4)."""
 
-    def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
+    def __init__(self, structure: StructureIStructureType, structure_graph: StructureGraph):
         self.structure = structure
         self.alkali_alkaline_indices = get_alkali_alkaline_indices(structure)
         self.structure_graph = structure_graph

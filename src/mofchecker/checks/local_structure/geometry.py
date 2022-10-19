@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Utilities for geometry operations"""
+"""Utilities for geometry operations."""
 import math
 
 import numpy as np
@@ -9,7 +9,7 @@ from pymatgen.util.coord import get_angle
 from ..utils.get_indices import is_metal
 
 
-def rotation_matrix(axis, theta):  # pylint: disable=too-many-locals
+def rotation_matrix(axis, theta):
     """
     Return the rotation matrix associated with counterclockwise rotation about
     the given axis by theta radians.
@@ -50,14 +50,13 @@ def get_angle_between_site_and_neighbors(site, neighbors):
 def _guess_underbound_nitrogen_cn3(
     structure: Structure, site_index: int, neighbors: list, tolerance: int = 10
 ) -> bool:
-    """Check if there is a nitrogen with three neighbors
-    that likely misses some coordination.
+    """Check if there is a nitrogen with three neighbors that likely misses some coordination.
 
     Args:
         structure (Structure): pymatgen Structure object
         site_index (int): index of the central site that is check
         neighbors (list): list of neighboring sites
-        tolerance (int, optional): Tolerance for angle checks in degree.
+        tolerance (int): Tolerance for angle checks in degree.
             Defaults to 10.
 
     Returns:
@@ -85,7 +84,7 @@ def _guess_underbound_nitrogen_cn3(
     return False
 
 
-def _guess_underbound_nitrogen_cn2(  # pylint:disable=too-many-arguments
+def _guess_underbound_nitrogen_cn2(
     structure: Structure,
     site_index: int,
     neighbors: list,

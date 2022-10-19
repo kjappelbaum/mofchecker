@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Flagging overcoordinated hydrogens"""
+"""Flagging overcoordinated hydrogens."""
 from .base_coordination_check import BaseCoordinationCheck
 from ..data import _get_vdw_radius
 from ..utils.get_indices import get_h_indices
 
 
 class OverCoordinatedHydrogenCheck(BaseCoordinationCheck):
-    """Flagging overcoordinated hydrogens"""
+    """Flagging overcoordinated hydrogens."""
 
     def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
         self.structure = structure

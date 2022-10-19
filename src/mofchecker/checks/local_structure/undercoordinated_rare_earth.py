@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-""""Check if there are any lanthanides/actinides
-that are likely undercoordinated (i.e., CN<4)"""
+"""Check if there are any lanthanides/actinides that are likely undercoordinated (i.e., CN<4)."""
 from .base_coordination_check import BaseCoordinationCheck
 from ..utils.get_indices import get_rare_earth_indices
 
 
 class UnderCoordinatedRareEarthCheck(BaseCoordinationCheck):
-    """ "Check if there are any lanthanides/actinides
-    that are likely undercoordinated (i.e., CN<4)"""
+    """Check if there are any lanthanides/actinides that are likely undercoordinated (i.e., CN<4)."""
 
     def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
         self.structure = structure

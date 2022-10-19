@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
-""""Check if there are any metals
-that are sterically exposed"""
+"""Check if there are any metals that are sterically exposed."""
+from pymatgen.analysis.graphs import StructureGraph
+
 from .base_coordination_check import BaseCoordinationCheck
 from ..utils.geometry import has_open_angle
 from ..utils.get_indices import get_alkali_alkaline_indices, get_rare_earth_indices
+from ...types import StructureIStructureType
 
 
 class GeometricallyExposedMetal(BaseCoordinationCheck):
-    """Check if there are any metals (alkali/alkaline earth or rare earth)
-    that are likely geometrically exposed, i.e. which form
-    a small cone angle with their binding partners"""
+    """Check if there are any metals (alkali/alkaline earth or rare earth) that are likely geometrically exposed.
 
-    def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
+    That is, which form a small cone angle with their binding partners."""
+
+    def __init__(self, structure: StructureIStructureType, structure_graph: StructureGraph):
         self.structure = structure
         self.relevant_metals = get_alkali_alkaline_indices(structure) + get_rare_earth_indices(
             structure

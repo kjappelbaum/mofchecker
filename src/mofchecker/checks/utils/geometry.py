@@ -31,7 +31,6 @@ def get_open_angle(graph: StructureGraph, index: int) -> float:
     """Get 360 - cone angle of the site with the given index."""
     coords, species = _get_coords_and_elements_of_neighbors(graph, index)
     encodings = encode_many(species, "van_der_waals_radius")
-    print(are_coplanar(coords))
     try:
         angle, _, _ = cone_angle(coords, encodings, 0)
         return 360 - angle
@@ -45,7 +44,16 @@ def get_open_angle(graph: StructureGraph, index: int) -> float:
 
 def has_open_angle(graph: StructureGraph, index: int, threshold: float = 80) -> bool:
     """Check if the site with the given index has an open angle.
+
     Nans are treated as False.
+
+    Args:
+        graph (StructureGraph): The StructureGraph to analyse.
+        index (int): The index of the site to analyse.
+        threshold (float): The threshold for the open angle. Defaults to 80.
+
+    Returns:
+        bool: True if the site has an open angle, False otherwise.
     """
     angle = get_open_angle(graph, index)
     if angle > threshold:

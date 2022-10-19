@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Test the symmetry subpackage"""
+"""Test the symmetry subpackage."""
 import os
 
 from pymatgen.core import Structure
@@ -12,7 +12,7 @@ from .conftest import THIS_DIR
 
 
 def test_get_symmetry_hash():
-    """Test the symmetry hashes"""
+    """Test the symmetry hashes."""
     zif3 = MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "ZIF-3.cif"))
     hash_a = get_symmetry_hash(zif3.structure, tight=True)
     assert len(hash_a) == 275

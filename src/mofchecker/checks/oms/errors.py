@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-"""Custom error types"""
+"""Custom error types."""
 
 
 class LowCoordinationNumber(KeyError):
-    """Error for low coordination number"""
+    """Error for low coordination number."""
 
 
 class HighCoordinationNumber(KeyError):
-    """Error for high coordination number"""
+    """Error for high coordination number."""
 
 
 class NoOpenDefined(KeyError):
     """Error in case the open check is not defined
-    for this coordination number"""
+    for this coordination number."""

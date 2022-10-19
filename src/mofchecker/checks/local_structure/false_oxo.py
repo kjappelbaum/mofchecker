@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Original idea and implementation idea contributed by Andrew Rosen,
-https://github.com/kjappelbaum/mofchecker/issues/122"""
+"""Check if there is a site with an unexpected Oxo group.
+
+Original idea and implementation idea contributed by Andrew Rosen.
+https://github.com/kjappelbaum/mofchecker/issues/122
+"""
 
 from .base_coordination_check import BaseCoordinationCheck
 from ..utils.get_indices import get_metal_indices
@@ -41,10 +44,9 @@ NO_TERMINAL_OXO = [
 
 
 class FalseOxoCheck(BaseCoordinationCheck):
-    """Checks if there is a metal with oxo group,
-    for which such a group is unexpected."""
+    """Check if there is a metal with oxo group for which such a group is unexpected."""
 
-    def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
+    def __init__(self, structure, structure_graph):
         self.structure = structure
         self.metal_indices = get_metal_indices(self.structure)
         self.structure_graph = structure_graph

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Check for undercoordinated nitrogens"""
+"""Check for undercoordinated nitrogens."""
 from .base_missing_check import BaseMissingCheck
 from .geometry import (
     _guess_underbound_nitrogen_cn2,
@@ -12,7 +12,7 @@ from ..utils.get_indices import get_n_indices
 
 
 class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
-    """Check for undercoordinated nitrogens"""
+    """Check for undercoordinated nitrogens."""
 
     def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
         self.structure = structure

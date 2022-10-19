@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Check if there are carbons with more neighbors than expected"""
+"""Check if there are carbons with more neighbors than expected."""
 from .base_coordination_check import BaseCoordinationCheck
 from ..utils.get_indices import _is_any_neighbor_metal, get_c_indices
 
 
 class OverCoordinatedCarbonCheck(BaseCoordinationCheck):
-    """Check if there are carbons with more neighbors than expected"""
+    """Check if there are carbons with more neighbors than expected."""
 
-    def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
+    def __init__(self, structure, structure_graph):
         self.structure = structure
         self.c_indices = get_c_indices(self.structure)
         self.structure_graph = structure_graph

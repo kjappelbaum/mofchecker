@@ -2,7 +2,10 @@
 """Base class for checks on coordination numbers/environments"""
 import abc
 
+from pymatgen.analysis.graphs import StructureGraph
 from structuregraph_helpers.analysis import get_cn
+
+from mofchecker.types import StructureIStructureType
 
 from ..check_base import AbstractIndexCheck
 
@@ -11,7 +14,7 @@ class BaseCoordinationCheck(AbstractIndexCheck):
     """Base class for checks on coordination numbers/environments"""
 
     @abc.abstractmethod
-    def __init__(self, structure, structure_graph):
+    def __init__(self, structure: StructureIStructureType, structure_graph: StructureGraph):
         self.structure = structure
         self.structure_graph = structure_graph
 

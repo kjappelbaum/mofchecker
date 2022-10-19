@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
-"""Base class for checks for missing atoms, i.e., "undervalent" checks"""
+"""Base class for checks for missing atoms, i.e., "undervalent" checks."""
 import abc
 
+from pymatgen.analysis.graphs import StructureGraph
 from structuregraph_helpers.analysis import get_cn
 
 from ..check_base import AbstractMissingCheck
+from ...types import StructureIStructureType
 
 
 class BaseMissingCheck(AbstractMissingCheck):
-    """Base class for checks for missing atoms, i.e., "undervalent" checks"""
+    """Base class for checks for missing atoms, i.e., "undervalent" checks."""
 
     @abc.abstractmethod
-    def __init__(self, structure, structure_graph):
+    def __init__(self, structure: StructureIStructureType, structure_graph: StructureGraph):
         self.structure = structure
         self.structure_graph = structure_graph
 

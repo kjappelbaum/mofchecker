@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Constants reused in all parts of the code"""
+"""Constants reused in all parts of the code."""
 
 COVALENT_RADII = {
     # Covalent radii revisited -- DOI:10.1039/B801115J

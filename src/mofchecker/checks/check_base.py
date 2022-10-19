@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# pylint: disable=missing-module-docstring,missing-function-docstring,missing-class-docstring
 import abc
+from typing import List
 
 from backports.cached_property import cached_property
 
@@ -8,11 +8,19 @@ from backports.cached_property import cached_property
 class AbstractCheck(abc.ABC):
     @property
     @abc.abstractmethod
-    def description(self):
+    def description(self) -> str:
+        """Return a description of the check."""
+        pass
+
+    @property
+    @abc.abstractmethod
+    def name(self) -> str:
+        """Return the name of the check."""
         pass
 
     @cached_property
-    def is_ok(self):
+    def is_ok(self) -> bool:
+        """Return whether the check passed."""
         return self._run_check()
 
     @abc.abstractmethod
@@ -24,6 +32,13 @@ class AbstractIndexCheck(abc.ABC):
     @property
     @abc.abstractmethod
     def description(self):
+        """Return a description of the check."""
+        pass
+
+    @property
+    @abc.abstractmethod
+    def name(self) -> str:
+        """Return the name of the check."""
         pass
 
     @cached_property
@@ -32,12 +47,14 @@ class AbstractIndexCheck(abc.ABC):
         return result, indices
 
     @cached_property
-    def is_ok(self):
+    def is_ok(self) -> bool:
+        """Return whether the check passed."""
         result, _ = self.is_ok_and_indices
         return result
 
     @cached_property
-    def flagged_indices(self):
+    def flagged_indices(self) -> List[int]:
+        """Return the indices that failed the check."""
         _, indices = self.is_ok_and_indices
         return indices
 
@@ -49,12 +66,14 @@ class AbstractIndexCheck(abc.ABC):
 class AbstractMissingCheck(abc.ABC):
     @property
     @abc.abstractmethod
-    def description(self):
+    def description(self) -> str:
+        """Return a description of the check."""
         pass
 
     @property
     @abc.abstractmethod
-    def name(self):
+    def name(self) -> str:
+        """Return the name of the check."""
         pass
 
     @cached_property
@@ -63,12 +82,14 @@ class AbstractMissingCheck(abc.ABC):
         return result, indices, positions
 
     @property
-    def is_ok(self):
+    def is_ok(self) -> bool:
+        """Return whether the check passed."""
         result, _, _ = self.is_ok_indices_positions
         return result
 
     @property
-    def flagged_indices(self):
+    def flagged_indices(self) -> List[int]:
+        """Return the indices that failed the check."""
         _, indices, _ = self.is_ok_indices_positions
         return indices
 

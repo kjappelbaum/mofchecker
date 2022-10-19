@@ -3,4 +3,4 @@
 
 
 class NoMetal(KeyError):
-    """Error in case there is no metal in structure"""
+    """Error in case there is no metal in structure."""

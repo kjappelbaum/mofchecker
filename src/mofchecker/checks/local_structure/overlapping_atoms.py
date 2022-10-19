@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"Checks if there are atomic overlaps, based on dist < min(covr 1, covr 2)"
+"""Checks if there are atomic overlaps, based on dist < min(covr 1, covr 2)."""
 import warnings
 
 import numpy as np
@@ -11,7 +11,7 @@ from ..data import _get_covalent_radius
 
 
 class AtomicOverlapCheck(AbstractIndexCheck):
-    "Checks if there are atomic overlaps, based on dist < min(covr 1, covr 2)"
+    """Checks if there are atomic overlaps, based on dist < min(covr 1, covr 2)."""
 
     def __init__(self, structure):
         self.structure = structure
@@ -31,8 +31,7 @@ class AtomicOverlapCheck(AbstractIndexCheck):
 
 
 def _compute_overlap_matrix(distance_matrix: np.array, allatomtypes: list, tolerance: float = 1.0):
-    """
-    Find atomic overlap based on pairwise distance and Ccvalent radii.
+    """Find atomic overlap based on pairwise distance and Ccvalent radii.
 
     Criterion: if dist < min (covr 1, covr 2) -> overlap
         (this function is used in molsimplify)
@@ -53,7 +52,7 @@ def _compute_overlap_matrix(distance_matrix: np.array, allatomtypes: list, toler
     return sparse.csr_matrix(overlap_matrix)
 
 
-def _get_overlaps(s: Structure) -> list:  # pylint: disable=invalid-name
+def _get_overlaps(s: Structure) -> list:
     """Find overlapping atoms in a structure."""
     distance_matrix = s.distance_matrix
     atomtypes = [str(species) for species in s.species]

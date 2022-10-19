@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Check for undercoordinated carbons"""
+"""Check for undercoordinated carbons."""
 import numpy as np
 
 from .base_missing_check import BaseMissingCheck
@@ -8,7 +8,7 @@ from ..utils.get_indices import get_c_indices
 
 
 class UnderCoordinatedCarbonCheck(BaseMissingCheck):
-    """Check for undercoordinated carbons"""
+    """Check for undercoordinated carbons."""
 
     def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
         self.structure = structure

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests of mofchecker"""
-# pylint: disable=missing-function-docstring,singleton-comparison,invalid-name
+"""Tests of mofchecker."""
 import os
 
 import pytest
@@ -25,12 +24,6 @@ def test_name():
 
 def test_unknown_elements():
     """Parsing structure with unknown element raises warning for covalent radius."""
-    # with pytest.warns(UserWarning) as record:
-    #     mofchecker = MOFCheƒ√cker.from_cif(
-    #         os.path.join(THIS_DIR, "test_files", "GUPQOA.cif")
-    #     )
-    #     mofchecker.get_mof_descriptors()
-    # assert len(record) >= 1
 
     with pytest.raises(NotImplementedError):
         mofchecker = MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "GUPQOA.cif"))

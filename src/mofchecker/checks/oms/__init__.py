@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
-"""Tooling for finding open metal sites"""
+"""Tooling for finding open metal sites."""
 from typing import List
 
 import numpy as np
+from pymatgen.analysis.graphs import StructureGraph
 from pymatgen.analysis.local_env import LocalStructOrderParams
 from structuregraph_helpers.analysis import get_cn
 
 from .definitions import OP_DEF
 from .errors import HighCoordinationNumber, LowCoordinationNumber
+from .types import StructureIStructureType
 from ..check_base import AbstractIndexCheck
 from ..utils.get_indices import get_metal_indices
 from ...errors import NoMetal
 
 
 class MOFOMS(AbstractIndexCheck):
-    """A 'checker' for finding open metal sites"""
+    """A 'checker' for finding open metal sites."""
 
-    def __init__(self, structure, structure_graph):
+    def __init__(self, structure: StructureIStructureType, structure_graph: StructureGraph):
         self.structure = structure
         self.structure_graph = structure_graph
         self._metal_indices = get_metal_indices(structure)
@@ -29,18 +31,18 @@ class MOFOMS(AbstractIndexCheck):
         return "Check if there are any open metal sites in the structure."
 
     def get_cn(self, index):
-        """Return the coordination number"""
+        """Return the coordination number."""
         return get_cn(self.structure_graph, index)
 
     @classmethod
     def from_mofchecker(cls, mofchecker):
-        """Initialize a OMS check from a mofchecker instance"""
+        """Initialize a OMS check from a mofchecker instance."""
         checker = cls(mofchecker.structure, mofchecker.graph)
         checker.get_cn = mofchecker.get_cn
         return checker
 
     def get_metal_descriptors_for_site(self, site_index: int) -> dict:
-        """Computes the checks for one metal site"""
+        """Computes the checks for one metal site."""
         if len(self._metal_indices) == 0:
             raise NoMetal
         return self._get_metal_descriptors_for_site(site_index)
@@ -55,8 +57,9 @@ class MOFOMS(AbstractIndexCheck):
         return descriptordict
 
     def get_metal_descriptors(self) -> dict:
-        """Return local structure order parameters for coordination number (CN),
-        element string and wheter site is open or not. Key is the site index.
+        """Return local structure order parameters.
+
+        Key is the site index.
 
         Raises:
             NoMetal: If no metal can be found in the structure
@@ -84,7 +87,7 @@ class MOFOMS(AbstractIndexCheck):
             NoMetal: Raised if the structure contains no metal
 
         Returns:
-            [list]: OMS indices
+            List[int]: OMS indices
         """
         oms_sites = []
         if len(self._metal_indices) == 0:

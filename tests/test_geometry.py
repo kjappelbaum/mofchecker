@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Testing the geometry module"""
+"""Testing the geometry module."""
 from collections import namedtuple
 
 import numpy as np
@@ -19,8 +19,7 @@ ConnectedSite = namedtuple("ConnectedSite", "site")
 
 
 def test_get_some_orthorgonal_vector():
-    """Make sure the vector we get is
-    actually orthogonal to the input and normalized"""
+    """Make sure the vector we get is actually orthogonal to the input and normalized."""
     some_vec = np.array([1, 1, 1])
     new_vec = get_some_orthorgonal_vector(some_vec)
     assert np.abs(np.dot(some_vec, new_vec)) < 0.01
@@ -28,7 +27,7 @@ def test_get_some_orthorgonal_vector():
 
 
 def test_add_sp3_hydrogens_on_cn1():
-    """Test on a toy example with one neighbor on the x axis"""
+    """Test on a toy example with one neighbor on the x axis."""
     site_b_coord = [0, 0, 0]
     site_a_coord = [0.5, 0, 0]
 
@@ -46,7 +45,7 @@ def test_add_sp3_hydrogens_on_cn1():
 
 
 def test_add_methylene_hydrogens():
-    """simplified  test case of existing CN2 coordination"""
+    """Simplified  test case of existing CN2 coordination."""
     site_b_coord = [0.1, 0.1, 0]
     site_a_coord = [0, 0.5, 0]
     site_c_coord = [0.1, 0.9, 0]
@@ -67,7 +66,7 @@ def test_add_methylene_hydrogens():
 
 
 def test_add_sp2_hydrogen():
-    """simplified  test case of existing CN2 coordination"""
+    """Simplified  test case of existing CN2 coordination."""
     site_b_coord = [0.1, 0.1, 0]
     site_a_coord = [0, 0.5, 0]
     site_c_coord = [0.1, 0.9, 0]
@@ -87,7 +86,7 @@ def test_add_sp2_hydrogen():
 
 
 def test_add_sp_hydrogen():
-    """Add H on simplified case with one neighbor"""
+    """Add H on simplified case with one neighbor."""
     site_b_coord = [0, 0, 0]
     site_a_coord = [0.5, 0, 0]
     lattice = Lattice.from_parameters(1, 1, 1, 90, 90, 90)

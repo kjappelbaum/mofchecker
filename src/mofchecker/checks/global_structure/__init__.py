@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-"""Checks on the composition"""
+"""Checks on the composition."""
+from mofchecker.types import StructureIStructureType
+
 from ..check_base import AbstractCheck
 from ..utils.get_indices import get_c_indices, get_h_indices, get_metal_indices, get_n_indices
 
 
 class HasCarbon(AbstractCheck):
-    "Checks if the structure has any carbon atom."
+    """Checks if the structure has any carbon atom."""
 
-    def __init__(self, structure):
+    def __init__(self, structure: StructureIStructureType):
         self.structure = structure
 
     def _run_check(self):
@@ -20,9 +22,9 @@ class HasCarbon(AbstractCheck):
 
 
 class HasNitrogen(AbstractCheck):
-    "Checks if the structure has any nitrogen atom."
+    """Checks if the structure has any nitrogen atom."""
 
-    def __init__(self, structure):
+    def __init__(self, structure: StructureIStructureType):
         self.structure = structure
 
     def _run_check(self):
@@ -35,9 +37,9 @@ class HasNitrogen(AbstractCheck):
 
 
 class HasHydrogen(AbstractCheck):
-    "Checks if the structure has any hydrogen atom."
+    """Checks if the structure has any hydrogen atom."""
 
-    def __init__(self, structure):
+    def __init__(self, structure: StructureIStructureType):
         self.structure = structure
 
     def _run_check(self):
@@ -50,9 +52,9 @@ class HasHydrogen(AbstractCheck):
 
 
 class HasMetal(AbstractCheck):
-    "Checks if the structure has any metal atom."
+    """Checks if the structure has any metal atom."""
 
-    def __init__(self, structure):
+    def __init__(self, structure: StructureIStructureType):
         self.structure = structure
 
     def _run_check(self):
