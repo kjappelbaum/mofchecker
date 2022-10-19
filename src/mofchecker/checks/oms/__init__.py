@@ -27,7 +27,13 @@ class MOFOMS(AbstractIndexCheck):
         self.metal_features = {}
 
     @property
+    def name(self) -> str:
+        """Return the name of the check."""
+        return "OMS"
+
+    @property
     def description(self):
+        """Return a description of the check."""
         return "Check if there are any open metal sites in the structure."
 
     def get_cn(self, index):

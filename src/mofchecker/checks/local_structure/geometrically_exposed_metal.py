@@ -23,10 +23,12 @@ class GeometricallyExposedMetal(BaseCoordinationCheck):
 
     @property
     def name(self):
+        """Return the name of the check."""
         return "Geometrically exposed metal."
 
     @property
     def description(self):
+        """Return a description of the check."""
         return "Check if there are any metals (alkali/alkaline earth or rare earth) that are likely \
             geometrically exposed, i.e. which form a small cone angle \
                 with their binding partners"

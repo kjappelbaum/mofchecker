@@ -8,7 +8,7 @@ from .check_base import AbstractIndexCheck
 
 
 class FloatingSolventCheck(AbstractIndexCheck):
-    """Checks if there is any non-periodic connected component in the cell.
+    """Check if there is any non-periodic connected component in the cell.
 
     This might be a solvent, charge compensating counter ion, etc.
     """
@@ -28,6 +28,7 @@ class FloatingSolventCheck(AbstractIndexCheck):
 
     @property
     def name(self):
+        """Return the name of the check."""
         return "Floating atom or molecule"
 
     @classmethod
@@ -42,5 +43,6 @@ class FloatingSolventCheck(AbstractIndexCheck):
 
     @property
     def description(self):
+        """Return a description of the check."""
         return "Checks if there is any non-periodic connected component in the cell,\
              which can be a solvent, charge compensating counter ion, etc."

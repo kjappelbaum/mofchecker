@@ -23,10 +23,12 @@ class ChargeCheck(AbstractCheck):
 
     @property
     def name(self) -> str:
+        """Return the name of the check."""
         return "High charges"
 
     @property
     def description(self) -> str:
+        """Return a description of the check."""
         return f"Check that the charges of the structure are reasonable\
              (abs(charge) not higher than {self.threshold})."
 

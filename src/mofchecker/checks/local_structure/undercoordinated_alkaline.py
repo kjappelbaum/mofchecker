@@ -11,16 +11,24 @@ class UnderCoordinatedAlkaliAlkaline(BaseCoordinationCheck):
     """Check if there are any alkali/alkaline earth metals that are likely undercoordinated (i.e., CN<4)."""
 
     def __init__(self, structure: StructureIStructureType, structure_graph: StructureGraph):
+        """Initialize the UnderCoordinatedAlkaliAlkaline check.
+
+        Args:
+            structure (StructureIStructureType): The structure to check.
+            structure_graph (StructureGraph): The structure graph to use for the check.
+        """
         self.structure = structure
         self.alkali_alkaline_indices = get_alkali_alkaline_indices(structure)
         self.structure_graph = structure_graph
 
     @property
     def name(self):
+        """Return the name of the check."""
         return "Undercoordinated alkali/alkaline earth metal"
 
     @property
     def description(self):
+        """Return a description of the check."""
         return "Check if there are any alkali/alkaline earth metals\
             that are likely undercoordinated (i.e., CN<4)."
 

@@ -6,6 +6,8 @@ import numpy as np
 from pymatgen.core import Structure
 from scipy import sparse
 
+from mofchecker.types import StructureIStructureType
+
 from ..check_base import AbstractIndexCheck
 from ..data import _get_covalent_radius
 
@@ -13,12 +15,18 @@ from ..data import _get_covalent_radius
 class AtomicOverlapCheck(AbstractIndexCheck):
     """Checks if there are atomic overlaps, based on dist < min(covr 1, covr 2)."""
 
-    def __init__(self, structure):
+    def __init__(self, structure: StructureIStructureType):
+        """Initialize the check.
+
+        Args:
+            structure (StructureIStructureType): The structure to check.
+        """
         self.structure = structure
         self.indices = None
 
     @property
     def name(self):
+        """Return the name of the check."""
         return "Atomic overlaps"
 
     def _run_check(self):
@@ -27,6 +35,7 @@ class AtomicOverlapCheck(AbstractIndexCheck):
 
     @property
     def description(self):
+        """Return a description of the check."""
         return "True, if there are no atomic overlaps, based on dist < min(covr 1, covr 2)"
 
 

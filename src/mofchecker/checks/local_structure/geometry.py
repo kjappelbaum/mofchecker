@@ -10,9 +10,9 @@ from ..utils.get_indices import is_metal
 
 
 def rotation_matrix(axis, theta):
-    """
-    Return the rotation matrix associated with counterclockwise rotation about
+    """Return the rotation matrix associated with counterclockwise rotation about
     the given axis by theta radians.
+
     Stolen from https://stackoverflow.com/questions/6802577/rotation-of-3d-vector
     """
     axis = axis / math.sqrt(np.dot(axis, axis))
@@ -245,7 +245,8 @@ def add_sp3_hydrogen(site, neighbors, length: float = 1):
 
 
 def add_sp3_hydrogens_on_cn1(site, neighbors, length: float = 1):
-    """
+    """Add hydrogens to a SP3 carbon with coordination number 1.
+
     We make a simple geometric construction based on a triangle which normal vector is
     - the vector from the current neighbor and the central atom.
     The cross product then gives us the next vector which we then only need to rotate

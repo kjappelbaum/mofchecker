@@ -81,8 +81,8 @@ def _parse_zeopp(filecontent: str) -> dict:
 
 
 def check_if_porous(structure: Structure, threshold: float = 2.4) -> Union[bool, None]:
-    """Runs zeo++ to check if structure is porous.
-    
+    """Run zeo++ to check if structure is porous.
+
     We consider the CoRE-MOF definition (PLD > 2.4, https://pubs.acs.org/doi/10.1021/acs.jced.9b00835)
 
     Args:
@@ -113,10 +113,12 @@ class PorosityCheck(AbstractCheck):
 
     @property
     def name(self):
+        """Return the name of the check."""
         return "Porosity"
 
     @property
     def description(self):
+        """Return a description of the check."""
         return f"Check if the pore limiting diameter is greater than {self.threshold}."
 
     def _run_check(self):

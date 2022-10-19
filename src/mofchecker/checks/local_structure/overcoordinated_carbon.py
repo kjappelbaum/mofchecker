@@ -14,10 +14,12 @@ class OverCoordinatedCarbonCheck(BaseCoordinationCheck):
 
     @property
     def name(self):
+        """Return the name of the check."""
         return "Overcoordinated carbons"
 
     @property
     def description(self):
+        """Return a description of the check."""
         return "Checks, using geometric heuristics,\
              if there are any carbons that are likely overcoordinated (i.e., CN>4)."
 

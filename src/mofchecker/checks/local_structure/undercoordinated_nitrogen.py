@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 """Check for undercoordinated nitrogens."""
+from pymatgen.analysis.graphs import StructureGraph
+
+from mofchecker.types import StructureIStructureType
+
 from .base_missing_check import BaseMissingCheck
 from .geometry import (
     _guess_underbound_nitrogen_cn2,
@@ -14,17 +18,25 @@ from ..utils.get_indices import get_n_indices
 class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
     """Check for undercoordinated nitrogens."""
 
-    def __init__(self, structure, structure_graph):  # pylint: disable=super-init-not-called
+    def __init__(self, structure: StructureIStructureType, structure_graph: StructureGraph):
+        """Initialize the check.
+
+        Args:
+            structure (StructureIStructureType): The structure to check
+            structure_graph (StructureGraph): The structure graph of the structure
+        """
         self.structure = structure
         self.n_indices = get_n_indices(self.structure)
         self.structure_graph = structure_graph
 
     @property
     def name(self):
+        """Return the name of the check."""
         return "Undercoordinated nitrogen"
 
     @property
     def description(self):
+        """Return a description of the check."""
         return "Checks, using geometric heuristics,\
              if there are any nitrogens that are likely undercoordinated."
 
@@ -37,9 +49,7 @@ class UnderCoordinatedNitrogenCheck(BaseMissingCheck):
         )
 
     def _get_undercoordinated_nitrogens(self, tolerance: int = 25):
-        """Attempts to captures missing hydrogens on nitrogen groups
-        using heuristics
-        """
+        """Attempts to captures missing hydrogens on nitrogen groups using heuristics."""
         undercoordinated_nitrogens = []
         h_positions = []
         for site_index in self.n_indices:
