@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Setup module"""
+"""Setup module."""
 
 import setuptools
 

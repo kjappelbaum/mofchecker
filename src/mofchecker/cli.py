@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Command line interface"""
+"""Command line interface."""
 
 import json
 
@@ -26,12 +26,10 @@ from mofchecker import DESCRIPTORS, MOFChecker
 )
 @click.argument("CIF_FILES", type=click.Path(exists=True, dir_okay=False), nargs=-1)
 def run(primitive, descriptors, cif_files):
-    """
-    Check provided structures and print list of JSON objects with descriptors.
-    """
+    """Check provided structures and print list of JSON objects with descriptors."""
     # Note: we want to see output as things progress,
     # thus this clumsy way of creating a JSON list
-    print("[")
+    print("[")  # noqa: T201
     for index, structure_file in enumerate(cif_files):
         mofchecker = MOFChecker.from_cif(structure_file, primitive=primitive)
         descriptors = mofchecker.get_mof_descriptors(descriptors=descriptors)
@@ -39,5 +37,5 @@ def run(primitive, descriptors, cif_files):
         string = json.dumps(descriptors, indent=2)
         if index != len(cif_files) - 1:
             string += ","
-        print(string)
-    print("]")
+        print(string)  # noqa: T201
+    print("]")  # noqa: T201

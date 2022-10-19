@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-"""Version information for :mod:`sonipredict`.
+"""Version information for :mod:`mofchecker`.
 
-Run with ``python -m sonipredict.version``
+Run with ``python -m mofchecker.version``
 """
 
 import os
