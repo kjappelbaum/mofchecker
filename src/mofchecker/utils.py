@@ -20,7 +20,7 @@ def deprecated(func: FunctionType) -> FunctionType:
 
     Args:
         func (FunctionType): function to be decorated
-    
+
     Returns:
         FunctionType: decorated function
     """
