@@ -92,6 +92,8 @@ def test_lone_molecule():
     mofchecker = MOFChecker.from_ase(atoms, primitive=False)
     assert len(mofchecker.lone_molecule_indices) == 3
 
+    mofchecker = MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "RSM3842.cif"))
+    assert mofchecker.has_lone_molecule is True
 
 @pytest.mark.past_issue
 def test_lone_molecule_past_issue():
