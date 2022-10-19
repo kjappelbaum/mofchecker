@@ -20,7 +20,7 @@ class MOFOMS(AbstractIndexCheck):
 
     def __init__(self, structure: StructureIStructureType, structure_graph: StructureGraph):
         """Initialize the MOFOMS class.
-        
+
         Args:
             structure (StructureIStructureType): pymatgen structure
             structure_graph (StructureGraph): pymatgen structure graph

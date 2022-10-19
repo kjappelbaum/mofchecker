@@ -10,6 +10,11 @@ class HasCarbon(AbstractCheck):
     """Checks if the structure has any carbon atom."""
 
     def __init__(self, structure: StructureIStructureType):
+        """Initialize a new HasCarbon check.
+
+        Args:
+            structure (StructureIStructureType): The structure to check.
+        """
         self.structure = structure
 
     def _run_check(self):
@@ -18,6 +23,7 @@ class HasCarbon(AbstractCheck):
 
     @property
     def description(self):
+        """Return a description of the check."""
         return "Checks if the structure has any carbon atom."
 
 
@@ -25,6 +31,11 @@ class HasNitrogen(AbstractCheck):
     """Checks if the structure has any nitrogen atom."""
 
     def __init__(self, structure: StructureIStructureType):
+        """Initialize a new HasNitrogen check.
+
+        Args:
+            structure (StructureIStructureType): Structure to check.
+        """
         self.structure = structure
 
     def _run_check(self):
@@ -33,6 +44,7 @@ class HasNitrogen(AbstractCheck):
 
     @property
     def description(self):
+        """Return a description of the check."""
         return "Checks if the structure has any nitrogen atom."
 
 
@@ -40,6 +52,11 @@ class HasHydrogen(AbstractCheck):
     """Checks if the structure has any hydrogen atom."""
 
     def __init__(self, structure: StructureIStructureType):
+        """Initialize a new HasHydrogen check.
+
+        Args:
+            structure (StructureIStructureType): Structure to check.
+        """
         self.structure = structure
 
     def _run_check(self):
@@ -48,6 +65,7 @@ class HasHydrogen(AbstractCheck):
 
     @property
     def description(self):
+        """Return a description of the check."""
         return "Checks if the structure has any hydrogen atom."
 
 
@@ -55,6 +73,11 @@ class HasMetal(AbstractCheck):
     """Checks if the structure has any metal atom."""
 
     def __init__(self, structure: StructureIStructureType):
+        """Initialize a new HasMetal check.
+
+        Args:
+            structure (StructureIStructureType): Structure to check.
+        """
         self.structure = structure
 
     def _run_check(self):
@@ -63,4 +86,5 @@ class HasMetal(AbstractCheck):
 
     @property
     def description(self):
+        """Return a description of the check."""
         return "Checks if the structure has any metal atom."
