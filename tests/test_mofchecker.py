@@ -95,6 +95,7 @@ def test_lone_molecule():
     mofchecker = MOFChecker.from_cif(os.path.join(THIS_DIR, "test_files", "RSM3842.cif"))
     assert mofchecker.has_lone_molecule is True
 
+
 @pytest.mark.past_issue
 def test_lone_molecule_past_issue():
     atoms = read(os.path.join(THIS_DIR, "test_files", "floating_check.cif"))
