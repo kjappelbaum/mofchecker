@@ -1,0 +1,1 @@
+"""MOFChecker test package."""

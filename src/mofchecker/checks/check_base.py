@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Base classes for checks."""
 import abc
 from typing import List
 
@@ -6,6 +7,8 @@ from backports.cached_property import cached_property
 
 
 class AbstractCheck(abc.ABC):
+    """Base class for checks."""
+
     @property
     @abc.abstractmethod
     def description(self) -> str:
@@ -29,6 +32,8 @@ class AbstractCheck(abc.ABC):
 
 
 class AbstractIndexCheck(abc.ABC):
+    """Base class for checks that return indices."""
+
     @property
     @abc.abstractmethod
     def description(self):
@@ -43,6 +48,7 @@ class AbstractIndexCheck(abc.ABC):
 
     @cached_property
     def is_ok_and_indices(self):
+        """Return whether the check passed and the indices that failed."""
         result, indices = self._run_check()
         return result, indices
 
@@ -64,6 +70,8 @@ class AbstractIndexCheck(abc.ABC):
 
 
 class AbstractMissingCheck(abc.ABC):
+    """Base class for checks that return candidate positions."""
+
     @property
     @abc.abstractmethod
     def description(self) -> str:
@@ -78,6 +86,7 @@ class AbstractMissingCheck(abc.ABC):
 
     @cached_property
     def is_ok_indices_positions(self):
+        """Return whether the check passed and the indices and positions that failed."""
         result, indices, positions = self._run_check()
         return result, indices, positions
 
@@ -95,6 +104,7 @@ class AbstractMissingCheck(abc.ABC):
 
     @property
     def candidate_positions(self):
+        """Return the candidate positions for the missing sites."""
         _, _, positions = self.is_ok_indices_positions
         return positions
 

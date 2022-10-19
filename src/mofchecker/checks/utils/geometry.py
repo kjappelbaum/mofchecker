@@ -6,8 +6,15 @@ from numpy.linalg import matrix_rank
 from pymatgen.analysis.graphs import StructureGraph
 
 
-def are_coplanar(coords) -> bool:
-    """Check if the given coordinates are coplanar."""
+def are_coplanar(coords: np.typing.ArrayLike) -> bool:
+    """Check if the given coordinates are coplanar.
+
+    Args:
+        coords (np.typing.ArrayLike): The coordinates to check.
+
+    Returns:
+        bool: True if the coordinates are coplanar, False otherwise.
+    """
     coords = np.unique(np.array(coords), axis=0)
     coords -= coords.mean(axis=0)
     if matrix_rank(coords, tol=0.1) <= 2:
@@ -28,7 +35,15 @@ def _get_coords_and_elements_of_neighbors(graph, index):
 
 
 def get_open_angle(graph: StructureGraph, index: int) -> float:
-    """Get 360 - cone angle of the site with the given index."""
+    """Get 360 - cone angle of the site with the given index.
+
+    Args:
+        graph (StructureGraph): The StructureGraph to analyse.
+        index (int): The index of the site to analyse.
+
+    Returns:
+        float: The open angle of the site.
+    """
     coords, species = _get_coords_and_elements_of_neighbors(graph, index)
     encodings = encode_many(species, "van_der_waals_radius")
     try:

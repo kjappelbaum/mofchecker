@@ -59,6 +59,9 @@ class UnderCoordinatedCarbonCheck(BaseMissingCheck):
 
         Args:
             tolerance (float): The tolerance for the angle between the neighbors of the carbon.
+
+        Returns:
+            List[int], np.typing.ArrayLike: The list of undercoordinated carbons and a list of candidate positions.
         """
         undercoordinated_carbons = []
         h_positions = []  # output must be list of lists to allow for filtering
