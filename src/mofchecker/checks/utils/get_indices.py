@@ -39,9 +39,11 @@ def _get_indices(immutable_structure: IStructure) -> dict:
         "c": _get_c_indices(immutable_structure),
         "h": _get_h_indices(immutable_structure),
         "n": _get_n_indices(immutable_structure),
+        "o": _get_o_indices(immutable_structure),
         "metal": _get_metal_indices(immutable_structure),
         "rare_earth": _get_rare_earth_indices(immutable_structure),
         "alkali_alkaline": _get_alkali_alkaline_indices(immutable_structure),
+        "halogen": _get_halogen_indices(immutable_structure),
     }
 
 
@@ -57,6 +59,10 @@ def _get_n_indices(structure):
     return [i for i, species in enumerate(structure.species) if str(species) == "N"]
 
 
+def _get_o_indices(structure):
+    return [i for i, site in enumerate(structure) if str(site.specie) == "O"]
+
+
 def _get_metal_indices(structure):
     return [i for i, site in enumerate(structure) if is_metal(site)]
 
@@ -69,6 +75,10 @@ def _get_alkali_alkaline_indices(structure):
     return [
         i for i, site in enumerate(structure) if site.specie.is_alkali or site.specie.is_alkaline
     ]
+
+
+def _get_halogen_indices(structure):
+    return [i for i, site in enumerate(structure) if site.specie.is_halogen]
 
 
 def get_h_indices(structure):
@@ -86,6 +96,11 @@ def get_n_indices(structure):
     return get_indices(structure)["n"]
 
 
+def get_o_indices(structure):
+    """Get the indices of all O."""
+    return get_indices(structure)["o"]
+
+
 def get_metal_indices(structure):
     """Get the indices of all metals."""
     return get_indices(structure)["metal"]
@@ -94,6 +109,11 @@ def get_metal_indices(structure):
 def get_rare_earth_indices(structure):
     """Get the indices of all rare-earth metals."""
     return get_indices(structure)["rare_earth"]
+
+
+def get_halogen_indices(structure):
+    """Get the indices of all halogens."""
+    return get_indices(structure)["halogen"]
 
 
 def get_alkali_alkaline_indices(structure):

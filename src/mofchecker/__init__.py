@@ -34,6 +34,7 @@ from mofchecker.checks.local_structure.undercoordinated_rare_earth import (
 from .checks.charge_check import ChargeCheck
 from .checks.floating_solvent import FloatingSolventCheck
 from .checks.global_structure import HasCarbon, HasHydrogen, HasMetal, HasNitrogen
+from .checks.global_structure.graphcheck import IsThreeDimensional
 from .checks.local_structure import (
     AtomicOverlapCheck,
     FalseOxoCheck,
@@ -81,6 +82,7 @@ DESCRIPTORS = [
     "has_suspicicious_terminal_oxo",
     "has_undercoordinated_alkali_alkaline",
     "has_geometrically_exposed_metal",
+    "has_3d_connected_graph",
 ]
 
 
@@ -166,6 +168,7 @@ class MOFChecker:
             "is_porous": PorosityCheck(self.structure),
             "no_oms": MOFOMS.from_mofchecker(self),
             "no_false_terminal_oxo": FalseOxoCheck.from_mofchecker(self),
+            "has_3d_connected_graph": IsThreeDimensional.from_mofchecker(self),
         }
 
     @property
@@ -315,6 +318,11 @@ class MOFChecker:
     def formula(self) -> str:
         """Return the chemical formula of the structure."""
         return self.structure.formula
+
+    @property
+    def has_3d_connected_graph(self) -> bool:
+        """Check if the graph is 3D connected."""
+        return self.checks["has_3d_connected_graph"].is_ok
 
     # ToDo: deprecate one of overvalent/overcoordinated
     @property

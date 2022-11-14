@@ -37,7 +37,7 @@ class ChargeCheck(AbstractCheck):
             from pyeqeq.main import run_on_cif
 
             with NamedTemporaryFile("w", suffix=".cif") as file:
-                self.structure.to("cif", file.name)
+                self.structure.to(fmt="cif", filename=file.name)
                 charges = run_on_cif(file.name, verbose=False)
                 has_high_charges = np.sum(np.abs(charges) > self.threshold)
 
