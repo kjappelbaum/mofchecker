@@ -26,7 +26,7 @@ class IsThreeDimensional(BaseStructureGraphCheck):
     """Check if the structure is 3D."""
 
     def _run_check(self):
-        return get_dimensionality_larsen(self.structure_graph) == 3
+        return bool(get_dimensionality_larsen(self.structure_graph) == 3)
 
     @property
     def name(self):
