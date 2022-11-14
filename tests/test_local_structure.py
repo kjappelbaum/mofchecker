@@ -69,6 +69,18 @@ def test_geometrically_exposed_metal():
     structure = Structure.from_file(os.path.join(THIS_DIR, "test_files", "MOTMAK_clean.cif"))
     structure_graph = get_structure_graph(structure, "vesta")
 
-    checker = UnderCoordinatedAlkaliAlkaline(structure, structure_graph)
+    checker = GeometricallyExposedMetal(structure, structure_graph)
     assert not checker.is_ok
     assert len(checker.flagged_indices) == 2
+
+    structure = Structure.from_file(
+        os.path.join(THIS_DIR, "test_files", "046_flu+N131+126_charge.cif")
+    )
+    structure_graph = get_structure_graph(structure, "vesta")
+
+    checker = GeometricallyExposedMetal(structure, structure_graph, tight=True)
+    assert not checker.is_ok
+    assert len(checker.flagged_indices) == 8
+
+    checker = GeometricallyExposedMetal(structure, structure_graph, tight=False)
+    assert checker.is_ok

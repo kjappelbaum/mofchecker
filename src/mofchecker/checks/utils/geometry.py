@@ -46,6 +46,7 @@ def get_open_angle(graph: StructureGraph, index: int) -> float:
     """
     coords, species = _get_coords_and_elements_of_neighbors(graph, index)
     encodings = encode_many(species, "van_der_waals_radius")
+    # encodings = [0.5] * len(encodings)
     try:
         angle, _, _ = cone_angle(coords, encodings, 0)
         return 360 - angle
@@ -71,6 +72,7 @@ def has_open_angle(graph: StructureGraph, index: int, threshold: float = 80) -> 
         bool: True if the site has an open angle, False otherwise.
     """
     angle = get_open_angle(graph, index)
+
     if angle > threshold:
         return True
     return False

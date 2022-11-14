@@ -4,8 +4,25 @@ import os
 
 import pytest
 from pymatgen.core import Structure
+from structuregraph_helpers.create import get_structure_graph
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
+
+
+@pytest.fixture(scope="session")
+def get_3d_structure_and_graph():
+    """Get a 3D structure and graph."""
+    structure = Structure.from_file(os.path.join(THIS_DIR, "test_files", "BIXVEM.cif"))
+    structure_graph = get_structure_graph(structure, "vesta")
+    return structure, structure_graph
+
+
+@pytest.fixture(scope="session")
+def get_1d_structure_and_graph():
+    """Get a 1D structure and graph."""
+    structure = Structure.from_file(os.path.join(THIS_DIR, "test_files", "qmof-fef756d.cif"))
+    structure_graph = get_structure_graph(structure, "vesta")
+    return structure, structure_graph
 
 
 @pytest.fixture(scope="module")

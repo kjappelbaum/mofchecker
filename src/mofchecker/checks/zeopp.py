@@ -33,7 +33,7 @@ def run_zeopp(structure: Structure) -> dict:
         with TemporaryDirectory() as tempdir:
             structure_path = os.path.join(tempdir, "structure.cif")
             result_path = os.path.join(tempdir, "result.res")
-            structure.to("cif", structure_path)
+            structure.to(fmt="cif", filename=structure_path)
             cmd = ZEOPP_BASE_COMMAND + [str(result_path), str(structure_path)]
             _ = subprocess.run(
                 cmd,
